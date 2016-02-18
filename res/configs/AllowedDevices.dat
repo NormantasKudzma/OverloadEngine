@@ -1,0 +1,14 @@
+###
+# Allowed products and vendor list.
+# All values must be in PRODUCT=VENDOR format.
+# All values are parsed in hexadecimal format (0x0123). Format specifier (0x part) can be omitted.
+# Lines starting with sign/hashtag symbol (#) will be ignored.
+###
+# Default allowed product list.
+###
+
+0011=0079
+
+###
+# Add any user-defined allowed products below.
+###
