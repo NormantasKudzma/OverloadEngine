@@ -4,18 +4,22 @@ import game.Entity;
 
 import java.util.ArrayList;
 
-import org.jbox2d.callbacks.DebugDraw;
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.contacts.Contact;
 
-public class PhysicsWorld {
+public class PhysicsWorld implements ContactListener {
 	private static final PhysicsWorld INSTANCE = new PhysicsWorld();
 	private static ArrayList<PhysicsBody> bodyList = new ArrayList<PhysicsBody>();
 	private World world;
 	
 	private PhysicsWorld(){
 		world = new World(new Vec2());
+		world.setContactListener(this);
 	}
 	
 	public static PhysicsWorld getInstance(){
@@ -46,11 +50,61 @@ public class PhysicsWorld {
 		return new BodyDef();
 	}
 
-	public void setDebugDraw(DebugDraw debugDraw){
-		int debugFlags = 0x0;
-		debugFlags |= DebugDraw.e_shapeBit;
-		debugDraw.setFlags(debugFlags);
+	@Override
+	public void beginContact(Contact c) {
+		Object userDataA = c.getFixtureA().getBody().getUserData();
+		Object userDataB = c.getFixtureB().getBody().getUserData();
+		ICollidable collidableA = null;
+		ICollidable collidableB = null;
 		
-		world.setDebugDraw(debugDraw);
+		if (userDataA instanceof ICollidable){
+			collidableA = (ICollidable)userDataA;
+		}
+		if (userDataB instanceof ICollidable){
+			collidableB = (ICollidable)userDataB;
+		}
+		
+		if (collidableA != null)
+		{
+			collidableA.collisionStart(c.getFixtureA(), collidableB);
+		}
+		if (collidableB != null)
+		{
+			collidableB.collisionStart(c.getFixtureB(), collidableA);
+		}
+	}
+
+	@Override
+	public void endContact(Contact c) {
+		Object userDataA = c.getFixtureA().getBody().getUserData();
+		Object userDataB = c.getFixtureB().getBody().getUserData();
+		ICollidable collidableA = null;
+		ICollidable collidableB = null;
+		
+		if (userDataA instanceof ICollidable){
+			collidableA = (ICollidable)userDataA;
+		}
+		if (userDataB instanceof ICollidable){
+			collidableB = (ICollidable)userDataB;
+		}
+		
+		if (collidableA != null)
+		{
+			collidableA.collisionEnd(c.getFixtureA(), collidableB);
+		}
+		if (collidableB != null)
+		{
+			collidableB.collisionEnd(c.getFixtureB(), collidableA);
+		}
+	}
+
+	@Override
+	public void postSolve(Contact c, ContactImpulse arg1i) {
+		//stub
+	}
+
+	@Override
+	public void preSolve(Contact c, Manifold m) {
+		//stub
 	}
 }

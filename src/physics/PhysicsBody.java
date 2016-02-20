@@ -33,13 +33,6 @@ public class PhysicsBody {
 	private Vector2 bodyScale = new Vector2(1.0f, 1.0f);
 
 	/**
-	 * Creates a body with default settings.
-	 */
-	public PhysicsBody() {
-		createBody(null, null);
-	}
-
-	/**
 	 * Creates a body with a defined user data.
 	 * 
 	 * @param e - Entity that will be set to UserData.
@@ -101,7 +94,7 @@ public class PhysicsBody {
 		attachPolygonCollider(vertices, false);
 	}
 	
-	public void attachPolygonCollider(Vector2[] vertices, boolean isSensor) {
+	public Fixture attachPolygonCollider(Vector2[] vertices, boolean isSensor) {
 		Vec2[] vec2Verts = new Vec2[vertices.length];
 		for (int i = 0; i < vertices.length; i++) {
 			vec2Verts[i] = vertices[i].toVec2();
@@ -109,17 +102,19 @@ public class PhysicsBody {
 
 		PolygonShape polygon = new PolygonShape();
 		polygon.set(vec2Verts, vec2Verts.length);
-
-		attachCollider(polygon, isSensor);
+	
+		return attachCollider(polygon, isSensor);
 	}
 
-	private void attachCollider(Shape shape, boolean isSensor) {
+	private Fixture attachCollider(Shape shape, boolean isSensor) {
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.userData = this;
 		fixtureDef.isSensor = isSensor;
 
-		fixtureList.add(body.createFixture(fixtureDef));
+		Fixture fixture = body.createFixture(fixtureDef);
+		fixtureList.add(fixture);
+		return fixture;
 	}
 
 	private void createBody(BodyDef def, Entity e) {

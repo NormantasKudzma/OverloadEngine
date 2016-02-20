@@ -1,6 +1,9 @@
 package game;
 
 import graphics.IRenderable;
+
+import org.jbox2d.dynamics.Fixture;
+
 import physics.ICollidable;
 import physics.PhysicsBody;
 import physics.PhysicsWorld;
@@ -52,8 +55,13 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 	
 	@Override
-	public void handleCollision() {
-		// TODO Auto-generated method stub
+	public void collisionEnd(Fixture me, ICollidable other) {
+		//
+	}
+	
+	@Override
+	public void collisionStart(Fixture me, ICollidable other) {
+		//
 	}
 	
 	public void initEntity(){
