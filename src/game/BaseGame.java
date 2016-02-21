@@ -87,8 +87,6 @@ public class BaseGame implements IUpdatable, IClickable {
 		}
 		
 		renderGame();
-		
-		PhysicsDebugDraw.render();
 	}
 
 	protected void renderGame(){

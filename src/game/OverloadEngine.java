@@ -6,6 +6,11 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 
+import java.util.Locale;
+
+import graphics.PhysicsDebugDraw;
+import graphics.SimpleFont;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -24,9 +29,11 @@ public class OverloadEngine {
 	public static final int frameWidth = 1280;
 	public static final float aspectRatio = (float)frameWidth / (float)frameHeight;
 	
-	private long deltaTime;
 	private BaseGame game;
+	private boolean isDebugDrawn = true;
+	private float deltaTime;
 	private long t0, t1; // Frame start/end time
+	private DebugFrameCounter frameCounter;
 
 	private void destroy() {
 		game.destroy();
@@ -37,7 +44,7 @@ public class OverloadEngine {
 
 	private void init() {
 		try {
-			Display.setTitle("-");
+			Display.setTitle("Overload engine");
 			Display.setResizable(false);
 			Display.setDisplayMode(new DisplayMode(frameWidth, frameHeight));
 			Display.create();
@@ -51,10 +58,12 @@ public class OverloadEngine {
 
 		// Create and initialize game
 		if (game == null){
-			System.out.println("You need to setGame() first!");
+			System.err.println("You need to setGame() first!");
 			return;
 		}
 		game.init();
+		
+		frameCounter = new DebugFrameCounter();
 
 		LwjglMouseController c = (LwjglMouseController) ControllerManager.getInstance().getController(EController.LWJGLMOUSECONTROLLER);
 		c.addKeybind(0, new ControllerEventListener() {
@@ -82,33 +91,37 @@ public class OverloadEngine {
 		GL11.glViewport(0, 0, frameWidth, frameHeight);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-		//GL11.glOrtho(0, frameWidth, 0, frameHeight, 0, -1);
-		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glClearColor(1.0f, 0.4f, 0.9f, 1.0f);
 
 		t0 = t1 = System.currentTimeMillis();
 
 		while (!Display.isCloseRequested()) {
 			t0 = System.currentTimeMillis();
-			deltaTime = t0 - t1;
+			deltaTime = (t0 - t1) * 0.001f;
 			t1 = t0;
 
 			// Poll controllers for input
 			ControllerManager.getInstance().pollControllers();
 
 			// Update game logic
-			game.update(deltaTime * 0.001f);
+			game.update(deltaTime);
 
 			// Prepare for rendering
 			GL11.glLoadIdentity();
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			GL11.glTranslatef(-1.0f, -1.0f, 0.0f);
 			GL11.glPopMatrix();
-			//GL11.glScalef(1.0f, -1.0f, 1.0f);
 
 			// Render game and swap buffers
 			game.render();
+			
+			// Render debug things
+			if (isDebugDrawn){
+				PhysicsDebugDraw.render();
+				
+				frameCounter.update(deltaTime);
+				frameCounter.render();
+			}
 			
 			Display.update();
 			Display.sync(TARGET_FPS);
@@ -121,7 +134,17 @@ public class OverloadEngine {
 		destroy();
 	}
 	
+	public void setDebugDraw(boolean isDebugDrawn){
+		this.isDebugDrawn = isDebugDrawn;
+	}
+	
 	public void setGame(BaseGame g){
 		game = g;
+	}
+	
+	public void setTitle(String title){
+		if (title != null){
+			Display.setTitle(title);
+		}
 	}
 }

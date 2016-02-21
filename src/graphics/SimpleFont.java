@@ -68,6 +68,11 @@ public class SimpleFont implements IRenderable {
 	}
 
 	@Override
+	public void render() {
+		render(Vector2.one, 0.0f, Vector2.one);
+	}
+	
+	@Override
 	public void render(Vector2 position, float rotation, Vector2 scale) {
 		float step = defaultSymbol.sprite.getHalfSize().x * MAGIC_SCALE * scale.x;
 		internalPos = position.copy().add(-step * 0.5f * text.length() + step * 0.5f, 0);

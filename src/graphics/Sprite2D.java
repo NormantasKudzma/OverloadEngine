@@ -78,6 +78,10 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		}
 	}
 	
+	public void render(){
+		render(Vector2.one);
+	}
+	
 	public void render(Vector2 position){
 		render(position, 0.0f);
 	}

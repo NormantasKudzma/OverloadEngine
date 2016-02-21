@@ -1,7 +1,6 @@
 package graphics;
 
 import org.jbox2d.collision.AABB;
-import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Fixture;
 import org.lwjgl.opengl.GL11;
 

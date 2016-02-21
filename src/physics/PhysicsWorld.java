@@ -20,6 +20,7 @@ public class PhysicsWorld implements ContactListener {
 	private PhysicsWorld(){
 		world = new World(new Vec2());
 		world.setContactListener(this);
+		world.setAllowSleep(false);
 	}
 	
 	public static PhysicsWorld getInstance(){

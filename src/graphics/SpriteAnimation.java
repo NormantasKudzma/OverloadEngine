@@ -29,6 +29,11 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 	}
 
 	@Override
+	public void render() {
+		render(Vector2.one, 0.0f, Vector2.one);
+	}
+	
+	@Override
 	public void render(Vector2 position, float rotation, Vector2 scale) {
 		spriteArray[currentState][currentFrame].render(position, rotation, scale);
 	}
