@@ -41,13 +41,8 @@ public class DebugFrameCounter implements IUpdatable, IRenderable{
 			if (fpsTextUpdate > 0.25f){
 				fpsText.setText(String.format(Locale.ENGLISH, "%2.2f fps", (numFrames / debugTime)));
 				fpsTextUpdate = 0.0f;
-			}
-			
-			// Reset every few seconds or so
-			if (numFrames > 180.0f){
 				numFrames = 0.0f;
 				debugTime = 0.0f;
-				fpsTextUpdate = 0.0f;
 			}
 		}
 		

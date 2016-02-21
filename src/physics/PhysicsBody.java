@@ -165,7 +165,7 @@ public class PhysicsBody {
 	public void setRotation(float angle) {
 		body.setTransform(body.getPosition(), angle);
 	}
-
+	
 	/**
 	 * Set scale for sprite, WARNING: DOES NOT RESIZE COLLIDERS
 	 * 
@@ -173,5 +173,9 @@ public class PhysicsBody {
 	 */
 	public void setScale(Vector2 scale) {
 		bodyScale = scale;
+	}
+	
+	public void setScale(float scaleX, float scaleY){
+		bodyScale.set(scaleX, scaleY);
 	}
 }

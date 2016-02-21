@@ -15,7 +15,7 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 	protected int numStates = 0;
 	protected float frameDelay = 0.15f;
 	protected float timePassed = 0.0f;
-	protected boolean isRunning = true;
+	protected boolean isPaused = true;
 	
 	public SpriteAnimation(){
 
@@ -45,8 +45,11 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 	}
 	
 	public void setPaused(boolean isPaused){
-		isRunning = isPaused;
-		currentFrame = 0;
+		this.isPaused = isPaused;
+		
+		if (isPaused){
+			currentFrame = 0;
+		}
 	}
 	
 	public void setSpriteArray(Sprite2D[][] sprites){
@@ -60,7 +63,7 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 	}
 	
 	public void update(float deltaTime){
-		if (!isRunning){
+		if (isPaused){
 			return;
 		}
 		

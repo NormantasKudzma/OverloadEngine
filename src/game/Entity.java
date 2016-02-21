@@ -128,6 +128,10 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		body.setScale(scale);
 	}
 
+	public void setScale(float scaleX, float scaleY){
+		body.setScale(scaleX, scaleY);
+	}
+	
 	public void setSprite(S spr) {
 		sprite = spr;
 	}
