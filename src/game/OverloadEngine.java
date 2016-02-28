@@ -23,7 +23,7 @@ import controls.EController;
 import controls.LwjglMouseController;
 
 public class OverloadEngine {
-	private static final int TARGET_FPS = 60;
+	public static final int TARGET_FPS = 60;
 	
 	public static final int frameHeight = 720;
 	public static final int frameWidth = 1280;

@@ -30,6 +30,28 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		body.applyImpulse(dir);
 	}
 
+	public Entity<S> clone(){
+		Entity<S> clone = null;
+		try {
+			Object obj = super.clone();
+			if (obj instanceof Entity){
+				clone = (Entity<S>)obj;
+				clone.body = body.clone();
+				clone.isDestructible = isDestructible;
+				clone.isLifetimeFinite = isLifetimeFinite;
+				clone.isToBeDestroyed = isToBeDestroyed;
+				clone.isVisible = isVisible;
+				clone.lifetime = lifetime;
+				clone.sprite = sprite;
+			}
+		}
+		catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return clone;
+	}
+	
 	@Override
 	public void collisionEnd(Fixture me, ICollidable other) {
 		//

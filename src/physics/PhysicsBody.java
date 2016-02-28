@@ -109,7 +109,7 @@ public class PhysicsBody {
 	private Fixture attachCollider(Shape shape, boolean isSensor) {
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
-		fixtureDef.userData = this;
+		fixtureDef.userData = body.m_userData;
 		fixtureDef.isSensor = isSensor;
 
 		Fixture fixture = body.createFixture(fixtureDef);
@@ -117,10 +117,34 @@ public class PhysicsBody {
 		return fixture;
 	}
 
+	public PhysicsBody clone(){
+		try {
+			PhysicsBody clone = new PhysicsBody((Entity)body.m_userData);
+			clone.bodyRotation = bodyRotation;
+			clone.bodyScale = bodyScale;
+			
+			Fixture fixture = body.m_fixtureList;
+			while (fixture != null){
+				attachCollider(fixture.getShape(), fixture.isSensor());				
+				fixture = fixture.m_next;
+			}
+			return clone;
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	private void createBody(BodyDef def, Entity e) {
 		if (def == null) {
 			def = new BodyDef();
-			def.allowSleep = true;
+			if (def.type == BodyType.STATIC){
+				def.allowSleep = true;
+			}
+			else {
+				def.allowSleep = false;
+			}
 			def.linearDamping = 0.1f;
 			def.fixedRotation = true;
 			def.type = BodyType.DYNAMIC;
