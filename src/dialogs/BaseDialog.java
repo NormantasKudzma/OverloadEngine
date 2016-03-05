@@ -1,6 +1,6 @@
 package dialogs;
 
-import game.BaseGame;
+import engine.BaseGame;
 import graphics.Sprite2D;
 
 import java.util.ArrayList;

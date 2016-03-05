@@ -1,6 +1,6 @@
 package physics;
 
-import game.Entity;
+import engine.Entity;
 
 import java.util.ArrayList;
 

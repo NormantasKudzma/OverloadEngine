@@ -1,6 +1,6 @@
 package graphics;
 
-import game.IUpdatable;
+import engine.IUpdatable;
 
 import org.json.JSONObject;
 

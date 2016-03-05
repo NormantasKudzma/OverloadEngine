@@ -1,4 +1,4 @@
-package game;
+package engine;
 
 import graphics.PhysicsDebugDraw;
 import graphics.Sprite2D;
