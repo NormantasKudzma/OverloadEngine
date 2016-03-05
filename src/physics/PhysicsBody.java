@@ -122,6 +122,7 @@ public class PhysicsBody {
 			PhysicsBody clone = new PhysicsBody((Entity)body.m_userData);
 			clone.bodyRotation = bodyRotation;
 			clone.bodyScale = bodyScale;
+			clone.getBody().setActive(true);
 			
 			Fixture fixture = body.m_fixtureList;
 			while (fixture != null){
@@ -154,14 +155,23 @@ public class PhysicsBody {
 	}
 
 	public void destroyBody() {
-		for (Fixture i : fixtureList) {
-			body.destroyFixture(i);
-		}
+		destroyFixtures();
 		PhysicsWorld.getInstance().getBodyList().remove(this);
 		PhysicsWorld.getInstance().getWorld().destroyBody(body);
 		body = null;
 	}
 
+	public void destroyFixtures(){
+		for (Fixture i : fixtureList) {
+			body.destroyFixture(i);
+		}
+		fixtureList.clear();
+	}
+	
+	public void destroyFixture(Fixture f){
+		body.destroyFixture(f);
+	}
+	
 	public Body getBody() {
 		return body;
 	}

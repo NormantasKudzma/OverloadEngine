@@ -108,17 +108,17 @@ public class Sprite2D implements IRenderable, IUpdatable {
         // draw a quad textured to match the sprite
         glBegin(GL_QUADS);
         {
-            glTexCoord2f(topLeft.x, topLeft.y);
-            glVertex2f(topLeft.x, topLeft.y);
+        	glTexCoord2f(topLeft.x, topLeft.y);
+        	glVertex2f(topLeft.x, topLeft.y);
  
-            glTexCoord2f(topLeft.x, botRight.y);
-            glVertex2f(topLeft.x, botRight.y);
+        	glTexCoord2f(topLeft.x, botRight.y);
+        	glVertex2f(topLeft.x, botRight.y);
  
-            glTexCoord2f(botRight.x, botRight.y);
-            glVertex2f(botRight.x, botRight.y);
+			glTexCoord2f(botRight.x, botRight.y);
+			glVertex2f(botRight.x, botRight.y);
  
-            glTexCoord2f(botRight.x, topLeft.y);
-            glVertex2f(botRight.x, topLeft.y);         
+			glTexCoord2f(botRight.x, topLeft.y);
+			glVertex2f(botRight.x, topLeft.y);
         }
         glEnd();
  

@@ -2,7 +2,7 @@ package utils;
 
 import org.jbox2d.common.Vec2;
 
-public class Vector2 {
+public final class Vector2 {
 	public static final float VECTOR2_TO_PHYSICS = 20.0f;
 	public static final float PHYSICS_TO_VECTOR2 = 1.0f / VECTOR2_TO_PHYSICS;
 	
@@ -13,15 +13,15 @@ public class Vector2 {
 	public static final Vector2 zero = 	new Vector2(0.0f, 0.0f);
 	public static final Vector2 one = 	new Vector2(1.0f, 1.0f);
 	
-	public float x, y;
+	public float x = 0.0f;
+	public float y = 0.0f;
 	
 	public Vector2(){
-		this(0, 0);
+
 	}
 	
 	public Vector2(Vector2 i){
-		x = i.x;
-		y = i.y;
+		this(i.x, i.y);
 	}
 	
 	public Vector2(float x, float y){
@@ -122,6 +122,14 @@ public class Vector2 {
 		x *= i.x;
 		y *= i.y;
 		return this;
+	}
+	
+	public float ratio(){
+		return x / y;
+	}
+	
+	public float ratioInvert(){
+		return y / x;
 	}
 	
 	public void reset(){

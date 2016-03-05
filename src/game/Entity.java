@@ -9,7 +9,7 @@ import physics.PhysicsBody;
 import physics.PhysicsWorld;
 import utils.Vector2;
 
-public abstract class Entity<S extends IRenderable & IUpdatable> implements ICollidable, IRenderable, IUpdatable {
+public abstract class Entity<S extends IRenderable & IUpdatable> implements ICollidable, IRenderable, IUpdatable, Cloneable {
 	protected PhysicsBody body;
 	protected boolean isDestructible = true;
 	protected boolean isLifetimeFinite = false;
@@ -66,7 +66,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		body.destroyBody();
 	}
 
-	public PhysicsBody getBody() {
+	public PhysicsBody getPhysicsBody() {
 		return body;
 	}
 
