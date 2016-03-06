@@ -27,8 +27,6 @@ import utils.Vector2;
 public class PhysicsBody {
 	private Body body;
 	private ArrayList<Fixture> fixtureList = new ArrayList<Fixture>(1);
-
-	// Internal variables for faster getters
 	private float bodyRotation;
 	private Vector2 bodyScale = new Vector2(1.0f, 1.0f);
 
@@ -163,7 +161,7 @@ public class PhysicsBody {
 
 	public void destroyFixtures(){
 		for (Fixture i : fixtureList) {
-			body.destroyFixture(i);
+			destroyFixture(i);
 		}
 		fixtureList.clear();
 	}

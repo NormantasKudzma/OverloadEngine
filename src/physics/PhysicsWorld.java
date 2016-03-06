@@ -67,11 +67,11 @@ public class PhysicsWorld implements ContactListener {
 		
 		if (collidableA != null)
 		{
-			collidableA.collisionStart(c.getFixtureA(), collidableB);
+			collidableA.collisionStart(c.getFixtureA(), c.getFixtureB(), collidableB);
 		}
 		if (collidableB != null)
 		{
-			collidableB.collisionStart(c.getFixtureB(), collidableA);
+			collidableB.collisionStart(c.getFixtureB(), c.getFixtureA(), collidableA);
 		}
 	}
 
@@ -91,11 +91,11 @@ public class PhysicsWorld implements ContactListener {
 		
 		if (collidableA != null)
 		{
-			collidableA.collisionEnd(c.getFixtureA(), collidableB);
+			collidableA.collisionEnd(c.getFixtureA(), c.getFixtureB(), collidableB);
 		}
 		if (collidableB != null)
 		{
-			collidableB.collisionEnd(c.getFixtureB(), collidableA);
+			collidableB.collisionEnd(c.getFixtureB(), c.getFixtureA(), collidableA);
 		}
 	}
 

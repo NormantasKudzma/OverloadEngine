@@ -53,12 +53,12 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 	
 	@Override
-	public void collisionEnd(Fixture me, ICollidable other) {
+	public void collisionEnd(Fixture myFixture, Fixture otherFixture, ICollidable otherCollidable) {
 		//
 	}
 
 	@Override
-	public void collisionStart(Fixture me, ICollidable other) {
+	public void collisionStart(Fixture myFixture, Fixture otherFixture, ICollidable otherCollidable) {
 		//
 	}
 	

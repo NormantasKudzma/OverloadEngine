@@ -126,6 +126,13 @@ public final class Vector2 {
 		return this;
 	}
 	
+	public Vector2 normalized(){
+		float len = len();
+		x /= len;
+		y /= len;
+		return this;
+	}
+	
 	public float ratio(){
 		return x / y;
 	}
@@ -170,6 +177,11 @@ public final class Vector2 {
 	
 	public static Vector2 mul(Vector2 i, Vector2 j){
 		return new Vector2(i.x * j.x, i.y * j.y);
+	}
+	
+	public static Vector2 normalize(Vector2 i){
+		float len = i.len();
+		return new Vector2(i.x / len, i.y / len);
 	}
 	
 	public static Vector2 sub(Vector2 i, Vector2 j){
