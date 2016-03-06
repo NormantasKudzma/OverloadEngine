@@ -1,5 +1,6 @@
 package dialogs;
 
+import engine.BaseGame;
 import graphics.Sprite2D;
 
 import java.lang.reflect.Method;
@@ -16,10 +17,11 @@ public class Button extends Component{
 	protected Label label;
 	
 	public Button(){
-		this(null, null, "");
+		this(null, null, null, "");
 	}
 	
-	public Button(Object obj, Method m, String text){
+	public Button(BaseGame game, Object obj, Method m, String text){
+		super(game);
 		callbackObject = obj;
 		callbackMethod = m;
 		normalSprite = new Sprite2D(Paths.UI + "button_green.png");
@@ -85,7 +87,7 @@ public class Button extends Component{
 	
 	public void setText(String text){
 		if (label == null){
-			label = new Label(text);
+			label = new Label(game, text);
 		}
 		else {
 			label.setText(text);

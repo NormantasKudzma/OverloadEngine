@@ -1,17 +1,14 @@
 package dialogs;
 
+import engine.BaseGame;
 import graphics.SimpleFont;
 import utils.Vector2;
 
 public class Label extends Component{
 	private SimpleFont font = new SimpleFont("");
 	
-	public Label(){
-		this.initEntity();
-		setVisible(true);
-	}
-	
-	public Label(String text){
+	public Label(BaseGame game, String text){
+		super(game);
 		setText(text);
 	}
 	

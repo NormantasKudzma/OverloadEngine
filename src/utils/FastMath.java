@@ -64,6 +64,12 @@ public class FastMath {
 		return Double.longBitsToDouble(((Double.doubleToLongBits(num) - (1l << 52)) >> 1) + (1l << 61));
 	}
 
+	public static float normalizeAngle(float angle){
+		float a = angle % 360;
+		a = a < 0 ? a + 360.0f : a;
+		return a;
+	}
+	
 	public static final float DEG2RAD, RAD2DEG;
 	private static final float[] sin, cos;
 	private static final float[] asin, acos;

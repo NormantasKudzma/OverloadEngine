@@ -141,9 +141,21 @@ public final class Vector2 {
 		return y / x;
 	}
 	
-	public void reset(){
+	public Vector2 reset(){
 		x = 0;
 		y = 0;
+		return this;
+	}
+	
+	public Vector2 rotate(float angle){
+		angle = FastMath.normalizeAngle(angle);
+		float sin = FastMath.sinDeg(angle);
+		float cos = FastMath.cosDeg(angle);
+		float xi = x * cos - y * sin;
+		float yi = x * sin + y * cos;
+		x = xi;
+		y = yi;
+		return this;
 	}
 	
 	public Vector2 sub(Vector2 i){

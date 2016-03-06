@@ -1,13 +1,12 @@
 package dialogs;
 
-import engine.Entity;
-import graphics.Sprite2D;
-
 import java.util.ArrayList;
 
-import controls.IClickable;
-
 import utils.Vector2;
+import controls.IClickable;
+import engine.BaseGame;
+import engine.Entity;
+import graphics.Sprite2D;
 
 public abstract class Component extends Entity<Sprite2D> implements IClickable{
 	protected Component parent;
@@ -16,7 +15,8 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 	protected boolean isVisible = true;
 	protected Component lastClickable;
 	
-	public Component(){
+	public Component(BaseGame game){
+		super(game);
 		initEntity();
 		initialize();
 	}

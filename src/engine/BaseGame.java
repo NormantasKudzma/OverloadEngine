@@ -32,7 +32,6 @@ public class BaseGame implements IUpdatable, IClickable {
 
 	public void addDialog(BaseDialog d){
 		dialogList.add(d);
-		d.setGame(this);
 	}
 	
 	public void addEntity(Entity e){

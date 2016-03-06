@@ -16,10 +16,11 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	protected boolean isToBeDestroyed = false;
 	protected boolean isVisible = true;
 	protected float lifetime = 0.0f;
+	protected BaseGame game = null;
 	protected S sprite;
 
-	public Entity() {
-
+	public Entity(BaseGame game) {
+		this.game = game;
 	}
 
 	public void applyForce(Vector2 dir) {
