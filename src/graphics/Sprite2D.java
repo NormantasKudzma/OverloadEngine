@@ -10,7 +10,8 @@ import static org.lwjgl.opengl.GL11.glScalef;
 import static org.lwjgl.opengl.GL11.glTexCoord2f;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 import static org.lwjgl.opengl.GL11.glVertex2f;
-import game.IUpdatable;
+import engine.IUpdatable;
+import engine.OverloadEngine;
 
 import java.io.IOException;
 
@@ -21,14 +22,13 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	private static final float DEFAULT_SPRITE_H = (float)OverloadEngine.gridH / (float)OverloadEngine.frameHeight;*/
 	
 	private Texture texture;	// Sprite's texture
-	private Vector2 internalScale = new Vector2(1.0f, 1.0f);	// Sprite size in game units (0;0)->(2;2)
+	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
 	private Vector2 botRight;
 	private Vector2 halfSize;
 	
 	// Internal vectors for render calculations
 	private Vector2 renderOffset = new Vector2();
-	private Vector2 renderFullScale = new Vector2();
 	
 	public Sprite2D(){}
 	
@@ -46,10 +46,8 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	}
 	
 	public Sprite2D(Texture tex, Vector2 tl, Vector2 br){
-		texture = tex;
+		setTexture(tex);
 		setClippingBounds(tl, br);
-		//internalScale.set(DEFAULT_SPRITE_SIZE / texture.getWidth(), DEFAULT_SPRITE_SIZE / texture.getHeight());
-		//internalScale.set(DEFAULT_SPRITE_W / texture.getWidth(), DEFAULT_SPRITE_H / texture.getHeight());
 	}
 	
 	public Vector2 getInternalScale(){
@@ -70,8 +68,7 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	
 	public void loadTexture(String path){
 		try {
-			texture = TextureLoader.getInstance().getTexture(path);
-			//internalScale.set(DEFAULT_SPRITE_W / texture.getWidth(), DEFAULT_SPRITE_H / texture.getHeight());
+			setTexture(TextureLoader.getInstance().getTexture(path));
 		}
 		catch (IOException e){
 			e.printStackTrace();
@@ -98,27 +95,26 @@ public class Sprite2D implements IRenderable, IUpdatable {
         texture.bind();
  
         // translate to the right location and prepare to draw
-        renderFullScale.set(scale).mul(internalScale);
-        renderOffset.set(halfSize).mul(renderFullScale);
+        renderOffset.set(internalScale).mul(scale).mul(0.5f);
         
-        glTranslatef(position.x - topLeft.x * renderFullScale.x - renderOffset.x, position.y + topLeft.y * renderFullScale.y + renderOffset.y, 0);
-        glScalef(renderFullScale.x, -renderFullScale.y, 1.0f);
+        glTranslatef(position.x - renderOffset.x, position.y + renderOffset.y, 0);
+        glScalef(scale.x, -scale.y, 1.0f);
         glRotatef(rotation, 0, 0, 1.0f);
  
         // draw a quad textured to match the sprite
         glBegin(GL_QUADS);
         {
         	glTexCoord2f(topLeft.x, topLeft.y);
-        	glVertex2f(topLeft.x, topLeft.y);
+        	glVertex2f(0.0f, 0.0f);
  
         	glTexCoord2f(topLeft.x, botRight.y);
-        	glVertex2f(topLeft.x, botRight.y);
+        	glVertex2f(0.0f, internalScale.y);
  
 			glTexCoord2f(botRight.x, botRight.y);
-			glVertex2f(botRight.x, botRight.y);
+			glVertex2f(internalScale.x, internalScale.y);
  
 			glTexCoord2f(botRight.x, topLeft.y);
-			glVertex2f(botRight.x, topLeft.y);
+			glVertex2f(internalScale.x, 0.0f);
         }
         glEnd();
  
@@ -142,6 +138,15 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		}
 		
 		halfSize = Vector2.sub(botRight, topLeft).mul(0.5f);
+	}
+	
+	public void setInternalScale(float w, float h){
+		internalScale.set(w, h);
+		Vector2.pixelCoordsToNormal(internalScale);
+	}
+	
+	private void setTexture(Texture tex){
+		texture = tex;
 	}
 	
 	@Override

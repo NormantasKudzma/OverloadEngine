@@ -1,5 +1,7 @@
 package utils;
 
+import engine.OverloadEngine;
+
 import org.jbox2d.common.Vec2;
 
 public final class Vector2 {
@@ -186,6 +188,12 @@ public final class Vector2 {
 	
 	public static float distance(Vector2 i, Vector2 j){
 		return (float)Math.sqrt(distanceSqr(i, j));
+	}
+	
+	public static void pixelCoordsToNormal(Vector2 i){
+		i.mul(2.0f)
+		 .div(OverloadEngine.frameHeight, OverloadEngine.frameWidth)
+		 .div(OverloadEngine.aspectRatio, 1.0f / OverloadEngine.aspectRatio);
 	}
 	
 	@Override

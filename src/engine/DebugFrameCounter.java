@@ -1,4 +1,4 @@
-package game;
+package engine;
 
 import graphics.IRenderable;
 import graphics.SimpleFont;

@@ -1,4 +1,4 @@
-package game;
+package engine;
 
 import static org.lwjgl.opengl.GL11.GL_CLAMP;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;

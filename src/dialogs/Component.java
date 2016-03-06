@@ -1,6 +1,6 @@
 package dialogs;
 
-import game.Entity;
+import engine.Entity;
 import graphics.Sprite2D;
 
 import java.util.ArrayList;
