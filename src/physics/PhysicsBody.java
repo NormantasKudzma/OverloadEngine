@@ -120,6 +120,15 @@ public class PhysicsBody {
 			PhysicsBody clone = new PhysicsBody((Entity)body.m_userData);
 			clone.bodyRotation = bodyRotation;
 			clone.bodyScale = bodyScale;
+			Body b = clone.body;
+			b.m_angularDamping = body.m_angularDamping;
+			b.m_angularVelocity = body.m_angularVelocity;
+			b.m_flags = body.m_flags;
+			b.m_gravityScale = body.m_gravityScale;
+			b.m_linearDamping = body.m_linearDamping;
+			b.m_torque = body.m_torque;
+			b.m_type = body.m_type;
+			b.setTransform(body.getPosition(), bodyRotation);
 			clone.getBody().setActive(true);
 			
 			Fixture fixture = body.m_fixtureList;
@@ -195,6 +204,7 @@ public class PhysicsBody {
 	}
 
 	public void setRotation(float angle) {
+		bodyRotation = angle;
 		body.setTransform(body.getPosition(), angle);
 	}
 	

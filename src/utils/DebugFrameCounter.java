@@ -1,11 +1,11 @@
-package engine;
+package utils;
 
+import engine.IUpdatable;
 import graphics.IRenderable;
 import graphics.SimpleFont;
 
 import java.util.Locale;
 
-import utils.Vector2;
 
 public class DebugFrameCounter implements IUpdatable, IRenderable{
 	private boolean isFirstFrame = true;

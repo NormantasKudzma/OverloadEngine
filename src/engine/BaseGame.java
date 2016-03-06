@@ -133,10 +133,11 @@ public class BaseGame implements IUpdatable, IClickable {
 			}
 		}
 
-		// Delete entities which are marked for destruction
-		for (Integer i : destroyList) {
-			entityList.get(i).destroy();
-			entityList.remove((int)i);
+		// Delete entities which are marked for destruction 
+		// (iterate in reverse order)
+		for (int i = destroyList.size() - 1; i >= 0; --i){
+			entityList.get(destroyList.get(i)).destroy();
+			entityList.remove((int)destroyList.get(i));
 		}
 		destroyList.clear();
 	}

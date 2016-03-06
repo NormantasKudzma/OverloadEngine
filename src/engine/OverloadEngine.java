@@ -15,6 +15,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import utils.DebugFrameCounter;
 import utils.Vector2;
 import audio.AudioManager;
 import controls.ControllerEventListener;
@@ -34,6 +35,7 @@ public class OverloadEngine {
 	private float deltaTime;
 	private long t0, t1; // Frame start/end time
 	private DebugFrameCounter frameCounter;
+	private String title = "Overload engine";
 
 	private void destroy() {
 		game.destroy();
@@ -44,7 +46,7 @@ public class OverloadEngine {
 
 	private void init() {
 		try {
-			Display.setTitle("Overload engine");
+			Display.setTitle(title);
 			Display.setResizable(false);
 			Display.setDisplayMode(new DisplayMode(frameWidth, frameHeight));
 			Display.create();
@@ -144,7 +146,7 @@ public class OverloadEngine {
 	
 	public void setTitle(String title){
 		if (title != null){
-			Display.setTitle(title);
+			this.title = title;
 		}
 	}
 }
