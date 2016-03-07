@@ -133,7 +133,7 @@ public class PhysicsBody {
 			
 			Fixture fixture = body.m_fixtureList;
 			while (fixture != null){
-				attachCollider(fixture.getShape(), fixture.isSensor());				
+				clone.attachCollider(fixture.getShape(), fixture.isSensor());				
 				fixture = fixture.m_next;
 			}
 			return clone;
