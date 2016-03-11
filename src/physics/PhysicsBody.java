@@ -1,7 +1,5 @@
 package physics;
 
-import engine.Entity;
-
 import java.util.ArrayList;
 
 import org.jbox2d.collision.shapes.CircleShape;
@@ -13,10 +11,12 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.Filter;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
 import utils.Vector2;
+import engine.Entity;
 
 /**
  * Wrapper for box2d Body class.
@@ -25,6 +25,13 @@ import utils.Vector2;
  * 
  */
 public class PhysicsBody {
+	public enum MaskType {
+		EXCLUDE,
+		INCLUDE,
+		SET,
+		SET_NOT
+	}
+	
 	private Body body;
 	private ArrayList<Fixture> fixtureList = new ArrayList<Fixture>(1);
 	private float bodyRotation;
@@ -130,7 +137,7 @@ public class PhysicsBody {
 			b.m_type = body.m_type;
 			b.m_userData = userData;
 			b.setBullet(body.isBullet());
-			b.setAwake(body.isAwake());
+			b.setAwake(body.isAwake());			
 			clone.getBody().setActive(true);
 			
 			Fixture fixture = body.m_fixtureList;
@@ -139,6 +146,12 @@ public class PhysicsBody {
 				fixture = fixture.m_next;
 			}
 			b.setTransform(body.getPosition(), bodyRotation);
+			
+			if (body.m_fixtureList != null){
+				Filter filter = body.m_fixtureList.getFilterData();
+				clone.setCollisionCategory(filter.categoryBits, MaskType.SET);
+				clone.setCollisionFlags(filter.maskBits, MaskType.SET);
+			}
 			return clone;
 		}
 		catch (Exception e){
@@ -198,6 +211,68 @@ public class PhysicsBody {
 		return bodyScale;
 	}
 
+	public void setCollisionCategory(int flags, MaskType type){
+		if (body != null){
+			Fixture f = body.m_fixtureList;
+			while (f != null){
+				Filter filterData = f.getFilterData();
+				switch (type){
+					case EXCLUDE:{
+						filterData.categoryBits &= ~flags;
+						break;
+					}
+					case INCLUDE:{
+						filterData.categoryBits |= flags;
+						break;
+					}
+					case SET:{
+						filterData.categoryBits = flags;
+						break;
+					}
+					case SET_NOT:{
+						filterData.categoryBits = ~flags;
+						break;
+					}
+					default:{
+						break;
+					}
+				}
+				f = f.m_next;
+			}
+		}
+	}
+	
+	public void setCollisionFlags(int flags, MaskType type){
+		if (body != null){
+			Fixture f = body.m_fixtureList;
+			while (f != null){
+				Filter filterData = f.getFilterData();
+				switch (type){
+					case EXCLUDE:{
+						filterData.maskBits &= ~flags;
+						break;
+					}
+					case INCLUDE:{
+						filterData.maskBits |= flags;
+						break;
+					}
+					case SET:{
+						filterData.maskBits = flags;
+						break;
+					}
+					case SET_NOT:{
+						filterData.maskBits = ~flags;
+						break;
+					}
+					default:{
+						break;
+					}
+				}
+				f = f.m_next;
+			}
+		}
+	}
+	
 	public void setPosition(Vector2 pos) {
 		body.setTransform(Vector2.toVec2(pos), bodyRotation);
 	}

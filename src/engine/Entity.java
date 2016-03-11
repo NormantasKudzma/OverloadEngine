@@ -131,6 +131,13 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		sprite.render(position, rotation, scale);
 	}
 
+	public void setCollisionFlags(int category, int mask){
+		if (body != null){
+			body.setCollisionCategory(category, PhysicsBody.MaskType.SET);
+			body.setCollisionFlags(mask, PhysicsBody.MaskType.SET);
+		}
+	}
+	
 	public void setPosition(Vector2 pos) {
 		body.setPosition(pos);
 	}
