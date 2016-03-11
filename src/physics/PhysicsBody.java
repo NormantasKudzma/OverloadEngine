@@ -115,7 +115,7 @@ public class PhysicsBody {
 		return fixture;
 	}
 
-	public PhysicsBody clone(){
+	public PhysicsBody clone(Entity userData){
 		try {
 			PhysicsBody clone = new PhysicsBody((Entity)body.m_userData);
 			clone.bodyRotation = bodyRotation;
@@ -128,14 +128,17 @@ public class PhysicsBody {
 			b.m_linearDamping = body.m_linearDamping;
 			b.m_torque = body.m_torque;
 			b.m_type = body.m_type;
-			b.setTransform(body.getPosition(), bodyRotation);
+			b.m_userData = userData;
+			b.setBullet(body.isBullet());
+			b.setAwake(body.isAwake());
 			clone.getBody().setActive(true);
 			
 			Fixture fixture = body.m_fixtureList;
 			while (fixture != null){
-				clone.attachCollider(fixture.getShape(), fixture.isSensor());				
+				clone.attachCollider(fixture.getShape().clone(), fixture.isSensor());				
 				fixture = fixture.m_next;
 			}
+			b.setTransform(body.getPosition(), bodyRotation);
 			return clone;
 		}
 		catch (Exception e){

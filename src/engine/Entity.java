@@ -37,7 +37,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 			Object obj = super.clone();
 			if (obj instanceof Entity){
 				clone = (Entity<S>)obj;
-				clone.body = body.clone();
+				clone.body = body.clone(clone);
 				clone.initEntity();
 				clone.isDestructible = isDestructible;
 				clone.isLifetimeFinite = isLifetimeFinite;
