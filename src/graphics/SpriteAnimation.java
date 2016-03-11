@@ -20,13 +20,6 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 	public SpriteAnimation(){
 
 	}
-	
-	public Vector2 getHalfSize() {
-		if (spriteArray != null && spriteArray[0][0] != null){
-			return spriteArray[0][0].getHalfSize();
-		}
-		return null;
-	}
 
 	@Override
 	public void render() {

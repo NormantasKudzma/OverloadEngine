@@ -3,6 +3,7 @@ package graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import utils.ConfigManager;
@@ -28,19 +29,22 @@ public class SimpleFont implements IRenderable {
 		JSONObject s;
 		char chr;
 		int x, y;
-		float offset;
+		Vector2 offset;
 		for (int i = 0; i < json.length() - 2; i++) {
 			s = json.getJSONObject("" + i);
 			chr = s.getString("symbol").charAt(0);
 			x = s.getInt("x");
 			y = s.getInt("y");
 			if (s.has("offset")) {
-				offset = s.getInt("offset") / size;
+				JSONArray offsetJson = s.getJSONArray("offset");
+				offset = new Vector2(offsetJson.getInt(0), offsetJson.getInt(1));
+				Vector2.pixelCoordsToNormal(offset);
 			}
 			else {
-				offset = 0;
+				offset = Vector2.zero;
 			}
 			Symbol symbol = new Symbol(new Sprite2D(sheet.getTexture(), new Vector2(x / size, y / size), new Vector2((x + wstep) / size, (y + hstep) / size)), offset);
+			symbol.sprite.setInternalScale(wstep, hstep);
 			symbols.put(chr, symbol);
 		}
 		defaultSymbol = symbols.get('Q');
@@ -79,7 +83,7 @@ public class SimpleFont implements IRenderable {
 		Symbol s;
 		for (int i = 0; i < textSymbols.size(); i++) {
 			s = textSymbols.get(i);
-			internalPos.y = s.offset * scale.y * 1.5f + position.y;
+			internalPos.y = s.offset.y * scale.y * 1.5f + position.y;
 			s.sprite.render(internalPos, rotation, scale);
 			internalPos.x += step;
 		}

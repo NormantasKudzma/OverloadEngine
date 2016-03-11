@@ -55,7 +55,7 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	}
 	
 	public Vector2 getHalfSize(){
-		return halfSize;
+		return internalScale.copy().mul(0.5f);
 	}
 	
 	public Texture getTexture(){
