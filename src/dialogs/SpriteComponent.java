@@ -2,8 +2,8 @@ package dialogs;
 
 import engine.BaseGame;
 
-public class ComponentContainer extends Component{
-	public ComponentContainer(BaseGame game){
+public class SpriteComponent extends Component{
+	public SpriteComponent(BaseGame game) {
 		super(game);
 	}
 	

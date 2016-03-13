@@ -25,7 +25,6 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
 	private Vector2 botRight;
-	private Vector2 halfSize;
 	
 	// Internal vectors for render calculations
 	private Vector2 renderOffset = new Vector2();
@@ -151,8 +150,6 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		else {
 			botRight = bottomRightCorner;
 		}
-		
-		halfSize = Vector2.sub(botRight, topLeft).mul(0.5f);
 	}
 	
 	public void setInternalScale(float w, float h){

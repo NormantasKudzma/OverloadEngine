@@ -21,8 +21,12 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 		initialize();
 	}
 	
-	protected void initialize(){
-		//stub
+	protected abstract void initialize();
+	
+	@Override
+	public void initEntity() {
+		super.initEntity();
+		getPhysicsBody().getBody().setGravityScale(0.0f);
 	}
 	
 	public String getName(){

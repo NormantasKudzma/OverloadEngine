@@ -214,10 +214,11 @@ public final class Vector2 {
 		return (float)Math.sqrt(distanceSqr(i, j));
 	}
 	
-	public static void pixelCoordsToNormal(Vector2 i){
+	public static Vector2 pixelCoordsToNormal(Vector2 i){
 		i.mul(2.0f)
 		 .div(OverloadEngine.frameHeight, OverloadEngine.frameWidth)
 		 .div(OverloadEngine.aspectRatio, 1.0f / OverloadEngine.aspectRatio);
+		return i;
 	}
 	
 	@Override

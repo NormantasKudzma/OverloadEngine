@@ -40,8 +40,8 @@ public class Button extends Component{
 	}
 	
 	@Override
-	public void initEntity() {
-		//stub
+	protected void initialize() {
+
 	}
 	
 	public boolean isMouseOver(Vector2 pos){

@@ -19,4 +19,9 @@ public class BaseDialog extends Component{
 		getScale().mul(40f);
 		setPosition(1.0f, 1.0f);		
 	}
+	
+	@Override
+	protected void initialize() {
+
+	}
 }
