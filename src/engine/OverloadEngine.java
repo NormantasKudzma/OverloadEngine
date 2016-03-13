@@ -5,11 +5,7 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
-
-import java.util.Locale;
-
 import graphics.PhysicsDebugDraw;
-import graphics.SimpleFont;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -39,8 +35,8 @@ public class OverloadEngine {
 
 	private void destroy() {
 		game.destroy();
+		ControllerManager.getInstance().destroyManager();
 		AudioManager.destroy();
-
 		Display.destroy();
 	}
 

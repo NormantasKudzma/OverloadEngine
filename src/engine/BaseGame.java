@@ -1,20 +1,11 @@
 package engine;
 
-import graphics.PhysicsDebugDraw;
-import graphics.Sprite2D;
-import graphics.SpriteAnimation;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
-
-import controls.IClickable;
-
-import dialogs.BaseDialog;
 
 import physics.PhysicsWorld;
 import utils.Vector2;
+import controls.IClickable;
+import dialogs.BaseDialog;
 
 public class BaseGame implements IUpdatable, IClickable {
 	private static final int NUM_VELOCITY_ITERATIONS = 2;

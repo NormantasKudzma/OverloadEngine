@@ -118,7 +118,7 @@ public class UsbController extends AbstractController {
 
 	public void pollController() {
 		// STUB
-		//System.err.println("UNIMPLEMENTED::USB_CONTROLLER_POLL");
+		// TODO: poll controller manually
 	}
 
 	private long read(DeviceHandle handle, int size) {

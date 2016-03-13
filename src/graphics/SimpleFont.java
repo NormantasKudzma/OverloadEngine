@@ -2,6 +2,9 @@ package graphics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,46 +15,74 @@ import utils.Vector2;
 
 public class SimpleFont implements IRenderable {
 	private static final float MAGIC_SCALE = 1.4f;
-	private static final HashMap<Character, Symbol> symbols = new HashMap<Character, Symbol>(128);
-	private static Symbol defaultSymbol;
+	private static final HashMap<Character, Symbol> defaultSymbolMap = new HashMap<Character, Symbol>(128);
 
 	private String text;
 	private Vector2 internalPos;
+	private Symbol firstSymbol;
+	private HashMap<Character, Symbol> symbolMap;
 	private ArrayList<Symbol> textSymbols = new ArrayList<Symbol>();
 
 	static {
-		Sprite2D sheet = new Sprite2D(Paths.DEFAULT_FONT_IMG);
-		float size = 64.0f;
-
-		JSONObject json = ConfigManager.loadConfigAsJson(Paths.DEFAULT_FONT_JSON);
-		float wstep = json.getInt("width");
-		float hstep = json.getInt("height");
-		JSONObject s;
-		char chr;
-		int x, y;
-		Vector2 offset;
-		for (int i = 0; i < json.length() - 2; i++) {
-			s = json.getJSONObject("" + i);
-			chr = s.getString("symbol").charAt(0);
-			x = s.getInt("x");
-			y = s.getInt("y");
-			if (s.has("offset")) {
-				JSONArray offsetJson = s.getJSONArray("offset");
-				offset = new Vector2(offsetJson.getInt(0), offsetJson.getInt(1));
-				Vector2.pixelCoordsToNormal(offset);
-			}
-			else {
-				offset = Vector2.zero;
-			}
-			Symbol symbol = new Symbol(new Sprite2D(sheet.getTexture(), new Vector2(x / size, y / size), new Vector2((x + wstep) / size, (y + hstep) / size)), offset);
-			symbol.sprite.setInternalScale(wstep, hstep);
-			symbols.put(chr, symbol);
+		HashMap<Character, Symbol> map = createFont(Paths.DEFAULT_FONT_IMG, Paths.DEFAULT_FONT_JSON);
+		
+		Iterator<Entry<Character, Symbol>> it = map.entrySet().iterator();
+		while (it.hasNext()){
+			Map.Entry<Character, Symbol> pair = (Map.Entry<Character, Symbol>)it.next();
+			defaultSymbolMap.put(pair.getKey(), pair.getValue());
+	        it.remove();
 		}
-		defaultSymbol = symbols.get('Q');
 	}
 
 	public SimpleFont(String text) {
-		this.setText(text);
+		this(text, defaultSymbolMap);
+	}
+	
+	public SimpleFont(String text, String fontImg, String fontJson){
+		this(text, createFont(fontImg, fontJson));
+	}
+	
+	public SimpleFont(String text, HashMap<Character, Symbol> font){
+		symbolMap = font;
+		firstSymbol = font.values().iterator().next();
+		setText(text);
+	}
+	
+	public static HashMap<Character, Symbol> createFont(String fontImg, String fontJson){
+		HashMap<Character, Symbol> map = new HashMap<Character, Symbol>();
+		try {
+			Sprite2D sheet = new Sprite2D(fontImg);
+
+			JSONObject json = ConfigManager.loadConfigAsJson(fontJson);
+			char chr;
+			int x, y, w, h;
+			
+			Vector2 offset;
+			JSONObject symbolJson = null;
+			JSONArray symbolsJsonArray = json.getJSONArray("symbols");
+			for (int i = 0; i < symbolsJsonArray.length(); ++i) {
+				symbolJson = symbolsJsonArray.getJSONObject(i);
+				chr = symbolJson.getString("symbol").charAt(0);
+				x = symbolJson.getInt("x");
+				y = symbolJson.getInt("y");
+				w = symbolJson.getInt("w");
+				h = symbolJson.getInt("h");
+				if (symbolJson.has("offset")) {
+					JSONArray offsetJson = symbolJson.getJSONArray("offset");
+					offset = new Vector2(offsetJson.getInt(0), offsetJson.getInt(1));
+					Vector2.pixelCoordsToNormal(offset);
+				}
+				else {
+					offset = Vector2.zero;
+				}
+				Symbol symbol = new Symbol(Sprite2D.getSpriteFromSheet(x, y, w, h, sheet), offset);
+				map.put(chr, symbol);
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return map;
 	}
 
 	public String getText() {
@@ -63,11 +94,10 @@ public class SimpleFont implements IRenderable {
 		textSymbols.clear();
 		Symbol s;
 		for (int i = 0; i < text.length(); i++) {
-			s = symbols.get(text.charAt(i));
-			if (s == null) {
-				s = defaultSymbol;
+			s = symbolMap.get(text.charAt(i));
+			if (s != null) {
+				textSymbols.add(s);
 			}
-			textSymbols.add(s);
 		}
 	}
 
@@ -78,7 +108,7 @@ public class SimpleFont implements IRenderable {
 	
 	@Override
 	public void render(Vector2 position, float rotation, Vector2 scale) {
-		float step = defaultSymbol.sprite.getHalfSize().x * MAGIC_SCALE * scale.x;
+		float step = firstSymbol.sprite.getHalfSize().x * MAGIC_SCALE * scale.x;
 		internalPos = position.copy().add(-step * 0.5f * text.length() + step * 0.5f, 0);
 		Symbol s;
 		for (int i = 0; i < textSymbols.size(); i++) {
