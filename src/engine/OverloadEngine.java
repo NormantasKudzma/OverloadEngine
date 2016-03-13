@@ -51,9 +51,6 @@ public class OverloadEngine {
 			e.printStackTrace();
 		}
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
 		// Create and initialize game
 		if (game == null){
 			System.err.println("You need to setGame() first!");
@@ -90,6 +87,10 @@ public class OverloadEngine {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		Display.setVSyncEnabled(true);
 
 		t0 = t1 = System.currentTimeMillis();
 
