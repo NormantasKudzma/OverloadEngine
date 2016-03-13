@@ -3,6 +3,7 @@ package utils;
 import engine.OverloadEngine;
 
 import org.jbox2d.common.Vec2;
+import org.json.JSONArray;
 
 public final class Vector2 {
 	public static final float VECTOR2_TO_PHYSICS = 20.0f;
@@ -181,6 +182,10 @@ public final class Vector2 {
 
 	public static Vector2 copy(Vector2 i){
 		return new Vector2(i.x, i.y);
+	}
+	
+	public static Vector2 fromJsonArray(JSONArray json){
+		return new Vector2((float)json.getDouble(0), (float)json.getDouble(1));
 	}
 	
 	public static Vector2 fromVec2(Vec2 v){

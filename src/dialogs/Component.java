@@ -99,6 +99,7 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 		if (c != null){
 			c.setParent(this);
 			children.add(c);
+			c.setPosition(c.getPosition().add(getPosition()));
 		}
 	}
 	
