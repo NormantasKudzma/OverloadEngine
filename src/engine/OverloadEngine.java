@@ -5,8 +5,12 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
+
+import java.io.File;
+
 import graphics.PhysicsDebugDraw;
 
+import org.lwjgl.LWJGLUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -41,6 +45,29 @@ public class OverloadEngine {
 	}
 
 	private void init() {
+		File nativesFolder = null;
+		switch(LWJGLUtil.getPlatform())
+		{
+		    case LWJGLUtil.PLATFORM_WINDOWS:
+		    {
+		    	nativesFolder = new File("./native/windows/");
+		    }
+		    break;
+
+		    case LWJGLUtil.PLATFORM_LINUX:
+		    {
+		    	nativesFolder = new File("./native/linux/");
+		    }
+		    break;
+
+		    case LWJGLUtil.PLATFORM_MACOSX:
+		    {
+		    	nativesFolder = new File("./native/macosx/");
+		    }
+		    break;
+		}
+		System.setProperty("org.lwjgl.librarypath", nativesFolder.getAbsolutePath());
+		
 		try {
 			Display.setTitle(title);
 			Display.setResizable(false);
