@@ -3,21 +3,24 @@ package engine;
 import graphics.IRenderable;
 
 import org.jbox2d.dynamics.Fixture;
+import org.lwjgl.util.Color;
 
 import physics.ICollidable;
 import physics.PhysicsBody;
 import physics.PhysicsWorld;
+import physics.Transform;
 import utils.Vector2;
 
 public abstract class Entity<S extends IRenderable & IUpdatable> implements ICollidable, IRenderable, IUpdatable, Cloneable {
-	protected PhysicsBody body;
 	protected boolean isDestructible = true;
 	protected boolean isLifetimeFinite = false;
 	protected boolean isToBeDestroyed = false;
 	protected boolean isVisible = true;
 	protected float lifetime = 0.0f;
+	protected PhysicsBody body;
 	protected BaseGame game = null;
 	protected S sprite;
+	protected Color color = new Color(255, 255, 255, 255);
 
 	public Entity(BaseGame game) {
 		this.game = game;
@@ -68,6 +71,10 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		body.destroyBody();
 	}
 
+	public Color getColor(){
+		return color;
+	}
+	
 	public PhysicsBody getPhysicsBody() {
 		return body;
 	}
@@ -121,14 +128,19 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 
 	public void render() {
-		render(body.getPosition(), body.getRotation(), body.getScale());
+		render(body.getTransform(), color);
 	}
 
-	public void render(Vector2 position, float rotation, Vector2 scale) {
+	@Override
+	public void render(Transform t, Color c) {
+		render(t.getPosition(), t.getScale(), t.getRotation(), c);
+	}
+	
+	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
 		if (!isVisible) {
 			return;
 		}
-		sprite.render(position, rotation, scale);
+		sprite.render(position, scale, rotation, c);
 	}
 
 	public void setCollisionFlags(int category, int mask){
@@ -136,6 +148,18 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 			body.setCollisionCategory(category, PhysicsBody.EMaskType.SET);
 			body.setCollisionFlags(mask, PhysicsBody.EMaskType.SET);
 		}
+	}
+	
+	public void setColor(Color c){
+		color = c;
+	}
+	
+	public void setHorizontalVelocity(float v){
+		body.getBody().m_linearVelocity.x = v;
+	}
+	
+	public void setLinearVelocity(Vector2 velocity){
+		body.getBody().setLinearVelocity(velocity.toVec2());
 	}
 	
 	public void setPosition(Vector2 pos) {
@@ -159,28 +183,20 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		body.setScale(scale);
 	}
 
-	public void setScale(float scaleX, float scaleY){
-		body.setScale(scaleX, scaleY);
+	public void setScale(float x, float y){
+		body.setScale(x, y);
 	}
 	
 	public void setSprite(S spr) {
 		sprite = spr;
 	}
-
-	public void setVisible(boolean isVisible) {
-		this.isVisible = isVisible;
-	}
-	
-	public void setHorizontalVelocity(float v){
-		body.getBody().m_linearVelocity.x = v;
-	}
-	
-	public void setLinearVelocity(Vector2 velocity){
-		body.getBody().setLinearVelocity(velocity.toVec2());
-	}
 	
 	public void setVerticalVelocity(float v){
 		body.getBody().m_linearVelocity.y = v;
+	}
+
+	public void setVisible(boolean isVisible) {
+		this.isVisible = isVisible;
 	}
 
 	public void update(float deltaTime) {

@@ -5,6 +5,8 @@ import graphics.Sprite2D;
 
 import java.lang.reflect.Method;
 
+import org.lwjgl.util.Color;
+
 import utils.Paths;
 import utils.Vector2;
 
@@ -92,10 +94,10 @@ public class Button extends Component{
 	}
 	
 	@Override
-	public void render(Vector2 position, float rotation, Vector2 scale) {
-		super.render(position, rotation, scale);
+	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
+		super.render(position, scale, rotation, c);
 		if (label != null){
-			label.render(position, rotation, fontScale);
+			label.render(position, fontScale, rotation, c);
 		}
 	}
 	

@@ -1,5 +1,7 @@
 package dialogs;
 
+import org.lwjgl.util.Color;
+
 import engine.BaseGame;
 import graphics.SimpleFont;
 import utils.Vector2;
@@ -31,12 +33,11 @@ public class Label extends Component{
 	
 	@Override
 	public void render() {
-		render(getPosition(), getRotation(), getScale());
+		render(getPosition(), getScale(), getRotation(), getColor());
 	}
 	
 	@Override
-	public void render(Vector2 position, float rotation, Vector2 scale) {
-		font.render(position, rotation, scale);
+	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
+		font.render(position, scale, rotation, c);
 	}
-
 }

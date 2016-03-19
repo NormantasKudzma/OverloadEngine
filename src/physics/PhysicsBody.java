@@ -195,8 +195,10 @@ public class PhysicsBody {
 	public void destroyBody() {
 		destroyFixtures();
 		PhysicsWorld.getInstance().getBodyList().remove(this);
-		PhysicsWorld.getInstance().getWorld().destroyBody(body);
-		body = null;
+		if (body != null){
+			PhysicsWorld.getInstance().getWorld().destroyBody(body);
+			body = null;
+		}
 	}
 
 	public void destroyFixtures(){
@@ -236,6 +238,10 @@ public class PhysicsBody {
 
 	public EBodyType getType(){
 		return bodyType;
+	}
+	
+	public Transform getTransform(){
+		return transform;
 	}
 	
 	public void setBodyType(EBodyType type, Entity<?> userData){

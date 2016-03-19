@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.lwjgl.util.Color;
 
 import physics.PhysicsBody;
 
@@ -107,14 +108,14 @@ public class SimpleFont extends Entity<Sprite2D> {
 	}
 	
 	@Override
-	public void render(Vector2 position, float rotation, Vector2 scale) {
+	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
 		float step = firstSymbol.sprite.getHalfSize().x * MAGIC_SCALE * scale.x;
 		Vector2 internalPos = position.copy().add(-step * 0.5f * text.length() + step * 0.5f, 0);
 		Symbol s;
 		for (int i = 0; i < textSymbols.size(); i++) {
 			s = textSymbols.get(i);
 			internalPos.y = s.offset.y * scale.y * 1.5f + position.y;
-			s.sprite.render(internalPos, rotation, scale);
+			s.sprite.render(internalPos, scale, rotation, c);
 			internalPos.x += step;
 		}
 	}

@@ -1,12 +1,11 @@
 package graphics;
 
-import engine.IUpdatable;
+import org.lwjgl.util.Color;
 
-import org.json.JSONObject;
+import physics.Transform;
 
-import utils.ConfigManager;
-import utils.Paths;
 import utils.Vector2;
+import engine.IUpdatable;
 
 public class SpriteAnimation implements IRenderable, IUpdatable{
 	protected Sprite2D spriteArray[][];
@@ -23,12 +22,17 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 
 	@Override
 	public void render() {
-		render(Vector2.one, 0.0f, Vector2.one);
+		render(Vector2.one, Vector2.one, 0.0f, null);
 	}
 	
 	@Override
-	public void render(Vector2 position, float rotation, Vector2 scale) {
-		spriteArray[currentState][currentFrame].render(position, rotation, scale);
+	public void render(Transform t, Color c) {
+		render(t.getPosition(), t.getScale(), t.getRotation(), c);
+	}
+	
+	@Override
+	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
+		spriteArray[currentState][currentFrame].render(position, scale, rotation, c);
 	}
 	
 	public void setFrameDelay(float delay){
@@ -66,4 +70,5 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 			currentFrame = (currentFrame + 1) % spriteArray[currentState].length;
 		}
 	}
+
 }

@@ -10,23 +10,24 @@ import static org.lwjgl.opengl.GL11.glScalef;
 import static org.lwjgl.opengl.GL11.glTexCoord2f;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 import static org.lwjgl.opengl.GL11.glVertex2f;
-import engine.IUpdatable;
-import engine.OverloadEngine;
 
 import java.io.IOException;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
+
+import physics.Transform;
+
 import utils.Vector2;
+import engine.IUpdatable;
 
 public class Sprite2D implements IRenderable, IUpdatable {
-	/*private static final float DEFAULT_SPRITE_W = (float)OverloadEngine.gridW / (float)OverloadEngine.frameWidth;
-	private static final float DEFAULT_SPRITE_H = (float)OverloadEngine.gridH / (float)OverloadEngine.frameHeight;*/
-	
-	private Texture texture;	// Sprite's texture
+	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
 	private Vector2 botRight;
 	
-	// Internal vectors for render calculations
+	// Internal vector for render calculations
 	private Vector2 renderOffset = new Vector2();
 	
 	public Sprite2D(){}
@@ -90,50 +91,52 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	}
 	
 	public void render(){
-		render(Vector2.one);
-	}
-	
-	public void render(Vector2 position){
-		render(position, 0.0f);
-	}
-	
-	public void render(Vector2 position, float rotation){
-		render(position, rotation, Vector2.one);
+		render(Vector2.one, Vector2.one, 0.0f, null);
 	}
 	
 	@Override
-	public void render(Vector2 position, float rotation, Vector2 scale) {
+	public void render(Transform t, Color c) {
+		render(t.getPosition(), t.getScale(), t.getRotation(), c);
+	}
+	
+	@Override
+	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
 		// store the current model matrix
-        glPushMatrix();
-        // bind to the appropriate texture for this sprite
-        texture.bind();
+		glPushMatrix();
+		if (c != null){
+			GL11.glColor4ub(c.getRedByte(), c.getGreenByte(), c.getBlueByte(), c.getAlphaByte());
+		}
+		// bind to the appropriate texture for this sprite
+		texture.bind();
  
-        // translate to the right location and prepare to draw
-        renderOffset.set(internalScale).mul(scale).mul(0.5f);
+		// translate to the right location and prepare to draw
+		renderOffset.set(internalScale).mul(scale).mul(0.5f);
         
-        glTranslatef(position.x - renderOffset.x, position.y + renderOffset.y, 0);
-        glScalef(scale.x, -scale.y, 1.0f);
-        glRotatef(rotation, 0, 0, 1.0f);
+		glTranslatef(position.x - renderOffset.x, position.y + renderOffset.y, 0);
+		glScalef(scale.x, -scale.y, 1.0f);
+		glRotatef(rotation, 0, 0, 1.0f);
  
-        // draw a quad textured to match the sprite
-        glBegin(GL_QUADS);
-        {
-        	glTexCoord2f(topLeft.x, topLeft.y);
-        	glVertex2f(0.0f, 0.0f);
+		// draw a quad textured to match the sprite
+		glBegin(GL_QUADS);
+		{
+			glTexCoord2f(topLeft.x, topLeft.y);
+			glVertex2f(0.0f, 0.0f);
  
-        	glTexCoord2f(topLeft.x, botRight.y);
-        	glVertex2f(0.0f, internalScale.y);
+			glTexCoord2f(topLeft.x, botRight.y);
+			glVertex2f(0.0f, internalScale.y);
  
 			glTexCoord2f(botRight.x, botRight.y);
 			glVertex2f(internalScale.x, internalScale.y);
  
 			glTexCoord2f(botRight.x, topLeft.y);
 			glVertex2f(internalScale.x, 0.0f);
-        }
-        glEnd();
+		}
+		glEnd();
  
-        // restore the model view matrix to prevent contamination
-        glPopMatrix();
+		// Restore colors and alpha
+		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        // Restore the model view matrix to prevent contamination
+		glPopMatrix();
 	}
 	
 	public void setClippingBounds(Vector2 topLeftCorner, Vector2 bottomRightCorner){
