@@ -2,6 +2,8 @@ package dialogs;
 
 import java.util.ArrayList;
 
+import physics.PhysicsBody;
+
 import utils.Vector2;
 import controls.IClickable;
 import engine.BaseGame;
@@ -17,17 +19,11 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 	
 	public Component(BaseGame game){
 		super(game);
-		initEntity();
+		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		initialize();
 	}
 	
 	protected abstract void initialize();
-	
-	@Override
-	public void initEntity() {
-		super.initEntity();
-		getPhysicsBody().getBody().setGravityScale(0.0f);
-	}
 	
 	public String getName(){
 		return name;

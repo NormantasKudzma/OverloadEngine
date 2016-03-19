@@ -4,11 +4,9 @@ import static org.lwjgl.opengl.GL11.GL_CLAMP;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
-import static org.lwjgl.opengl.GL11.glTexParameteri;
+import graphics.PhysicsDebugDraw;
 
 import java.io.File;
-
-import graphics.PhysicsDebugDraw;
 
 import org.lwjgl.LWJGLUtil;
 import org.lwjgl.opengl.Display;
@@ -17,7 +15,6 @@ import org.lwjgl.opengl.GL11;
 
 import utils.DebugFrameCounter;
 import utils.Vector2;
-import audio.AudioManager;
 import controls.ControllerEventListener;
 import controls.ControllerManager;
 import controls.EController;

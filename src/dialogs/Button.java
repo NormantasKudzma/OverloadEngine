@@ -27,10 +27,7 @@ public class Button extends Component{
 		normalSprite = new Sprite2D(Paths.UI + "button_green.png");
 		hoverSprite = new Sprite2D(Paths.UI + "hover_green.png");
 		setSprite(normalSprite);
-		//this.text = new TrueTypeFont(ConfigManager.loadFont(Paths.DEFAULT_FONT, 14), false);
-		//this.text.setText(text);
 		setText(text);
-		super.initEntity();
 		setScale(Vector2.one);
 		setVisible(true);
 	}

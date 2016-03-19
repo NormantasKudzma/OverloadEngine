@@ -205,6 +205,10 @@ public final class Vector2 {
 		return new Vector2(i.x - j.x, i.y - j.y);
 	}
 	
+	public static Vec2 toVec2(float x, float y){
+		return new Vec2(x * VECTOR2_TO_PHYSICS, y * VECTOR2_TO_PHYSICS);
+	}
+	
 	public static Vec2 toVec2(Vector2 v){
 		return new Vec2(v.x * VECTOR2_TO_PHYSICS, v.y * VECTOR2_TO_PHYSICS);
 	}

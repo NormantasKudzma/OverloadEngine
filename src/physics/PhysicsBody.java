@@ -6,7 +6,6 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Rot;
-import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
@@ -25,7 +24,25 @@ import engine.Entity;
  * 
  */
 public class PhysicsBody {
-	public enum MaskType {
+	/**
+	 * 	Internal type of PhysicsBody. Not to be confused with org.jbox2d.dynamics.BodyType,
+	 * 	which marks type for box2d body.
+	 */
+	public enum EBodyType {
+		/** 
+		* 	This type marks a physics body, which will not interact with the world. 
+		* 	Created physics body will not have a box2d body attached to it.
+		**/
+		NON_INTERACTIVE,
+		/** 
+		*	This type indicates that physics body can interact with the physics world
+		* 	via collisions/forces/etc.
+		* 	Created physics body will have a box2d body and can have colliders/sensors.
+		**/
+		INTERACTIVE
+	}
+	
+	public enum EMaskType {
 		EXCLUDE,
 		INCLUDE,
 		SET,
@@ -34,25 +51,21 @@ public class PhysicsBody {
 	
 	private Body body;
 	private ArrayList<Fixture> fixtureList = new ArrayList<Fixture>(1);
-	private float bodyRotation;
-	private Vector2 bodyScale = new Vector2(1.0f, 1.0f);
+	private Transform transform = new Transform();
+	private EBodyType bodyType = EBodyType.INTERACTIVE;
 
-	/**
-	 * Creates a body with a defined user data.
-	 * 
-	 * @param e - Entity that will be set to UserData.
-	 */
-	public PhysicsBody(Entity e) {
-		createBody(null, e);
+	public PhysicsBody(EBodyType type, Entity e){
+		bodyType = type;
+		if (type == EBodyType.INTERACTIVE){
+			createBody(null, e);
+		}
 	}
 
-	/**
-	 * Creates a body from body definition.
-	 * 
-	 * @param def- Body Definition.
-	 */
-	public PhysicsBody(BodyDef def) {
-		createBody(def, null);
+	public PhysicsBody(EBodyType type, BodyDef def) {
+		bodyType = type;
+		if (type == EBodyType.INTERACTIVE){
+			createBody(def, null);
+		}
 	}
 
 	public void applyForce(Vector2 dir) {
@@ -75,7 +88,7 @@ public class PhysicsBody {
 		PolygonShape polygon = new PolygonShape();
 		polygon.setAsBox(size2.x, size2.y);
 		if (position != null) {
-			polygon.centroid(new Transform(pos2, new Rot(rotation)));
+			polygon.centroid(new org.jbox2d.common.Transform(pos2, new Rot(rotation)));
 		}
 
 		attachCollider(polygon, isSensor);
@@ -124,33 +137,35 @@ public class PhysicsBody {
 
 	public PhysicsBody clone(Entity userData){
 		try {
-			PhysicsBody clone = new PhysicsBody((Entity)body.m_userData);
-			clone.bodyRotation = bodyRotation;
-			clone.bodyScale = bodyScale;
-			Body b = clone.body;
-			b.m_angularDamping = body.m_angularDamping;
-			b.m_angularVelocity = body.m_angularVelocity;
-			b.m_flags = body.m_flags;
-			b.m_gravityScale = body.m_gravityScale;
-			b.m_linearDamping = body.m_linearDamping;
-			b.m_torque = body.m_torque;
-			b.m_type = body.m_type;
-			b.m_userData = userData;
-			b.setBullet(body.isBullet());
-			b.setAwake(body.isAwake());			
-			clone.getBody().setActive(true);
+			PhysicsBody clone = new PhysicsBody(bodyType, userData);
+			clone.transform = transform.clone();
 			
-			Fixture fixture = body.m_fixtureList;
-			while (fixture != null){
-				clone.attachCollider(fixture.getShape().clone(), fixture.isSensor());				
-				fixture = fixture.m_next;
-			}
-			b.setTransform(body.getPosition(), bodyRotation);
+			if (body != null){
+				Body b = clone.body;
+				b.m_angularDamping = body.m_angularDamping;
+				b.m_angularVelocity = body.m_angularVelocity;
+				b.m_flags = body.m_flags;
+				b.m_gravityScale = body.m_gravityScale;
+				b.m_linearDamping = body.m_linearDamping;
+				b.m_torque = body.m_torque;
+				b.m_type = body.m_type;
+				b.m_userData = userData;
+				b.setBullet(body.isBullet());
+				b.setAwake(body.isAwake());			
+				clone.getBody().setActive(true);	
 			
-			if (body.m_fixtureList != null){
-				Filter filter = body.m_fixtureList.getFilterData();
-				clone.setCollisionCategory(filter.categoryBits, MaskType.SET);
-				clone.setCollisionFlags(filter.maskBits, MaskType.SET);
+				Fixture fixture = body.m_fixtureList;
+				while (fixture != null){
+					clone.attachCollider(fixture.getShape().clone(), fixture.isSensor());				
+					fixture = fixture.m_next;
+				}
+				b.setTransform(body.getPosition(), transform.getRotation());
+				
+				if (body.m_fixtureList != null){
+					Filter filter = body.m_fixtureList.getFilterData();
+					clone.setCollisionCategory(filter.categoryBits, EMaskType.SET);
+					clone.setCollisionFlags(filter.maskBits, EMaskType.SET);
+				}
 			}
 			return clone;
 		}
@@ -171,7 +186,7 @@ public class PhysicsBody {
 			}
 			def.linearDamping = 0.1f;
 			def.fixedRotation = true;
-			def.type = BodyType.DYNAMIC;
+			//def.type = BodyType.DYNAMIC;
 			def.userData = e;
 		}
 		body = PhysicsWorld.getInstance().getWorld().createBody(def);
@@ -200,18 +215,46 @@ public class PhysicsBody {
 	}
 
 	public Vector2 getPosition() {
-		return Vector2.fromVec2(body.getPosition());
+		switch (bodyType){
+			case INTERACTIVE:{
+				return Vector2.fromVec2(body.getPosition());
+			}
+			case NON_INTERACTIVE:{
+				return transform.getPosition();
+			}
+		}
+		return null;
 	}
 
 	public float getRotation() {
-		return bodyRotation;
+		return transform.getRotation();
 	}
 
 	public Vector2 getScale() {
-		return bodyScale;
+		return transform.getScale();
 	}
 
-	public void setCollisionCategory(int flags, MaskType type){
+	public EBodyType getType(){
+		return bodyType;
+	}
+	
+	public void setBodyType(EBodyType type, Entity<?> userData){
+		this.bodyType = type;
+		switch (type){
+			case INTERACTIVE:{
+				if (body == null){
+					createBody(null, userData);
+				}
+				break;
+			}
+			case NON_INTERACTIVE:{
+				destroyBody();
+				break;
+			}
+		}
+	}
+	
+	public void setCollisionCategory(int flags, EMaskType type){
 		if (body != null){
 			Fixture f = body.m_fixtureList;
 			while (f != null){
@@ -242,7 +285,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	public void setCollisionFlags(int flags, MaskType type){
+	public void setCollisionFlags(int flags, EMaskType type){
 		if (body != null){
 			Fixture f = body.m_fixtureList;
 			while (f != null){
@@ -274,16 +317,27 @@ public class PhysicsBody {
 	}
 	
 	public void setPosition(Vector2 pos) {
-		body.setTransform(Vector2.toVec2(pos), bodyRotation);
+		setPosition(pos.x, pos.y);
 	}
 
 	public void setPosition(float x, float y) {
-		setPosition(new Vector2(x, y));
+		switch (bodyType){
+			case INTERACTIVE:{
+				body.setTransform(Vector2.toVec2(x, y), transform.getRotation());
+				break;
+			}
+			case NON_INTERACTIVE:{
+				transform.setPosition(x, y);
+				break;
+			}
+		}
 	}
 
 	public void setRotation(float angle) {
-		bodyRotation = angle;
-		body.setTransform(body.getPosition(), angle);
+		transform.setRotation(angle);
+		if (bodyType != EBodyType.NON_INTERACTIVE){
+			body.setTransform(body.getPosition(), angle);
+		}
 	}
 	
 	/**
@@ -292,10 +346,10 @@ public class PhysicsBody {
 	 * @param scale - desired sprite scale
 	 */
 	public void setScale(Vector2 scale) {
-		bodyScale = scale;
+		transform.setScale(scale);
 	}
 	
-	public void setScale(float scaleX, float scaleY){
-		bodyScale.set(scaleX, scaleY);
+	public void setScale(float x, float y){
+		transform.setScale(x, y);
 	}
 }

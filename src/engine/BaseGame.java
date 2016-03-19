@@ -13,8 +13,8 @@ public class BaseGame implements IUpdatable, IClickable {
 	private static final int NUM_VELOCITY_ITERATIONS = 2;
 	private static final int NUM_POSITION_ITERATIONS = 4;
 
-	protected SoundManager soundManager = new SoundManager<String>();
-	protected MusicManager musicManager = new MusicManager<String>();
+	protected SoundManager<?> soundManager = new SoundManager<String>();
+	protected MusicManager<?> musicManager = new MusicManager<String>();
 	protected ArrayList<Integer> destroyList = new ArrayList<Integer>();
 	protected ArrayList<Entity> entityList = new ArrayList<Entity>();
 	protected ArrayList<BaseDialog> dialogList = new ArrayList<BaseDialog>();
@@ -29,7 +29,7 @@ public class BaseGame implements IUpdatable, IClickable {
 		dialogList.add(d);
 	}
 	
-	public void addEntity(Entity e){
+	public void addEntity(Entity<?> e){
 		entityList.add(e);
 	}
 	
@@ -38,7 +38,7 @@ public class BaseGame implements IUpdatable, IClickable {
 	 * that must be released, should be released here.
 	 */
 	public void destroy() {
-		for (Entity i : entityList) {
+		for (Entity<?> i : entityList) {
 			i.destroy();
 		}
 		entityList.clear();
@@ -58,11 +58,11 @@ public class BaseGame implements IUpdatable, IClickable {
 		return entityList;
 	}
 	
-	public MusicManager getMusicManager(){
+	public MusicManager<?> getMusicManager(){
 		return musicManager;
 	}
 	
-	public SoundManager getSoundManager(){
+	public SoundManager<?> getSoundManager(){
 		return soundManager;
 	}
 	
@@ -135,7 +135,7 @@ public class BaseGame implements IUpdatable, IClickable {
 		physicsWorld.getWorld().step(deltaTime, NUM_VELOCITY_ITERATIONS, NUM_POSITION_ITERATIONS);
 
 		// Update all entities
-		Entity e;
+		Entity<?> e;
 		for (int i = 0; i < entityList.size(); i++) {
 			e = entityList.get(i);
 			e.update(deltaTime);

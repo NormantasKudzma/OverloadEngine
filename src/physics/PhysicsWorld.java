@@ -31,8 +31,8 @@ public class PhysicsWorld implements ContactListener {
 		return world;
 	}
 	
-	public PhysicsBody getBodyFromDef(BodyDef def){
-		PhysicsBody b = new PhysicsBody(def);
+	public PhysicsBody getBodyFromDef(PhysicsBody.EBodyType type, BodyDef def){
+		PhysicsBody b = new PhysicsBody(type, def);
 		bodyList.add(b);
 		return b;
 	}
@@ -41,8 +41,8 @@ public class PhysicsWorld implements ContactListener {
 		return bodyList;
 	}
 	
-	public PhysicsBody getNewBody(Entity e){
-		PhysicsBody b = new PhysicsBody(e);
+	public PhysicsBody getNewBody(PhysicsBody.EBodyType type, Entity e){
+		PhysicsBody b = new PhysicsBody(type, e);
 		bodyList.add(b);
 		return b;
 	}
@@ -100,7 +100,7 @@ public class PhysicsWorld implements ContactListener {
 	}
 
 	@Override
-	public void postSolve(Contact c, ContactImpulse arg1i) {
+	public void postSolve(Contact c, ContactImpulse i) {
 		//stub
 	}
 

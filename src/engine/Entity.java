@@ -38,7 +38,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 			if (obj instanceof Entity){
 				clone = (Entity<S>)obj;
 				clone.body = body.clone(clone);
-				clone.initEntity();
+				clone.initEntity(body.getType());
 				clone.isDestructible = isDestructible;
 				clone.isLifetimeFinite = isLifetimeFinite;
 				clone.isToBeDestroyed = isToBeDestroyed;
@@ -88,9 +88,9 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		return sprite;
 	}
 
-	public void initEntity() {
+	public void initEntity(PhysicsBody.EBodyType type) {
 		if (body == null) {
-			body = PhysicsWorld.getInstance().getNewBody(this);
+			body = PhysicsWorld.getInstance().getNewBody(type, this);
 		}
 	}
 
@@ -133,8 +133,8 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 
 	public void setCollisionFlags(int category, int mask){
 		if (body != null){
-			body.setCollisionCategory(category, PhysicsBody.MaskType.SET);
-			body.setCollisionFlags(mask, PhysicsBody.MaskType.SET);
+			body.setCollisionCategory(category, PhysicsBody.EMaskType.SET);
+			body.setCollisionFlags(mask, PhysicsBody.EMaskType.SET);
 		}
 	}
 	
