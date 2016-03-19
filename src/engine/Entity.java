@@ -89,7 +89,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 
 	public void initEntity(PhysicsBody.EBodyType type) {
-		if (body == null) {
+		if (body == null){
 			body = PhysicsWorld.getInstance().getNewBody(type, this);
 		}
 	}

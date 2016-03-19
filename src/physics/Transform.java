@@ -8,7 +8,7 @@ public class Transform {
 	private float rotation;
 	
 	public Transform(){
-		this(new Vector2(), new Vector2(), 0.0f);
+		this(new Vector2(), Vector2.one, 0.0f);
 	}
 	
 	public Transform(Transform t){

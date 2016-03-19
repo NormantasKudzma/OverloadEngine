@@ -9,16 +9,19 @@ import java.util.Map.Entry;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import physics.PhysicsBody;
+
+import engine.Entity;
+
 import utils.ConfigManager;
 import utils.Paths;
 import utils.Vector2;
 
-public class SimpleFont implements IRenderable {
+public class SimpleFont extends Entity<Sprite2D> {
 	private static final float MAGIC_SCALE = 1.4f;
 	private static final HashMap<Character, Symbol> defaultSymbolMap = new HashMap<Character, Symbol>(128);
 
 	private String text;
-	private Vector2 internalPos;
 	private Symbol firstSymbol;
 	private HashMap<Character, Symbol> symbolMap;
 	private ArrayList<Symbol> textSymbols = new ArrayList<Symbol>();
@@ -43,6 +46,8 @@ public class SimpleFont implements IRenderable {
 	}
 	
 	public SimpleFont(String text, HashMap<Character, Symbol> font){
+		super(null);
+		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		symbolMap = font;
 		firstSymbol = font.values().iterator().next();
 		setText(text);
@@ -100,16 +105,11 @@ public class SimpleFont implements IRenderable {
 			}
 		}
 	}
-
-	@Override
-	public void render() {
-		render(Vector2.one, 0.0f, Vector2.one);
-	}
 	
 	@Override
 	public void render(Vector2 position, float rotation, Vector2 scale) {
 		float step = firstSymbol.sprite.getHalfSize().x * MAGIC_SCALE * scale.x;
-		internalPos = position.copy().add(-step * 0.5f * text.length() + step * 0.5f, 0);
+		Vector2 internalPos = position.copy().add(-step * 0.5f * text.length() + step * 0.5f, 0);
 		Symbol s;
 		for (int i = 0; i < textSymbols.size(); i++) {
 			s = textSymbols.get(i);

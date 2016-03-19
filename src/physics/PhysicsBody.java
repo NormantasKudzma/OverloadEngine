@@ -178,15 +178,15 @@ public class PhysicsBody {
 	private void createBody(BodyDef def, Entity e) {
 		if (def == null) {
 			def = new BodyDef();
-			if (def.type == BodyType.STATIC){
+			/*if (def.type == BodyType.STATIC){
 				def.allowSleep = true;
 			}
 			else {
 				def.allowSleep = false;
-			}
+			}*/
 			def.linearDamping = 0.1f;
 			def.fixedRotation = true;
-			//def.type = BodyType.DYNAMIC;
+			def.type = BodyType.DYNAMIC;
 			def.userData = e;
 		}
 		body = PhysicsWorld.getInstance().getWorld().createBody(def);
@@ -321,15 +321,9 @@ public class PhysicsBody {
 	}
 
 	public void setPosition(float x, float y) {
-		switch (bodyType){
-			case INTERACTIVE:{
-				body.setTransform(Vector2.toVec2(x, y), transform.getRotation());
-				break;
-			}
-			case NON_INTERACTIVE:{
-				transform.setPosition(x, y);
-				break;
-			}
+		transform.setPosition(x, y);
+		if (bodyType == EBodyType.INTERACTIVE){
+			body.setTransform(Vector2.toVec2(x, y), transform.getRotation());
 		}
 	}
 
@@ -346,7 +340,7 @@ public class PhysicsBody {
 	 * @param scale - desired sprite scale
 	 */
 	public void setScale(Vector2 scale) {
-		transform.setScale(scale);
+		setScale(scale.x, scale.y);
 	}
 	
 	public void setScale(float x, float y){
