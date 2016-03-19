@@ -6,100 +6,66 @@ import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-import utils.Paths;
+import engine.IUpdatable;
 
+public abstract class AudioManager<T> implements IUpdatable {
+	public enum EAudioType {
+		OGG("OGG"),
+		MP3("MP3"),
+		WAV("WAV"),
+		INVALID(null);
+		
+		private String name;
 
-public class AudioManager {
-	public enum SoundType {
-		BOMB_EXPLODE(Paths.SOUNDS + "bombexplosion.ogg"), BOMB_PLACED(
-				Paths.SOUNDS + "bombplaced.ogg"), FIRST_BLOOD(
-				Paths.SOUNDS + "firstblood.ogg"), DOUBLE_KILL(
-				Paths.SOUNDS + "doublekill.ogg"), TRIPLE_KILL(
-				Paths.SOUNDS + "triplekill.ogg"), MONSTER_KILL(
-				Paths.SOUNDS + "monsterkill.ogg"), POWERUP_PICKUP(
-				Paths.SOUNDS + "poweruppickup.ogg"), INVALID(null);
-
-		private String filename;
-
-		private SoundType(String f) {
-			filename = f;
+		private EAudioType(String name){
+			this.name = name;
 		}
-
-		public String getFilename() {
-			return filename;
-		}
-
-		public static SoundType fromString(String str) {
-			for (int i = 0; i < values().length; i++) {
-				if (values()[i].getFilename().equals(str)) {
-					return values()[i];
-				}
-			}
-			return INVALID;
+		
+		public String getName(){
+			return name;
 		}
 	}
+	
+	protected HashMap<T, Audio> audioList = new HashMap<T, Audio>(16);
 
-	private static HashMap<String, Audio> soundList = new HashMap<String, Audio>(SoundType.values().length + 10);
-	private static Audio currentMusic = null;
-
-	private AudioManager() {
+	public AudioManager() {
+		
 	}
 
-	static {
-		// Loading all initial sounds and putting them into sound list
-		for (SoundType stype : SoundType.values()) {
-			if (stype == SoundType.INVALID) {
-				continue;
-			}
-			try {
-				Audio audio = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream(stype.getFilename()));
-				soundList.put(stype.getFilename(), audio);
-			}
-			catch (Exception e) {
-				//e.printStackTrace();
-			}
-		}
+	public void destroy() {
+		stopAll();
 	}
-
-	public static final void destroy() {
-		stopMusic();
-	}
-
-	public static void playMusic(String path) {
-		if (!path.contains(Paths.MUSIC)) {
-			path = Paths.MUSIC + path;
-		}
+	
+	public void loadAudio(String path, EAudioType type, T key){
 		try {
-			currentMusic = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream(path));
-			currentMusic.playAsMusic(1.0f, 1.0f, false);
+			Audio audio = AudioLoader.getAudio(type.getName(), ResourceLoader.getResourceAsStream(path));
+			audioList.put(key, audio);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	public static void playSound(SoundType sound) {
-		playSound(sound.getFilename());
-	}
-
-	public static void playSound(String path) {
-		Audio audio = soundList.get(path);
-		if (audio == null) {
-			try {
-				audio = soundList.put(path, AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream(path)));
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+	
+	public abstract void pause();
+	
+	public abstract void play();
+	
+	public abstract void play(T audio, boolean loop);
+	
+	public abstract void resume();
+	
+	public abstract void stop();
+	
+	public void stop(T sound){
+		Audio audio = audioList.get(sound);
+		if (audio.isPlaying()){
+			audio.stop();
 		}
-
-		audio.playAsSoundEffect(1.0f, 1.0f, false);
 	}
-
-	public static void stopMusic() {
-		if (currentMusic != null) {
-			currentMusic.stop();
-			currentMusic = null;
+	
+	public void stopAll(){
+		for (Audio i : audioList.values()){
+			i.stop();
 		}
 	}
 }

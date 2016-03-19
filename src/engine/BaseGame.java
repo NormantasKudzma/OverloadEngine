@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import physics.PhysicsWorld;
 import utils.Vector2;
+import audio.MusicManager;
+import audio.SoundManager;
 import controls.IClickable;
 import dialogs.BaseDialog;
 
@@ -11,6 +13,8 @@ public class BaseGame implements IUpdatable, IClickable {
 	private static final int NUM_VELOCITY_ITERATIONS = 2;
 	private static final int NUM_POSITION_ITERATIONS = 4;
 
+	protected SoundManager soundManager = new SoundManager<String>();
+	protected MusicManager musicManager = new MusicManager<String>();
 	protected ArrayList<Integer> destroyList = new ArrayList<Integer>();
 	protected ArrayList<Entity> entityList = new ArrayList<Entity>();
 	protected ArrayList<BaseDialog> dialogList = new ArrayList<BaseDialog>();
@@ -52,6 +56,14 @@ public class BaseGame implements IUpdatable, IClickable {
 	
 	public ArrayList<Entity> getEntityList(){
 		return entityList;
+	}
+	
+	public MusicManager getMusicManager(){
+		return musicManager;
+	}
+	
+	public SoundManager getSoundManager(){
+		return soundManager;
 	}
 	
 	/**
@@ -102,6 +114,14 @@ public class BaseGame implements IUpdatable, IClickable {
 	 * @param deltaTime - time that has passed since last frame (in ms)
 	 */
 	public void update(float deltaTime) {
+		if (soundManager != null){
+			soundManager.update(deltaTime);
+		}
+		
+		if (musicManager != null){
+			musicManager.update(deltaTime);
+		}
+		
 		// If there are visible dialogs, don't update the game
 		BaseDialog d;
 		for (int i = 0; i < dialogList.size(); i++){

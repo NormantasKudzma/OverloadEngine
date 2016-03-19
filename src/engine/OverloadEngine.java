@@ -40,7 +40,6 @@ public class OverloadEngine {
 	private void destroy() {
 		game.destroy();
 		ControllerManager.getInstance().destroyManager();
-		AudioManager.destroy();
 		Display.destroy();
 	}
 
