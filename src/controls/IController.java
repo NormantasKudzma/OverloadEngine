@@ -3,7 +3,9 @@ package controls;
 public interface IController {
 	public void addKeybind(long bitmask, ControllerEventListener callback);
 
-	public ControllerKeybind clearKeybind(long bitmask);
+	public ControllerKeybind removeKeybind(ControllerEventListener callback);
+	
+	public ControllerKeybind removeKeybind(long bitmask);
 
 	public void clearKeybinds();
 

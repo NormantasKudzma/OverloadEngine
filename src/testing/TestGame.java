@@ -20,7 +20,7 @@ public class TestGame extends BaseGame{
 	public void init() {
 		super.init();
 		
-		for (int i = 0; i < 15; ++i){
+		for (int i = 0; i < 40; ++i){
 			StringBuilder builder = new StringBuilder();
 			for (int j = 0; j < 57; ++j){
 				builder.append((char)(OverloadRandom.nextRandom(25) + 97));

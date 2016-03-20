@@ -146,7 +146,7 @@ public class OverloadEngine {
 			}
 			
 			Display.update();
-			Display.sync(TARGET_FPS);
+			//Display.sync(TARGET_FPS);
 		}
 	}
 

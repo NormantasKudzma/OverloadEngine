@@ -128,7 +128,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 
 	public void render() {
-		render(body.getTransform(), color);
+		render(body.getPosition(), body.getScale(), body.getRotation(), color);
 	}
 
 	@Override

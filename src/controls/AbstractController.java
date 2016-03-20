@@ -22,18 +22,6 @@ public abstract class AbstractController implements IController {
 		keyBindings.add(keybind);
 	}
 
-	public ControllerKeybind clearKeybind(long bitmask) {
-		ControllerKeybind temp = null;
-		for (ControllerKeybind bind : keyBindings) {
-			if (bind.getBitmask() == bitmask) {
-				temp = bind;
-				keyBindings.remove(temp);
-				break;
-			}
-		}
-		return temp;
-	}
-
 	public void clearKeybinds() {
 		keyBindings.clear();
 	}
@@ -50,6 +38,30 @@ public abstract class AbstractController implements IController {
 		return isActive && !isStopped;
 	}
 
+	public ControllerKeybind removeKeybind(ControllerEventListener callback){
+		ControllerKeybind temp = null;
+		for (ControllerKeybind bind : keyBindings) {
+			if (bind.getCallback() == callback) {
+				temp = bind;
+				keyBindings.remove(temp);
+				break;
+			}
+		}
+		return temp;
+	}
+	
+	public ControllerKeybind removeKeybind(long bitmask) {
+		ControllerKeybind temp = null;
+		for (ControllerKeybind bind : keyBindings) {
+			if (bind.getBitmask() == bitmask) {
+				temp = bind;
+				keyBindings.remove(temp);
+				break;
+			}
+		}
+		return temp;
+	}
+	
 	public ControllerKeybind removeUnmaskedCallback() {
 		ControllerKeybind temp = defaultCallback;
 		defaultCallback = null;
