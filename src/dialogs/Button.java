@@ -9,13 +9,11 @@ import java.lang.reflect.Method;
 import utils.Paths;
 import utils.Vector2;
 
-public class Button extends Component{
+public class Button extends SpriteComponent{
 	protected Object callbackObject;
 	protected Method callbackMethod;
-	protected Sprite2D normalSprite;
-	protected Sprite2D hoverSprite;
 	protected Vector2 fontScale = Vector2.one;
-	protected Label label;
+	protected Label label = new Label(game, "");
 	
 	public Button(){
 		this(null, null, null, "");
@@ -25,10 +23,7 @@ public class Button extends Component{
 		super(game);
 		callbackObject = obj;
 		callbackMethod = m;
-		normalSprite = new Sprite2D(Paths.UI + "button_green.png");
-		hoverSprite = new Sprite2D(Paths.UI + "hover_green.png");
-		setSprite(normalSprite);
-		setText(text);
+		label = new Label(game, "");
 		setScale(Vector2.one);
 		setVisible(true);
 	}
@@ -39,7 +34,11 @@ public class Button extends Component{
 	
 	@Override
 	protected void initialize() {
+		super.initialize();
+		setSprite(new Sprite2D(Paths.UI + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
+		setSprite(new Sprite2D(Paths.UI + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
 
+		addChild(label);
 	}
 	
 	public boolean isMouseOver(Vector2 pos){
@@ -80,35 +79,11 @@ public class Button extends Component{
 	public void setScale(Vector2 scale) {
 		float min = Math.min(scale.x, scale.y);
 		fontScale = (new Vector2(min, min)).mul(0.16f);
+		label.setScale(fontScale);
 		super.setScale(scale);
 	}
 	
 	public void setText(String text){
-		if (label == null){
-			label = new Label(game, text);
-		}
-		else {
-			label.setText(text);
-		}
-	}
-	
-	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
-		super.render(position, scale, rotation, c);
-		if (label != null){
-			label.render(position, fontScale, rotation, c);
-		}
-	}
-	
-	@Override
-	public boolean onHover(Vector2 pos) {
-		boolean ret = isMouseOver(pos);
-		if (ret){
-			setSprite(hoverSprite);
-		}
-		else {
-			setSprite(normalSprite);
-		}
-		return ret;
+		label.setText(text);
 	}
 }

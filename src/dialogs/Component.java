@@ -21,38 +21,40 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 		super(game);
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		initialize();
+	}	
+	
+	public void addChild(Component c){
+		if (c != null){
+			c.setParent(this);
+			children.add(c);
+			c.setPosition(c.getPosition().add(getPosition()));
+		}
 	}
 	
-	protected abstract void initialize();
+	public ArrayList<Component> getChildren(){
+		return children;
+	}
 	
 	public String getName(){
 		return name;
 	}
 	
-	public void setName(String name){
-		this.name = name;
+	public Component getParent(){
+		return parent;
 	}
-	
-	public boolean isVisible(){
-		return isVisible;
-	}
-	
-	public void setVisible(boolean isVisible){
-		this.isVisible = isVisible;
-	}
+
+	protected abstract void initialize();
 	
 	@Override
 	public boolean isMouseOver(Vector2 pos) {
-		if (!isVisible){
+		if (!isVisible || sprite == null){
 			return false;
 		}
 		
-		Vector2 offset = sprite == null ? Vector2.zero : sprite.getRenderOffset();
-		
-		return  pos.x < getPosition().x + offset.x &&
-				pos.x > getPosition().x - offset.x &&
-				pos.y < getPosition().y + offset.y &&
-			    pos.y > getPosition().y - offset.y;
+		return  pos.x < getPosition().x + sprite.getRenderOffset().x &&
+				pos.x > getPosition().x - sprite.getRenderOffset().x &&
+				pos.y < getPosition().y + sprite.getRenderOffset().y &&
+			    pos.y > getPosition().y - sprite.getRenderOffset().y;
 	}
 
 	@Override
@@ -91,36 +93,6 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 		return ret;
 	}
 	
-	public void addChild(Component c){
-		if (c != null){
-			c.setParent(this);
-			children.add(c);
-			c.setPosition(c.getPosition().add(getPosition()));
-		}
-	}
-	
-	public ArrayList<Component> getChildren(){
-		return children;
-	}
-	
-	public void setParent(Component c){
-		parent = c;
-	}
-	
-	public Component getParent(){
-		return parent;
-	}
-	
-	@Override
-	public void update(float deltaTime) {
-		if (isVisible){
-			super.update(deltaTime);
-			for (Component component : children){
-				component.update(deltaTime);
-			}
-		}
-	}
-	
 	@Override
 	public void render() {
 		if (isVisible){
@@ -130,6 +102,32 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 			
 			for (Component component : children){
 				component.render();
+			}
+		}
+	}
+	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public void setParent(Component c){
+		parent = c;
+	}
+	
+	public void setPosition(float x, float y){
+		Vector2 delta = new Vector2(x, y).sub(getPosition());
+		for (Component component : children){
+			component.setPosition(component.getPosition().add(delta));
+		}
+		super.setPosition(x, y);
+	}
+	
+	@Override
+	public void update(float deltaTime) {
+		if (isVisible){
+			super.update(deltaTime);
+			for (Component component : children){
+				component.update(deltaTime);
 			}
 		}
 	}

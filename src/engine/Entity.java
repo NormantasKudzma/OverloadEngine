@@ -164,7 +164,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 	
 	public void setPosition(Vector2 pos) {
-		body.setPosition(pos);
+		setPosition(pos.x, pos.y);
 	}
 
 	public void setPosition(float x, float y) {

@@ -104,13 +104,13 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		// translate to the right location and prepare to draw
 		renderOffset.set(internalScale).mul(scale).mul(0.5f);
         
+		texture.bind();
+		
 		glTranslatef(position.x - renderOffset.x, position.y + renderOffset.y, 0);
 		glScalef(scale.x, -scale.y, 1.0f);
 		glRotatef(rotation, 0, 0, 1.0f);
  
 		setBufferColors(c);
-		
-		texture.bind();
 
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 32, 0);
@@ -129,7 +129,7 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		glPopMatrix();
 	}
 	
-	public void setBufferColors(Color c){
+	private void setBufferColors(Color c){
 		float[] rgba = c.getRgba();
 		for (int i = 4; i < 32; i += 8){
 			vbo.put(i, rgba[0]).put(i + 1, rgba[1]).put(i + 2, rgba[2]).put(i + 3, rgba[3]);
@@ -180,9 +180,10 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		}
 		
 		setBufferTexCoords(topLeft, botRight);
+		setInternalScale(texture.getImageWidth(), texture.getImageHeight());
 	}
 	
-	public void setInternalScale(float w, float h){
+	public void setInternalScale(int w, int h){
 		internalScale.set(w, h);
 		Vector2.pixelCoordsToNormal(internalScale);
 
