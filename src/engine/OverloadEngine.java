@@ -81,7 +81,9 @@ public class OverloadEngine {
 		}
 		game.init();
 		
-		frameCounter = new DebugFrameCounter();
+		if (isDebugDrawn){
+			frameCounter = new DebugFrameCounter();
+		}
 
 		LwjglMouseController c = (LwjglMouseController) ControllerManager.getInstance().getController(EController.LWJGLMOUSECONTROLLER);
 		c.addKeybind(0, new ControllerEventListener() {
@@ -118,8 +120,8 @@ public class OverloadEngine {
 		t0 = t1 = System.currentTimeMillis();
 
 		while (!Display.isCloseRequested()) {
-			t0 = System.currentTimeMillis();
-			deltaTime = (t0 - t1) * 0.001f;
+			t0 = System.nanoTime();
+			deltaTime = (t0 - t1) * 0.000000001f;
 			t1 = t0;
 
 			// Poll controllers for input

@@ -1,11 +1,10 @@
 package dialogs;
 
 import engine.BaseGame;
+import graphics.Color;
 import graphics.Sprite2D;
 
 import java.lang.reflect.Method;
-
-import org.lwjgl.util.Color;
 
 import utils.Paths;
 import utils.Vector2;

@@ -1,8 +1,7 @@
 package dialogs;
 
-import org.lwjgl.util.Color;
-
 import engine.BaseGame;
+import graphics.Color;
 import graphics.SimpleFont;
 import utils.Vector2;
 

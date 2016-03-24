@@ -8,15 +8,12 @@ import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.lwjgl.util.Color;
 
 import physics.PhysicsBody;
-
-import engine.Entity;
-
 import utils.ConfigManager;
 import utils.Paths;
 import utils.Vector2;
+import engine.Entity;
 
 public class SimpleFont extends Entity<Sprite2D> {
 	private static final float MAGIC_SCALE = 1.4f;

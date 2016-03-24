@@ -1,6 +1,6 @@
 package graphics;
 
-import org.lwjgl.util.Color;
+import graphics.Color;
 
 import physics.Transform;
 import utils.Vector2;

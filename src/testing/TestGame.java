@@ -1,12 +1,9 @@
 package testing;
 
-import org.lwjgl.util.Color;
-
 import utils.OverloadRandom;
-import utils.Vector2;
 import dialogs.Label;
 import engine.BaseGame;
-import engine.Entity;
+import graphics.Color;
 
 public class TestGame extends BaseGame{
 	private static final int LIM = 254;
@@ -27,9 +24,9 @@ public class TestGame extends BaseGame{
 			}
 			Label label;
 			label = new Label(this, builder.toString());
-			label.setPosition(1.0f, 0.025f + i * 0.05f);
+			label.setPosition(1.0f, 0.025f + i*0.05f);
 			label.setScale(4.0f, 4.0f);
-			label.setColor(new Color(OverloadRandom.nextRandom(255), OverloadRandom.nextRandom(255), OverloadRandom.nextRandom(255), 255));
+			label.setColor(new Color(OverloadRandom.nextRandom(170) / 255.0f, OverloadRandom.nextRandom(50) / 255.0f, OverloadRandom.nextRandom(20) / 255.0f, 1.0f));
 			addEntity(label);
 		}
 	}
@@ -38,7 +35,7 @@ public class TestGame extends BaseGame{
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 		
-		for (Entity<?> e : entityList){
+		/*for (Entity<?> e : entityList){
 			Color c = e.getColor();
 			int r = c.getRed();
 			int g = c.getGreen();
@@ -56,6 +53,6 @@ public class TestGame extends BaseGame{
 				}
 			}
 			c.set(r, g, b);
-		}
+		}*/
 	}
 }

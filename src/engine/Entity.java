@@ -1,9 +1,9 @@
 package engine;
 
+import graphics.Color;
 import graphics.IRenderable;
 
 import org.jbox2d.dynamics.Fixture;
-import org.lwjgl.util.Color;
 
 import physics.ICollidable;
 import physics.PhysicsBody;
@@ -20,7 +20,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	protected PhysicsBody body;
 	protected BaseGame game = null;
 	protected S sprite;
-	protected Color color = new Color(255, 255, 255, 255);
+	protected Color color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 	public Entity(BaseGame game) {
 		this.game = game;

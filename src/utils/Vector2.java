@@ -20,7 +20,7 @@ public final class Vector2 {
 	public float y = 0.0f;
 	
 	public Vector2(){
-
+		this(0.0f, 0.0f);
 	}
 	
 	public Vector2(Vector2 i){

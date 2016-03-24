@@ -1,9 +1,6 @@
 package graphics;
 
-import org.lwjgl.util.Color;
-
 import physics.Transform;
-
 import utils.Vector2;
 import engine.IUpdatable;
 

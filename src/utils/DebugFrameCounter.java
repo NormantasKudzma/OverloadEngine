@@ -1,15 +1,9 @@
 package utils;
 
-import graphics.SimpleFont;
-
 import java.util.Locale;
 
-import org.lwjgl.util.Color;
-
-import physics.Transform;
 import physics.PhysicsBody.EBodyType;
 import dialogs.Label;
-
 
 public class DebugFrameCounter extends Label{
 	private static final Vector2 fpsTextPosition = new Vector2(0.2f, 0.15f);
