@@ -46,13 +46,11 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	public Sprite2D(String path, Vector2 tl, Vector2 br){
 		loadTexture(path);
 		setClippingBounds(tl, br);
-		init();
 	}
 	
 	public Sprite2D(Texture tex, Vector2 tl, Vector2 br){
-		setTexture(tex);
+		texture = tex;
 		setClippingBounds(tl, br);
-		init();
 	}
 	
 	public Vector2 getInternalScale(){
@@ -86,22 +84,9 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		return sprite;
 	}	
 	
-	private void init(){	
-		texture.bind();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, posBufferId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, posBuffer, GL15.GL_STATIC_DRAW);
-	      
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, texBuffer, GL15.GL_STATIC_DRAW);
-		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colorBuffer, GL15.GL_STATIC_DRAW);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-	}
-	
 	public void loadTexture(String path){
 		try {
-			setTexture(TextureLoader.getInstance().getTexture(path));
+			texture = TextureLoader.getInstance().getTexture(path);
 		}
 		catch (IOException e){
 			e.printStackTrace();
@@ -129,62 +114,39 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		glScalef(scale.x, -scale.y, 1.0f);
 		glRotatef(rotation, 0, 0, 1.0f);
  
-		if (c != null){
-			setBufferColors(c);
-		}
-		else {
-			setBufferColors(WHITE);
-		}
+		setBufferColors(c);
 		
 		texture.bind();
-		
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
+		GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
+
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, posBufferId);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
-		
+
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferId);
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
-		
-		/*GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
-		GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);*/
-		         
+
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-		//GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-		//GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-			
-		// Bind and render buffer		
-		/*GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL11.glVertexPointer(2, GL11.GL_FLOAT, 32, 0);
-		 
-		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		//GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_DYNAMIC_DRAW);
-		GL11.glColorPointer(4, GL11.GL_FLOAT, 32, 16);*/
-		
-		/*texture.bind();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_DYNAMIC_DRAW);
-		GL11.glTexCoordPointer(2, 32, );*/
-		
-		//GL11.glDrawArrays(GL11.GL_TRIANGLE_FAN, 0, 4);
 
         // Restore the model view matrix to prevent contamination
 		glPopMatrix();
 	}
 	
-	private void setBufferColors(Color c){		
+	public void setBufferColors(Color c){		
 		colorBuffer.clear();
-		for (int i = 0; i < 16; i += 4){
-			colorBuffer.put(c.r)
-				.put(c.g)
-				.put(c.b)
-				.put(c.a);
+		for (int i = 0; i < 4; ++i){
+			colorBuffer.put(c.getRgba());
 		}
 		colorBuffer.flip();
+		
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colorBuffer, GL15.GL_STATIC_DRAW);
 	}
 
 	private void setBufferTexCoords(Vector2 tl, Vector2 br){
@@ -196,7 +158,10 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		};
 		texBuffer.put(buf);
 		texBuffer.flip();
-		init();
+		
+		texture.bind();   
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, texBuffer, GL15.GL_STATIC_DRAW);
 	}
 	
 	private void setBufferVertices(Vector2 pos){
@@ -208,7 +173,9 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		};
 		posBuffer.put(buf);
 		posBuffer.flip();
-		init();
+
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, posBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, posBuffer, GL15.GL_STATIC_DRAW);
 	}
 	
 	private void setClippingBounds(Vector2 topLeftCorner, Vector2 bottomRightCorner){
@@ -234,10 +201,6 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		Vector2.pixelCoordsToNormal(internalScale);
 
 		setBufferVertices(internalScale);
-	}
-	
-	private void setTexture(Texture tex){
-		texture = tex;
 	}
 	
 	@Override

@@ -26,7 +26,8 @@ public class TestGame extends BaseGame{
 			label = new Label(this, builder.toString());
 			label.setPosition(1.0f, 0.025f + i*0.05f);
 			label.setScale(4.0f, 4.0f);
-			label.setColor(new Color(OverloadRandom.nextRandom(170) / 255.0f, OverloadRandom.nextRandom(50) / 255.0f, OverloadRandom.nextRandom(20) / 255.0f, 1.0f));
+			label.setColor(new Color(OverloadRandom.nextRandom(255) / 255.0f, OverloadRandom.nextRandom(255) / 255.0f, OverloadRandom.nextRandom(255) / 255.0f, 1.0f));
+			//label.setColor(new Color(0.0f, 0.0f, 1.0f, 1.0f));
 			addEntity(label);
 		}
 	}
