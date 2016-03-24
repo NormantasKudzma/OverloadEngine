@@ -2,6 +2,7 @@ package engine;
 
 import graphics.Color;
 import graphics.IRenderable;
+import graphics.Sprite2D;
 
 import org.jbox2d.dynamics.Fixture;
 

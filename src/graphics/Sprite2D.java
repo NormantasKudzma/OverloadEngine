@@ -19,8 +19,6 @@ import utils.Vector2;
 import engine.IUpdatable;
 
 public class Sprite2D implements IRenderable, IUpdatable {
-	private static final Color WHITE = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-	
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
@@ -28,12 +26,8 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	
 	// Internal vector for render calculations
 	private Vector2 renderOffset = new Vector2();
-	private int colorBufferId = GL15.glGenBuffers();
-	private int posBufferId = GL15.glGenBuffers();
-	private int texBufferId = GL15.glGenBuffers();
-	private FloatBuffer colorBuffer = BufferUtils.createFloatBuffer(16);
-	private FloatBuffer posBuffer = BufferUtils.createFloatBuffer(8);
-	private FloatBuffer texBuffer = BufferUtils.createFloatBuffer(8);
+	private int vboId = GL15.glGenBuffers();
+	private FloatBuffer vbo = BufferUtils.createFloatBuffer(32);
 	
 	public Sprite2D(String path){
 		this(path, new Vector2(), null);
@@ -118,64 +112,56 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		
 		texture.bind();
 
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
-		GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, posBufferId);
-		GL11.glVertexPointer(2, GL11.GL_FLOAT, 0, 0);
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferId);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL11.glVertexPointer(2, GL11.GL_FLOAT, 32, 0);
+		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 32, 8);
+		GL11.glColorPointer(4, GL11.GL_FLOAT, 32, 16);
 
 		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 		GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 
         // Restore the model view matrix to prevent contamination
 		glPopMatrix();
 	}
 	
-	public void setBufferColors(Color c){		
-		colorBuffer.clear();
-		for (int i = 0; i < 4; ++i){
-			colorBuffer.put(c.getRgba());
+	public void setBufferColors(Color c){
+		float[] rgba = c.getRgba();
+		for (int i = 4; i < 32; i += 8){
+			vbo.put(i, rgba[0]).put(i + 1, rgba[1]).put(i + 2, rgba[2]).put(i + 3, rgba[3]);
 		}
-		colorBuffer.flip();
+		vbo.rewind();
 		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colorBufferId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colorBuffer, GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_STATIC_DRAW);
 	}
 
 	private void setBufferTexCoords(Vector2 tl, Vector2 br){
-		float buf[] = new float[]{
-			tl.x, tl.y,
-			br.x, tl.y,
-			br.x, br.y,
-			tl.x, br.y
-		};
-		texBuffer.put(buf);
-		texBuffer.flip();
+		vbo.put(2, tl.x).put(3, tl.y)
+		.put(10, br.x).put(11, tl.y)
+		.put(18, br.x).put(19, br.y)
+		.put(26, tl.x).put(27, br.y);
+		vbo.rewind();
 		
 		texture.bind();   
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, texBufferId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, texBuffer, GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_STATIC_DRAW);
 	}
 	
 	private void setBufferVertices(Vector2 pos){
-		float buf[] = new float[]{
-			0.0f, 0.0f,
-			pos.x, 0.0f,
-			pos.x, pos.y,
-			0.0f, pos.y
-		};
-		posBuffer.put(buf);
-		posBuffer.flip();
+		vbo.put(8, pos.x)
+		.put(16, pos.x)
+		.put(17, pos.y)
+		.put(25, pos.y);
+		
+		vbo.rewind();
 
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, posBufferId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, posBuffer, GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_STATIC_DRAW);
 	}
 	
 	private void setClippingBounds(Vector2 topLeftCorner, Vector2 bottomRightCorner){
