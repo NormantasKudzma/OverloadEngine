@@ -17,19 +17,31 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 
 	}
 
+	public void destroy(){
+		for (int i = 0; i < spriteArray.length; ++i){
+			for (int j = 0; j < spriteArray[i].length; ++j){
+				spriteArray[i][j].destroy();
+			}
+		}
+	}
+	
 	@Override
 	public void render() {
-		render(Vector2.one, Vector2.one, 0.0f, null);
+		render(Vector2.one, Vector2.one, 0.0f);
 	}
 	
 	@Override
-	public void render(Transform t, Color c) {
-		render(t.getPosition(), t.getScale(), t.getRotation(), c);
+	public void render(Transform t) {
+		render(t.getPosition(), t.getScale(), t.getRotation());
 	}
 	
 	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
-		spriteArray[currentState][currentFrame].render(position, scale, rotation, c);
+	public void render(Vector2 position, Vector2 scale, float rotation) {
+		spriteArray[currentState][currentFrame].render(position, scale, rotation);
+	}
+	
+	public void setColor(Color c){
+		spriteArray[currentState][currentFrame].setColor(c);
 	}
 	
 	public void setFrameDelay(float delay){

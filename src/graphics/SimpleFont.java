@@ -47,7 +47,7 @@ public class SimpleFont extends Entity<Sprite2D> {
 		super(null);
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		symbolMap = font;
-		firstSymbol = font.values().iterator().next();
+		firstSymbol = font.values().iterator().next().clone();
 		setText(text);
 	}
 	
@@ -92,27 +92,39 @@ public class SimpleFont extends Entity<Sprite2D> {
 		return text;
 	}
 
+	public void setColor(Color c){
+		Symbol s = null;
+		for (int i = 0; i < textSymbols.size(); i++) {
+			s = textSymbols.get(i);
+			s.sprite.setColor(c);
+		}
+	}
+	
 	public void setText(String text) {
 		this.text = text;
-		textSymbols.clear();
+		for (Symbol s : textSymbols){
+			s.sprite.destroy();
+		}
+		
 		Symbol s;
+		textSymbols.clear();
 		for (int i = 0; i < text.length(); i++) {
 			s = symbolMap.get(text.charAt(i));
 			if (s != null) {
-				textSymbols.add(s);
+				textSymbols.add(s.clone());
 			}
 		}
 	}
 	
 	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
+	public void render(Vector2 position, Vector2 scale, float rotation) {
 		float step = firstSymbol.sprite.getHalfSize().x * MAGIC_SCALE * scale.x;
 		Vector2 internalPos = position.copy().add(-step * 0.5f * text.length() + step * 0.5f, 0);
 		Symbol s;
 		for (int i = 0; i < textSymbols.size(); i++) {
 			s = textSymbols.get(i);
 			internalPos.y = s.offset.y * scale.y * 1.5f + position.y;
-			s.sprite.render(internalPos, scale, rotation, c);
+			s.sprite.render(internalPos, scale, rotation);
 			internalPos.x += step;
 		}
 	}

@@ -30,13 +30,17 @@ public class Label extends Component{
 		font.setText(text);
 	}
 	
-	@Override
-	public void render() {
-		render(getPosition(), getScale(), getRotation(), getColor());
+	public void setColor(Color c){
+		font.setColor(c);
 	}
 	
 	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
-		font.render(position, scale, rotation, c);
+	public void render() {
+		render(getPosition(), getScale(), getRotation());
+	}
+	
+	@Override
+	public void render(Vector2 position, Vector2 scale, float rotation) {
+		font.render(position, scale, rotation);
 	}
 }

@@ -1,6 +1,8 @@
 package graphics;
 
 public class Color {
+	public static final Color WHITE = new Color(1.0f, 1.0f, 1.0f);
+	
 	private float[] rgba = new float[4];
 	
 	public Color(float r, float g, float b){

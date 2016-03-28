@@ -6,28 +6,28 @@ import static org.lwjgl.opengl.GL11.glRotatef;
 import static org.lwjgl.opengl.GL11.glScalef;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 
-import graphics.Color;
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
 
 import physics.Transform;
 import utils.Vector2;
 import engine.IUpdatable;
 
-public class Sprite2D implements IRenderable, IUpdatable {
+public class Sprite2D implements IRenderable, IUpdatable, Cloneable {
+	private Renderer renderer;
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
 	private Vector2 botRight;
+	private int id;
 	
 	// Internal vector for render calculations
 	private Vector2 renderOffset = new Vector2();
-	private int vboId = GL15.glGenBuffers();
-	private FloatBuffer vbo = BufferUtils.createFloatBuffer(32);
+	
+	private Sprite2D(){
+		
+	}
 	
 	public Sprite2D(String path){
 		this(path, new Vector2(), null);
@@ -38,13 +38,29 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	}
 	
 	public Sprite2D(String path, Vector2 tl, Vector2 br){
+		init();
 		loadTexture(path);
 		setClippingBounds(tl, br);
 	}
 	
 	public Sprite2D(Texture tex, Vector2 tl, Vector2 br){
+		init();
 		texture = tex;
 		setClippingBounds(tl, br);
+	}
+	
+	public Sprite2D clone(){
+		Sprite2D clone = new Sprite2D();
+		clone.init();
+		clone.texture = texture;
+		clone.setClippingBounds(topLeft.copy(), botRight.copy());
+		clone.setInternalScale(internalScale.copy());
+		clone.renderOffset = renderOffset.copy();
+		return clone;
+	}
+	
+	public void destroy(){
+		renderer.releaseId(id);
 	}
 	
 	public Vector2 getInternalScale(){
@@ -78,6 +94,12 @@ public class Sprite2D implements IRenderable, IUpdatable {
 		return sprite;
 	}	
 	
+	private void init(){
+		renderer = Renderer.getInstance();
+		id = renderer.genSpriteId();
+		renderer.setColorData(id, Color.WHITE);
+	}
+	
 	public void loadTexture(String path){
 		try {
 			texture = TextureLoader.getInstance().getTexture(path);
@@ -88,80 +110,38 @@ public class Sprite2D implements IRenderable, IUpdatable {
 	}
 	
 	public void render(){
-		render(Vector2.one, Vector2.one, 0.0f, null);
+		render(Vector2.one, Vector2.one, 0.0f);
 	}
 	
 	@Override
-	public void render(Transform t, Color c) {
-		render(t.getPosition(), t.getScale(), t.getRotation(), c);
+	public void render(Transform t) {
+		render(t.getPosition(), t.getScale(), t.getRotation());
 	}
 	
 	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
+	public void render(Vector2 position, Vector2 scale, float rotation) {
 		// store the current model matrix
 		glPushMatrix();
  
 		// translate to the right location and prepare to draw
 		renderOffset.set(internalScale).mul(scale).mul(0.5f);
-        
+		
 		texture.bind();
 		
 		glTranslatef(position.x - renderOffset.x, position.y + renderOffset.y, 0);
 		glScalef(scale.x, -scale.y, 1.0f);
 		glRotatef(rotation, 0, 0, 1.0f);
  
-		setBufferColors(c);
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL11.glVertexPointer(2, GL11.GL_FLOAT, 32, 0);
-		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 32, 8);
-		GL11.glColorPointer(4, GL11.GL_FLOAT, 32, 16);
-
-		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-		GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		renderer.render(id);
 
         // Restore the model view matrix to prevent contamination
 		glPopMatrix();
 	}
 	
-	private void setBufferColors(Color c){
-		float[] rgba = c.getRgba();
-		for (int i = 4; i < 32; i += 8){
-			vbo.put(i, rgba[0]).put(i + 1, rgba[1]).put(i + 2, rgba[2]).put(i + 3, rgba[3]);
+	public void setColor(Color c){
+		if (c != null){
+			renderer.setColorData(id, c);
 		}
-		vbo.rewind();
-		
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_STATIC_DRAW);
-	}
-
-	private void setBufferTexCoords(Vector2 tl, Vector2 br){
-		vbo.put(2, tl.x).put(3, tl.y)
-		.put(10, br.x).put(11, tl.y)
-		.put(18, br.x).put(19, br.y)
-		.put(26, tl.x).put(27, br.y);
-		vbo.rewind();
-		
-		texture.bind();   
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_STATIC_DRAW);
-	}
-	
-	private void setBufferVertices(Vector2 pos){
-		vbo.put(8, pos.x)
-		.put(16, pos.x)
-		.put(17, pos.y)
-		.put(25, pos.y);
-		
-		vbo.rewind();
-
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_STATIC_DRAW);
 	}
 	
 	private void setClippingBounds(Vector2 topLeftCorner, Vector2 bottomRightCorner){
@@ -179,15 +159,19 @@ public class Sprite2D implements IRenderable, IUpdatable {
 			botRight = bottomRightCorner;
 		}
 		
-		setBufferTexCoords(topLeft, botRight);
+		renderer.setTexturePosition(id, topLeft, botRight);
 		setInternalScale(texture.getImageWidth(), texture.getImageHeight());
 	}
 	
 	public void setInternalScale(int w, int h){
 		internalScale.set(w, h);
 		Vector2.pixelCoordsToNormal(internalScale);
-
-		setBufferVertices(internalScale);
+		setInternalScale(internalScale);
+	}
+	
+	public void setInternalScale(Vector2 v){
+		internalScale = v;
+		renderer.setVertexPosition(id, internalScale);
 	}
 	
 	@Override

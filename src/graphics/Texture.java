@@ -34,6 +34,8 @@ package graphics;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Texture {
+	private static int lastTexId = 0;
+	
 	private int target;
 	private int textureID;
 	private int height;
@@ -49,7 +51,10 @@ public class Texture {
 	}
 
 	public void bind() {
-		glBindTexture(target, textureID);
+		if (textureID != lastTexId){
+			glBindTexture(target, textureID);
+			lastTexId = textureID;
+		}
 	}
 
 	public void setHeight(int height) {

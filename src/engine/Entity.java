@@ -21,7 +21,6 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	protected PhysicsBody body;
 	protected BaseGame game = null;
 	protected S sprite;
-	protected Color color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 	public Entity(BaseGame game) {
 		this.game = game;
@@ -70,10 +69,9 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	
 	public void destroy() {
 		body.destroyBody();
-	}
-
-	public Color getColor(){
-		return color;
+		if (sprite != null){
+			sprite.destroy();
+		}
 	}
 	
 	public PhysicsBody getPhysicsBody() {
@@ -129,19 +127,20 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 
 	public void render() {
-		render(body.getPosition(), body.getScale(), body.getRotation(), color);
+		render(body.getPosition(), body.getScale(), body.getRotation());
 	}
 
 	@Override
-	public void render(Transform t, Color c) {
-		render(t.getPosition(), t.getScale(), t.getRotation(), c);
+	public void render(Transform t) {
+		render(t.getPosition(), t.getScale(), t.getRotation());
 	}
 	
-	public void render(Vector2 position, Vector2 scale, float rotation, Color c) {
+	public void render(Vector2 position, Vector2 scale, float rotation) {
 		if (!isVisible) {
 			return;
 		}
-		sprite.render(position, scale, rotation, c);
+		
+		sprite.render(position, scale, rotation);
 	}
 
 	public void setCollisionFlags(int category, int mask){
@@ -152,7 +151,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 	
 	public void setColor(Color c){
-		color = c;
+		sprite.setColor(c);
 	}
 	
 	public void setHorizontalVelocity(float v){

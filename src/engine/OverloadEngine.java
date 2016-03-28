@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import graphics.PhysicsDebugDraw;
+import graphics.Renderer;
 
 import java.io.File;
 
@@ -28,6 +29,7 @@ public class OverloadEngine {
 	public static final float aspectRatio = (float)frameWidth / (float)frameHeight;
 	
 	private BaseGame game;
+	private Renderer renderer;
 	private boolean isDebugDrawn = true;
 	private float deltaTime;
 	private long t0, t1; // Frame start/end time
@@ -72,6 +74,10 @@ public class OverloadEngine {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+		
+		if (renderer == null){
+			renderer = Renderer.getInstance();
 		}
 
 		// Create and initialize game
@@ -137,6 +143,7 @@ public class OverloadEngine {
 			GL11.glPopMatrix();
 
 			// Render game and swap buffers
+			renderer.preRender();
 			game.render();
 			
 			// Render debug things
@@ -146,6 +153,7 @@ public class OverloadEngine {
 				frameCounter.update(deltaTime);
 				frameCounter.render();
 			}
+			renderer.postRender();
 			
 			Display.update();
 			//Display.sync(TARGET_FPS);
