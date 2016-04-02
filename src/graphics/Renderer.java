@@ -39,21 +39,18 @@ public class Renderer {
 			newBuffer.put(vbo);
 			vbo = newBuffer;
 			isModified = true;
-			System.out.println("Resizing buffer.. now " + bufferSize);
 		}
 		
 		// If there are any released ids, then return them instead of a new id
 		if (releasedIds.size() > 0){
-			System.out.println("Returning released id..");
 			return releasedIds.remove(releasedIds.size() - 1);
 		}
-		
-		System.out.println("Returning new id " + nextSpriteId);
+
 		return nextSpriteId++;		
 	}
 	
 	public void postRender(){
-		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		//GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 		
@@ -70,9 +67,9 @@ public class Renderer {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 32, 0);
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 32, 8);
-		GL11.glColorPointer(4, GL11.GL_FLOAT, 32, 16);
+		//GL11.glColorPointer(4, GL11.GL_FLOAT, 32, 16);
 
-		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		//GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}

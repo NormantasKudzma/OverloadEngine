@@ -102,16 +102,16 @@ public class SimpleFont extends Entity<Sprite2D> {
 	
 	public void setText(String text) {
 		this.text = text;
-		for (Symbol s : textSymbols){
+		/*for (Symbol s : textSymbols){
 			s.sprite.destroy();
-		}
+		}*/
 		
 		Symbol s;
 		textSymbols.clear();
 		for (int i = 0; i < text.length(); i++) {
 			s = symbolMap.get(text.charAt(i));
 			if (s != null) {
-				textSymbols.add(s.clone());
+				textSymbols.add(s);
 			}
 		}
 	}

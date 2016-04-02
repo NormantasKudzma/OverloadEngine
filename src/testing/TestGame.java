@@ -16,8 +16,13 @@ public class TestGame extends BaseGame{
 	@Override
 	public void init() {
 		super.init();
-		//initBenchmark();
-		initDialogs();
+		initBenchmark();
+		//initDialogs();
+		/*Label l = new Label(this, "01");
+		l.setPosition(Vector2.one);
+		l.setScale(Vector2.one);
+		l.setColor(new Color(1.0f, 0.7f, 1.0f));
+		addEntity(l);*/
 	}
 	
 	private void initBenchmark(){

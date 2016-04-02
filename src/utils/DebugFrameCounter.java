@@ -1,7 +1,5 @@
 package utils;
 
-import java.util.Locale;
-
 import physics.PhysicsBody.EBodyType;
 import dialogs.Label;
 
@@ -13,9 +11,10 @@ public class DebugFrameCounter extends Label{
 	private float debugTime = 0;
 	private float fpsTextUpdate = 0.0f;
 	private float numFrames = 0;
+	private Label fpsText;
 
 	public DebugFrameCounter(){
-		super(null, "00.00 fps");
+		super(null, "00");
 	}
 	
 	@Override
@@ -23,6 +22,11 @@ public class DebugFrameCounter extends Label{
 		super.initEntity(type);
 		setPosition(fpsTextPosition);
 		setScale(fpsTextScale);
+		
+		fpsText = new Label(game, "fps");
+		fpsText.setScale(fpsTextScale);
+		fpsText.setPosition(0.05f, 0.0f);
+		addChild(fpsText);
 	}
 	
 	@Override
@@ -33,8 +37,8 @@ public class DebugFrameCounter extends Label{
 			fpsTextUpdate += deltaTime;
 			
 			// Only set text every once in a while (text is expensive)
-			if (fpsTextUpdate > 0.25f){
-				setText(String.format(Locale.ENGLISH, "%2.2f fps", (numFrames / debugTime)));
+			if (fpsTextUpdate > 0.5f){
+				setText("" + (int)(numFrames / debugTime));
 				fpsTextUpdate = 0.0f;
 				numFrames = 0.0f;
 				debugTime = 0.0f;
@@ -45,5 +49,10 @@ public class DebugFrameCounter extends Label{
 			isFirstFrame = false;
 		}
 	}
-
+	
+	@Override
+	public void render(Vector2 position, Vector2 scale, float rotation) {
+		super.render(position, scale, rotation);
+		fpsText.render();
+	}
 }
