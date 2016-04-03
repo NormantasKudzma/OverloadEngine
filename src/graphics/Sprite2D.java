@@ -11,10 +11,11 @@ import java.io.IOException;
 import org.lwjgl.opengl.GL11;
 
 import physics.Transform;
+import utils.ICloneable;
 import utils.Vector2;
 import engine.IUpdatable;
 
-public class Sprite2D implements IRenderable, IUpdatable, Cloneable {
+public class Sprite2D implements IRenderable, IUpdatable, ICloneable {
 	private Renderer renderer;
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)

@@ -2,7 +2,6 @@ package engine;
 
 import graphics.Color;
 import graphics.IRenderable;
-import graphics.Sprite2D;
 
 import org.jbox2d.dynamics.Fixture;
 
@@ -10,6 +9,7 @@ import physics.ICollidable;
 import physics.PhysicsBody;
 import physics.PhysicsWorld;
 import physics.Transform;
+import utils.ICloneable;
 import utils.Vector2;
 
 public abstract class Entity<S extends IRenderable & IUpdatable> implements ICollidable, IRenderable, IUpdatable, Cloneable {
@@ -47,7 +47,12 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 				clone.isToBeDestroyed = isToBeDestroyed;
 				clone.isVisible = isVisible;
 				clone.lifetime = lifetime;
-				clone.sprite = sprite;
+				if (sprite instanceof ICloneable){
+					clone.sprite = (S)((ICloneable)sprite).clone();
+				}
+				else {
+					clone.sprite = sprite;
+				}
 			}
 		}
 		catch (CloneNotSupportedException e) {

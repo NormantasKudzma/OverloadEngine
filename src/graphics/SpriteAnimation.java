@@ -1,10 +1,11 @@
 package graphics;
 
 import physics.Transform;
+import utils.ICloneable;
 import utils.Vector2;
 import engine.IUpdatable;
 
-public class SpriteAnimation implements IRenderable, IUpdatable{
+public class SpriteAnimation implements IRenderable, IUpdatable, ICloneable{
 	protected Sprite2D spriteArray[][];
 	protected int currentFrame = 0;
 	protected int currentState = 0;
@@ -17,6 +18,18 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 
 	}
 
+	public SpriteAnimation clone(){
+		SpriteAnimation clone = new SpriteAnimation();
+		clone.spriteArray = spriteArray;	// Should sprites be cloned here?
+		clone.currentFrame = currentFrame;
+		clone.currentState = currentState;
+		clone.numStates = numStates;
+		clone.frameDelay = frameDelay;
+		clone.timePassed = timePassed;
+		clone.isPaused = isPaused;
+		return clone;
+	}
+	
 	public void destroy(){
 		for (int i = 0; i < spriteArray.length; ++i){
 			for (int j = 0; j < spriteArray[i].length; ++j){
@@ -79,5 +92,4 @@ public class SpriteAnimation implements IRenderable, IUpdatable{
 			currentFrame = (currentFrame + 1) % spriteArray[currentState].length;
 		}
 	}
-
 }

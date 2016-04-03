@@ -14,13 +14,17 @@ import org.jbox2d.dynamics.contacts.Contact;
 
 public class PhysicsWorld implements ContactListener {
 	private static final PhysicsWorld INSTANCE = new PhysicsWorld();
-	private static ArrayList<PhysicsBody> bodyList = new ArrayList<PhysicsBody>();
+	private ArrayList<PhysicsBody> bodyList = new ArrayList<PhysicsBody>();
 	private World world;
 	
 	private PhysicsWorld(){
 		world = new World(new Vec2());
 		world.setContactListener(this);
 		world.setAllowSleep(true);
+	}
+	
+	public void addBody(PhysicsBody body){
+		bodyList.add(body);
 	}
 	
 	public static PhysicsWorld getInstance(){

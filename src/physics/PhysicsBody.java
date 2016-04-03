@@ -167,6 +167,8 @@ public class PhysicsBody {
 					clone.setCollisionFlags(filter.maskBits, EMaskType.SET);
 				}
 			}
+			
+			PhysicsWorld.getInstance().addBody(clone);
 			return clone;
 		}
 		catch (Exception e){
