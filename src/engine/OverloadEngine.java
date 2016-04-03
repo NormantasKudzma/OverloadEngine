@@ -23,6 +23,7 @@ import controls.LwjglMouseController;
 
 public class OverloadEngine {
 	public static final int TARGET_FPS = 60;
+	public static final int TARGET_BPP = 32;
 	
 	public static final int frameHeight = 720;
 	public static final int frameWidth = 1280;
@@ -69,7 +70,23 @@ public class OverloadEngine {
 		try {
 			Display.setTitle(title);
 			Display.setResizable(false);
-			Display.setDisplayMode(new DisplayMode(frameWidth, frameHeight));
+			Display.setFullscreen(true);
+			DisplayMode displayModes[] = Display.getAvailableDisplayModes();
+			DisplayMode bestMatch = null;
+			for (DisplayMode d : displayModes){
+				if (d.getFrequency() == TARGET_FPS
+					&& d.getWidth() == frameWidth
+					&& d.getHeight() == frameHeight
+					&& d.getBitsPerPixel() == TARGET_BPP){
+					bestMatch = d;
+					break;
+				}
+			}
+			if (bestMatch == null){
+				System.out.println("No display mode with current parameters was found. Creating default one.");
+				bestMatch = new DisplayMode(frameWidth, frameHeight);
+			}
+			Display.setDisplayMode(bestMatch);
 			Display.create();
 		}
 		catch (Exception e) {

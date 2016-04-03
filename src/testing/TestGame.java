@@ -16,7 +16,7 @@ public class TestGame extends BaseGame{
 	@Override
 	public void init() {
 		super.init();
-		initBenchmark();
+		//initBenchmark();
 		//initDialogs();
 		/*Label l = new Label(this, "01");
 		l.setPosition(Vector2.one);
