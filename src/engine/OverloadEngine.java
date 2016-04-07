@@ -32,6 +32,7 @@ public class OverloadEngine {
 	private BaseGame game;
 	private Renderer renderer;
 	private boolean isDebugDrawn = true;
+	private boolean isFullscreen = true;
 	private float deltaTime;
 	private long t0, t1; // Frame start/end time
 	private DebugFrameCounter frameCounter;
@@ -70,7 +71,7 @@ public class OverloadEngine {
 		try {
 			Display.setTitle(title);
 			Display.setResizable(false);
-			Display.setFullscreen(true);
+			Display.setFullscreen(isFullscreen);
 			DisplayMode displayModes[] = Display.getAvailableDisplayModes();
 			DisplayMode bestMatch = null;
 			for (DisplayMode d : displayModes){
@@ -185,6 +186,10 @@ public class OverloadEngine {
 	
 	public void setDebugDraw(boolean isDebugDrawn){
 		this.isDebugDrawn = isDebugDrawn;
+	}
+	
+	public void setFullscreen(boolean fullscreen){
+		isFullscreen = fullscreen;
 	}
 	
 	public void setGame(BaseGame g){

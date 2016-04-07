@@ -1,5 +1,7 @@
 package engine;
 
+import graphics.Layer;
+
 import java.util.ArrayList;
 
 import physics.PhysicsWorld;
@@ -15,14 +17,13 @@ public class BaseGame implements IUpdatable, IClickable {
 
 	protected SoundManager<?> soundManager = new SoundManager<String>();
 	protected MusicManager<?> musicManager = new MusicManager<String>();
-	protected ArrayList<Integer> destroyList = new ArrayList<Integer>();
-	protected ArrayList<Entity> entityList = new ArrayList<Entity>();
 	protected ArrayList<BaseDialog> dialogList = new ArrayList<BaseDialog>();
+	protected ArrayList<Layer> layers = new ArrayList<Layer>();
 	protected PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
 	private boolean isGameOver = false;
 
 	public BaseGame() {
-
+		layers.add(new Layer(Layer.DEFAULT_NAME, Layer.DEFAULT_INDEX));
 	}
 
 	public void addDialog(BaseDialog d){
@@ -30,7 +31,38 @@ public class BaseGame implements IUpdatable, IClickable {
 	}
 	
 	public void addEntity(Entity<?> e){
-		entityList.add(e);
+		addEntity(e, Layer.DEFAULT_NAME);
+	}
+	
+	public void addEntity(Entity<?> e, String layerName){
+		for (Layer l : layers){
+			if (l.getName().equalsIgnoreCase(layerName)){
+				l.addEntity(e);
+				break;
+			}
+		}
+	}
+	
+	public void addLayer(Layer layer){
+		int index = -1;
+		
+		for (int i = 0; i < layers.size(); ++i){
+			Layer l = layers.get(i);
+			if (layer.getIndex() > l.getIndex()){
+				index = i;
+				break;
+			}
+		}
+		
+		if (index == -1){
+			index = layers.size() - 1;
+		}
+		
+		layers.add(index, layer);
+	}
+	
+	public void addLayer(String layerName, int index){
+		addLayer(new Layer(layerName, index));
 	}
 	
 	/**
@@ -38,10 +70,10 @@ public class BaseGame implements IUpdatable, IClickable {
 	 * that must be released, should be released here.
 	 */
 	public void destroy() {
-		for (Entity<?> i : entityList) {
-			i.destroy();
+		for (int i = 0; i < layers.size(); ++i){
+			layers.get(i).destroy();
 		}
-		entityList.clear();
+		layers.clear();
 	}
 
 	public BaseDialog getDialog(String name){
@@ -54,8 +86,24 @@ public class BaseGame implements IUpdatable, IClickable {
 		return null;
 	}
 	
-	public ArrayList<Entity> getEntityList(){
-		return entityList;
+	public Layer getLayer(int index){
+		for (Layer l : layers){
+			if (l.getIndex() == index){
+				return l;
+			}
+		}
+		
+		return null;
+	}
+	
+	public Layer getLayer(String layerName){
+		for (Layer l : layers){
+			if (l.getName().equalsIgnoreCase(layerName)){
+				return l;
+			}
+		}
+		
+		return null;
 	}
 	
 	public MusicManager<?> getMusicManager(){
@@ -92,9 +140,35 @@ public class BaseGame implements IUpdatable, IClickable {
 	}
 
 	protected void renderGame(){
-		for (int i = 0 ; i < entityList.size(); ++i){
-			entityList.get(i).render();
+		for (int i = 0 ; i < layers.size(); ++i){
+			layers.get(i).render();
 		}
+	}
+	
+	public Layer removeLayer(int index){
+		Layer l = null;
+		for (int i = 0; i < layers.size(); ++i){
+			l = layers.get(i);
+			if (l.getIndex() == index){
+				layers.remove(l);
+				return l;
+			}
+		}
+		
+		return null;
+	}
+	
+	public Layer removeLayer(String layerName){
+		Layer l = null;
+		for (int i = 0; i < layers.size(); ++i){
+			l = layers.get(i);
+			if (l.getName().equalsIgnoreCase(layerName)){
+				layers.remove(l);
+				return l;
+			}
+		}
+		
+		return null;
 	}
 	
 	public void setDialogVisible(String name, boolean isVisible){
@@ -135,22 +209,12 @@ public class BaseGame implements IUpdatable, IClickable {
 		physicsWorld.getWorld().step(deltaTime, NUM_VELOCITY_ITERATIONS, NUM_POSITION_ITERATIONS);
 
 		// Update all entities
-		Entity<?> e;
-		for (int i = 0; i < entityList.size(); i++) {
-			e = entityList.get(i);
-			e.update(deltaTime);
-			if (e.isDestroyed()) {
-				destroyList.add(i);
-			}
+		Layer layer = null;
+		for (int i = 0; i < layers.size(); i++) {
+			layer = layers.get(i);
+			layer.update(deltaTime);
+			layer.destroyMarkedEntities();
 		}
-
-		// Delete entities which are marked for destruction 
-		// (iterate in reverse order)
-		for (int i = destroyList.size() - 1; i >= 0; --i){
-			entityList.get(destroyList.get(i)).destroy();
-			entityList.remove((int)destroyList.get(i));
-		}
-		destroyList.clear();
 	}
 	
 	public boolean isGameOver(){

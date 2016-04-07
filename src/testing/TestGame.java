@@ -2,6 +2,10 @@ package testing;
 
 import utils.OverloadRandom;
 import utils.Vector2;
+import controls.AbstractController;
+import controls.ControllerEventListener;
+import controls.ControllerManager;
+import controls.EController;
 import dialogs.BaseDialog;
 import dialogs.CheckBox;
 import dialogs.Label;
@@ -23,8 +27,29 @@ public class TestGame extends BaseGame{
 		l.setScale(Vector2.one);
 		l.setColor(new Color(1.0f, 0.7f, 1.0f));
 		addEntity(l);*/
+		setUpController();
 	}
 	
+	private void setUpController() {
+		final Label l = new Label(this, "00000000");
+		l.setPosition(Vector2.one);
+		l.setScale(new Vector2(4.0f, 4.0f));
+		addEntity(l);
+		
+		AbstractController controller = ControllerManager.getInstance().getController(EController.USBCONTROLLER, 0);
+		if (controller != null){
+			ControllerEventListener listener = new ControllerEventListener(){
+				@Override
+				public void handleEvent(long eventArg, Vector2 pos, int... params) {
+					l.setText("" + eventArg);
+				}
+			};
+			
+			controller.setUnmaskedCallback(listener);
+			controller.startController();
+		}
+	}
+
 	private void initBenchmark(){
 		for (int i = 0; i < 40; ++i){
 			StringBuilder builder = new StringBuilder();

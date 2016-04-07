@@ -20,7 +20,15 @@ public class SpriteAnimation implements IRenderable, IUpdatable, ICloneable{
 
 	public SpriteAnimation clone(){
 		SpriteAnimation clone = new SpriteAnimation();
-		clone.spriteArray = spriteArray;	// Should sprites be cloned here?
+		Sprite2D sprites[][] = new Sprite2D[spriteArray.length][];
+		for (int i = 0; i < spriteArray.length; ++i){
+			Sprite2D state[] = new Sprite2D[spriteArray[i].length];
+			for (int j = 0; j < spriteArray[i].length; ++j){
+				state[j] = spriteArray[i][j].clone();
+			}
+			sprites[i] = state;
+		}
+		clone.setSpriteArray(sprites);
 		clone.currentFrame = currentFrame;
 		clone.currentState = currentState;
 		clone.numStates = numStates;
