@@ -8,6 +8,7 @@ public class EngineTestMain {
 		TestGame game = new TestGame();
 		engine.setGame(game);
 		//engine.setDebugDraw(false);
+		engine.setFullscreen(false);
 		engine.run();
 	}
 }

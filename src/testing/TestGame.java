@@ -42,6 +42,7 @@ public class TestGame extends BaseGame{
 				@Override
 				public void handleEvent(long eventArg, Vector2 pos, int... params) {
 					l.setText("" + eventArg);
+					System.out.println(eventArg);
 				}
 			};
 			

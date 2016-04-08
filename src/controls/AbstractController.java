@@ -3,8 +3,8 @@ package controls;
 import java.util.ArrayList;
 
 public abstract class AbstractController implements IController {
-	public static final long DEFAULT_POLL_TIMEOUT_MLS = 50; // Poll sleep time in miliseconds
-	public static final long DEFAULT_POLL_TIMEOUT_MCS = 1000000; // Poll sleep time in microseconds	
+	public static final long DEFAULT_POLL_TIMEOUT_MLS = 20; // Poll sleep time in miliseconds
+	public static final long DEFAULT_POLL_TIMEOUT_MCS = 20000; // Poll sleep time in microseconds	
 
 	protected ControllerKeybind defaultCallback;
 	protected long defaultDataValue;
@@ -85,6 +85,7 @@ public abstract class AbstractController implements IController {
 
 		isActive = false;
 		isStopped = true;
+		destroyController();
 	}
 
 	protected abstract void destroyController();

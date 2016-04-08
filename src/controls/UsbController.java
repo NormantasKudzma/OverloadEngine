@@ -28,6 +28,7 @@ public class UsbController extends AbstractController {
 	private DeviceHandle deviceHandle = new DeviceHandle();
 	private boolean isDeviceAttachedToKernel;
 	private Pair<Short, Short> productVendor;
+	private long lastBitmask = 0;
 
 	public UsbController(String bp, Context ctx, Device device,
 			Pair<Short, Short> pv) {
@@ -89,17 +90,16 @@ public class UsbController extends AbstractController {
 			@Override
 			public void run() {
 				while (isActive) {
-					int result = LibUsb.waitForEvent(context, DEFAULT_POLL_TIMEOUT_MCS);
+					/*int result = LibUsb.handleEvents(context);
 					if (result != LibUsb.SUCCESS) {
 						throw new LibUsbException("Unable to handle events", result);
 					}
-
-					read(deviceHandle, dataLength);
+*/
+					read();
 				}
 				destroyController();
 			}
 		};
-		defaultDataValue = read(deviceHandle, dataLength);
 		eventThread.start();
 	}
 
@@ -117,37 +117,43 @@ public class UsbController extends AbstractController {
 	}
 
 	public void pollController() {
-		// STUB
-		// TODO: poll controller manually
+		if (lastBitmask != 0) {
+			if (defaultCallback != null) {
+				defaultCallback.getCallback().handleEvent(lastBitmask, null);
+			}
+
+			if (oneClickCallback != null) {
+				oneClickCallback.getCallback().handleEvent(lastBitmask, null);
+				oneClickCallback = null;
+			}
+
+			for (ControllerKeybind bind : keyBindings) {
+				if ((bind.getBitmask() & lastBitmask) != 0) {
+					bind.getCallback().handleEvent(lastBitmask, null);
+				}
+			}
+		}
+		lastBitmask = 0;
 	}
 
-	private long read(DeviceHandle handle, int size) {
+	private long read() {
 		int result = LibUsb.bulkTransfer(deviceHandle, endpoint, buffer, transferred, DEFAULT_POLL_TIMEOUT_MCS);
 		if (result != LibUsb.SUCCESS) {
 			throw new LibUsbException("Unable to read data", result);
 		}
 
 		long bitmask = 0;
-		if (buffer.remaining() == dataLength) {
+		if (transferred.get() == dataLength) {
 			bitmask = buffer.getLong() ^ defaultDataValue;
-			if (bitmask != 0) {
-				if (defaultCallback != null) {
-					defaultCallback.getCallback().handleEvent(bitmask, null);
-				}
-
-				if (oneClickCallback != null) {
-					oneClickCallback.getCallback().handleEvent(bitmask, null);
-					oneClickCallback = null;
-				}
-
-				for (ControllerKeybind bind : keyBindings) {
-					if ((bind.getBitmask() & bitmask) != 0) {
-						bind.getCallback().handleEvent(bitmask, null);
-					}
-				}
+			
+			if (defaultDataValue == 0){
+				defaultDataValue = bitmask;
 			}
+			
+			lastBitmask = bitmask;
 		}
 
+		transferred.rewind();
 		buffer.rewind();
 		return bitmask;
 	}
