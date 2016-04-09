@@ -14,7 +14,6 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 	protected Component parent;
 	protected ArrayList<Component> children = new ArrayList<Component>(1);
 	protected String name;
-	protected boolean isVisible = true;
 	protected Component lastClickable;
 	
 	public Component(BaseGame game){
@@ -29,6 +28,10 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 			children.add(c);
 			c.setPosition(c.getPosition().add(getPosition()));
 		}
+	}
+	
+	public void clickFunction(){
+		//
 	}
 	
 	public ArrayList<Component> getChildren(){
@@ -87,7 +90,7 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 		boolean ret = isMouseOver(pos);
 		
 		if (lastClickable != null){
-			lastClickable.onClick(pos);
+			lastClickable.clickFunction();
 		}
 		
 		return ret;

@@ -23,7 +23,9 @@ public class Button extends SpriteComponent{
 		super(game);
 		callbackObject = obj;
 		callbackMethod = m;
-		label = new Label(game, "");
+		label = new Label(game, text == null ? "" : text);
+		label.setPosition(Vector2.one);
+		addChild(label);
 		setScale(Vector2.one);
 		setVisible(true);
 	}
@@ -58,11 +60,13 @@ public class Button extends SpriteComponent{
 		try {
 			if (callbackMethod != null && callbackObject != null){
 				callbackMethod.invoke(callbackObject);
-				return ret;
+			}
+			else {
+				clickFunction();
 			}
 		}
 		catch (Exception e) {
-			return ret;		
+			e.printStackTrace();
 		}
 		return ret;
 	}
@@ -78,7 +82,7 @@ public class Button extends SpriteComponent{
 	@Override
 	public void setScale(Vector2 scale) {
 		float min = Math.min(scale.x, scale.y);
-		fontScale = (new Vector2(min, min)).mul(0.16f);
+		fontScale = (new Vector2(min, min)).mul(7.0f);
 		label.setScale(fontScale);
 		super.setScale(scale);
 	}

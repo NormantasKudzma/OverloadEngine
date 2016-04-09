@@ -31,14 +31,8 @@ public class CheckBox extends SpriteComponent{
 	}
 	
 	@Override
-	public boolean onClick(Vector2 pos) {
-		if (!isMouseOver(pos)){
-			return false;
-		}
-		
+	public void clickFunction() {
 		isChecked = !isChecked;
 		setState(isChecked ? EUIState.CLICKED : EUIState.NORMAL);
-		
-		return true;
 	}
 }

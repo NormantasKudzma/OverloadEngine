@@ -13,6 +13,8 @@ import org.lwjgl.LWJGLUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.PixelFormat;
 
 import utils.DebugFrameCounter;
 import utils.Vector2;
@@ -89,6 +91,7 @@ public class OverloadEngine {
 			}
 			Display.setDisplayMode(bestMatch);
 			Display.create();
+			Display.setVSyncEnabled(true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -130,16 +133,15 @@ public class OverloadEngine {
 
 	private void loop() {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glViewport(0, 0, frameWidth, frameHeight);
+		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 
+		GL11.glViewport(0, 0, frameWidth, frameHeight);
 		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		Display.setVSyncEnabled(true);
 
 		t0 = t1 = System.currentTimeMillis();
 
@@ -174,7 +176,6 @@ public class OverloadEngine {
 			renderer.postRender();
 			
 			Display.update();
-			//Display.sync(TARGET_FPS);
 		}
 	}
 
