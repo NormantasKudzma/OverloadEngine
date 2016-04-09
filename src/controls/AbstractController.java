@@ -85,7 +85,6 @@ public abstract class AbstractController implements IController {
 
 		isActive = false;
 		isStopped = true;
-		destroyController();
 	}
 
 	protected abstract void destroyController();

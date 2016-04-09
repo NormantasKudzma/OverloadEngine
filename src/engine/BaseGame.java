@@ -65,9 +65,22 @@ public class BaseGame implements IUpdatable, IClickable {
 		addLayer(new Layer(layerName, index));
 	}
 	
+	public void clearLayer(Layer l){
+		clearLayer(l.getName());
+	}
+	
+	public void clearLayer(String layerName){
+		for (Layer l : layers){
+			if (l.getName().equalsIgnoreCase(layerName)){
+				l.clear();
+				break;
+			}
+		}
+	}
+	
 	/**
-	 * Game destruction method. This method will be called last. Any resources
-	 * that must be released, should be released here.
+	 * Game destruction method. This method will be called last. Any acquired resources
+	 * should be released here.
 	 */
 	public void destroy() {
 		for (int i = 0; i < layers.size(); ++i){

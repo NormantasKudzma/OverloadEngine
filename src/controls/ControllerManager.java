@@ -31,20 +31,12 @@ public class ControllerManager {
 
 	public void destroyManager() {
 		for (AbstractController c : allControllers) {
-			c.stopController();
+			c.destroyController();
 		}
-
-		if (usbControllerList != null) {
-			for (UsbController controller : usbControllerList) {
-				controller.stopController();
-			}
-		}
+		
 		if (usbDeviceList != null) {
 			LibUsb.freeDeviceList(usbDeviceList, true);
 			LibUsb.exit(libUsbContext);
-		}
-		if (lwjglKeyboardController != null) {
-			lwjglKeyboardController.destroyController();
 		}
 	}
 

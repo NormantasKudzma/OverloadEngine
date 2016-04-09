@@ -90,20 +90,23 @@ public class UsbController extends AbstractController {
 			@Override
 			public void run() {
 				while (isActive) {
-					/*int result = LibUsb.handleEvents(context);
-					if (result != LibUsb.SUCCESS) {
-						throw new LibUsbException("Unable to handle events", result);
-					}
-*/
 					read();
 				}
-				destroyController();
 			}
 		};
 		eventThread.start();
 	}
 
 	protected void destroyController() {
+		stopController();
+		
+		try {
+			eventThread.join();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		
 		if (deviceHandle != null) {
 			LibUsb.releaseInterface(deviceHandle, interfaceNum);
 			LibUsb.close(deviceHandle);

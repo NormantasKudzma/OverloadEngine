@@ -25,14 +25,18 @@ public class Layer implements IRenderable, IUpdatable {
 		entityList.add(e);
 	}
 	
+	public void clear(){
+		entityList.clear();
+		
+		destroyMarkedEntities();
+	}
+	
 	@Override
 	public void destroy() {
 		for (Entity<?> i : entityList) {
 			i.destroy();
 		}
-		entityList.clear();
-		
-		destroyMarkedEntities();
+		clear();
 	}
 	
 	public void destroyMarkedEntities(){
