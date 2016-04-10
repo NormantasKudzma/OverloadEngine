@@ -13,17 +13,17 @@ public class Button extends SpriteComponent{
 	protected Object callbackObject;
 	protected Method callbackMethod;
 	protected Vector2 fontScale = Vector2.one;
-	protected Label label = new Label(game, "");
+	protected Label label;
 	
 	public Button(){
-		this(null, null, null, "");
+		this(null, null, null, null);
 	}
 	
 	public Button(BaseGame game, Object obj, Method m, String text){
 		super(game);
 		callbackObject = obj;
 		callbackMethod = m;
-		label = new Label(game, text == null ? "" : text);
+		label = new Label(game, text == null ? " " : text);
 		label.setPosition(Vector2.one);
 		addChild(label);
 		setScale(Vector2.one);
