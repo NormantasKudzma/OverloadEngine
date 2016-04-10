@@ -50,7 +50,7 @@ public class Renderer {
 	}
 	
 	public void postRender(){
-		//GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 		
@@ -67,9 +67,9 @@ public class Renderer {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
 		GL11.glVertexPointer(2, GL11.GL_FLOAT, 32, 0);
 		GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 32, 8);
-		//GL11.glColorPointer(4, GL11.GL_FLOAT, 32, 16);
+		GL11.glColorPointer(4, GL11.GL_FLOAT, 32, 16);
 
-		//GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}
@@ -96,7 +96,7 @@ public class Renderer {
 		}
 	}
 	
-	public void setVertexPosition(int id, Vector2 pos){
+	public void setVertexData(int id, Vector2 pos){
 		if (pos == null || id < 0 || id >= nextSpriteId){
 			return;
 		}
@@ -110,7 +110,7 @@ public class Renderer {
 			.put(25 + offset, pos.y);
 	}
 	
-	public void setTexturePosition(int id, Vector2 tl, Vector2 br){
+	public void setTextureData(int id, Vector2 tl, Vector2 br){
 		if (tl == null || br == null || id < 0 || id >= nextSpriteId){
 			return;
 		}

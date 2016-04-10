@@ -31,9 +31,13 @@ public class TestGame extends BaseGame{
 	}
 	
 	private void setUpController() {
+		Label test = new Label(this, "4444");
+		test.setPosition(new Vector2(1.0f, 1.5f));
+		addEntity(test);
+		
 		final Label l = new Label(this, "00000000");
 		l.setPosition(Vector2.one);
-		l.setScale(new Vector2(4.0f, 4.0f));
+		l.setScale(new Vector2(1.0f, 1.0f));
 		addEntity(l);
 		
 		AbstractController controller = ControllerManager.getInstance().getController(EController.USBCONTROLLER, 0);

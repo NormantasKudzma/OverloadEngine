@@ -160,7 +160,7 @@ public class Sprite2D implements IRenderable, IUpdatable, ICloneable {
 			botRight = bottomRightCorner;
 		}
 		
-		renderer.setTexturePosition(id, topLeft, botRight);
+		renderer.setTextureData(id, topLeft, botRight);
 		setInternalScale(texture.getImageWidth(), texture.getImageHeight());
 	}
 	
@@ -172,7 +172,7 @@ public class Sprite2D implements IRenderable, IUpdatable, ICloneable {
 	
 	public void setInternalScale(Vector2 v){
 		internalScale = v;
-		renderer.setVertexPosition(id, internalScale);
+		renderer.setVertexData(id, internalScale);
 	}
 	
 	@Override

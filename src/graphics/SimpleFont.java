@@ -1,131 +1,89 @@
 package graphics;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import javax.imageio.ImageIO;
 
 import physics.PhysicsBody;
-import utils.ConfigManager;
-import utils.Paths;
-import utils.Vector2;
 import engine.Entity;
 
 public class SimpleFont extends Entity<Sprite2D> {
-	private static final float MAGIC_SCALE = 1.4f;
-	private static final HashMap<Character, Symbol> defaultSymbolMap = new HashMap<Character, Symbol>(128);
+	public static final Font DEFAULT_FONT = new Font("Serif", Font.PLAIN, 32);
 
 	private String text;
-	private Symbol firstSymbol;
-	private HashMap<Character, Symbol> symbolMap;
-	private ArrayList<Symbol> textSymbols = new ArrayList<Symbol>();
+	private Font font;
+	
+	private BufferedImage measureImage;
+	private Graphics measureGraphics;
+	private FontRenderContext frc;
 
 	static {
-		HashMap<Character, Symbol> map = createFont(Paths.DEFAULT_FONT_IMG, Paths.DEFAULT_FONT_JSON);
 		
-		Iterator<Entry<Character, Symbol>> it = map.entrySet().iterator();
-		while (it.hasNext()){
-			Map.Entry<Character, Symbol> pair = (Map.Entry<Character, Symbol>)it.next();
-			defaultSymbolMap.put(pair.getKey(), pair.getValue());
-	        it.remove();
-		}
 	}
-
+	
 	public SimpleFont(String text) {
-		this(text, defaultSymbolMap);
+		this(text, DEFAULT_FONT);
 	}
 	
-	public SimpleFont(String text, String fontImg, String fontJson){
-		this(text, createFont(fontImg, fontJson));
-	}
-	
-	public SimpleFont(String text, HashMap<Character, Symbol> font){
+	public SimpleFont(String text, Font f){
 		super(null);
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
-		symbolMap = font;
-		firstSymbol = font.values().iterator().next().clone();
+		setFont(f);
 		setText(text);
 	}
 	
-	public static HashMap<Character, Symbol> createFont(String fontImg, String fontJson){
-		HashMap<Character, Symbol> map = new HashMap<Character, Symbol>();
-		try {
-			Sprite2D sheet = new Sprite2D(fontImg);
-
-			JSONObject json = ConfigManager.loadConfigAsJson(fontJson);
-			char chr;
-			int x, y, w, h;
-			
-			Vector2 offset;
-			JSONObject symbolJson = null;
-			JSONArray symbolsJsonArray = json.getJSONArray("symbols");
-			for (int i = 0; i < symbolsJsonArray.length(); ++i) {
-				symbolJson = symbolsJsonArray.getJSONObject(i);
-				chr = symbolJson.getString("symbol").charAt(0);
-				x = symbolJson.getInt("x");
-				y = symbolJson.getInt("y");
-				w = symbolJson.getInt("w");
-				h = symbolJson.getInt("h");
-				if (symbolJson.has("offset")) {
-					JSONArray offsetJson = symbolJson.getJSONArray("offset");
-					offset = new Vector2(offsetJson.getInt(0), offsetJson.getInt(1));
-					Vector2.pixelCoordsToNormal(offset);
-				}
-				else {
-					offset = Vector2.zero;
-				}
-				Symbol symbol = new Symbol(Sprite2D.getSpriteFromSheet(x, y, w, h, sheet), offset);
-				map.put(chr, symbol);
-			}
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		return map;
-	}
-
 	public String getText() {
 		return text;
 	}
-
-	public void setColor(Color c){
-		Symbol s = null;
-		for (int i = 0; i < textSymbols.size(); i++) {
-			s = textSymbols.get(i);
-			s.sprite.setColor(c);
+	
+	public void setFont(Font f){
+		if (font != null && f.equals(font)){
+			return;
 		}
+		
+		font = f;
+		
+		measureImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		measureGraphics = measureImage.getGraphics();
+		measureGraphics.setFont(f);	
+		frc = measureGraphics.getFontMetrics().getFontRenderContext();
 	}
 	
 	public void setText(String text) {
+		if (this.text != null && text.equals(this.text)){
+			return;
+		}
+		
 		this.text = text;
-		/*for (Symbol s : textSymbols){
-			s.sprite.destroy();
+
+		if (sprite != null){
+			sprite.destroy();
+		}
+
+		// Prerender text to a texture using default java tools, 
+		// because dealing with fonts is a nightmare
+		GlyphVector gv = font.createGlyphVector(frc, text);
+		Rectangle rect = gv.getVisualBounds().getBounds();
+		BufferedImage textImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = textImage.getGraphics();
+		g.setFont(font);
+		g.setColor(java.awt.Color.WHITE);
+		g.drawString(text, -rect.x, -rect.y);
+
+		// For debugging
+		/*try {
+			ImageIO.write(textImage, "png", new File("C:\\Users\\Nor-Vartotojas\\Desktop\\textimage.png"));
+		}
+		catch (Exception e){
+			e.printStackTrace();
 		}*/
 		
-		Symbol s;
-		textSymbols.clear();
-		for (int i = 0; i < text.length(); i++) {
-			s = symbolMap.get(text.charAt(i));
-			if (s != null) {
-				textSymbols.add(s);
-			}
-		}
-	}
-	
-	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation) {
-		float step = firstSymbol.sprite.getHalfSize().x * MAGIC_SCALE * scale.x;
-		Vector2 internalPos = position.copy().add(-step * 0.5f * text.length() + step * 0.5f, 0);
-		Symbol s;
-		for (int i = 0; i < textSymbols.size(); i++) {
-			s = textSymbols.get(i);
-			internalPos.y = s.offset.y * scale.y * 1.5f + position.y;
-			s.sprite.render(internalPos, scale, rotation);
-			internalPos.x += step;
-		}
+		sprite = new Sprite2D(TextureLoader.getInstance().getTexture(textImage));
 	}
 }

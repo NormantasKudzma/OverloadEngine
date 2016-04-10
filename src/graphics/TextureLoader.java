@@ -143,46 +143,22 @@ public class TextureLoader {
 			return tex;
 		}
 
-		tex = getTexture(resourceName, GL_TEXTURE_2D, // target
-				GL_RGBA, // dst pixel format
-				GL11.GL_NEAREST, // min filter (unused)
-				GL11.GL_NEAREST);
+		BufferedImage bufferedImage = loadImage(resourceName);
+		tex = getTexture(bufferedImage);
 
 		table.put(resourceName, tex);
 		
 		return tex;
 	}
 
-	/**
-	 * Load a texture into OpenGL from a image reference on disk.
-	 * 
-	 * @param resourceName
-	 *            The location of the resource to load
-	 * @param target
-	 *            The GL target to load the texture against
-	 * @param dstPixelFormat
-	 *            The pixel format of the screen
-	 * @param minFilter
-	 *            The minimising filter
-	 * @param magFilter
-	 *            The magnification filter
-	 * @return The loaded texture
-	 * @throws IOException
-	 *             Indicates a failure to access the resource
-	 */
-	public Texture getTexture(String resourceName, int target,
-			int dstPixelFormat, int minFilter, int magFilter)
-			throws IOException {
-		int srcPixelFormat;
-
-		// create the texture ID for this texture
+	public Texture getTexture(BufferedImage bufferedImage){
+		int srcPixelFormat = -1;
 		int textureID = createTextureID();
-		Texture texture = new Texture(target, textureID);
+		Texture texture = new Texture(GL_TEXTURE_2D, textureID);
 
 		// bind this texture
-		glBindTexture(target, textureID);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		BufferedImage bufferedImage = loadImage(resourceName);
 		texture.setWidth(bufferedImage.getWidth());
 		texture.setHeight(bufferedImage.getHeight());
 
@@ -195,13 +171,11 @@ public class TextureLoader {
 		// convert that image into a byte buffer of texture data
 		ByteBuffer textureBuffer = convertImageData(bufferedImage, texture);
 
-		if (target == GL_TEXTURE_2D) {
-			glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
-			glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilter);
-		}
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
 		// produce a texture from the byte buffer
-		glTexImage2D(target, 0, dstPixelFormat,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 				get2Fold(bufferedImage.getWidth()),
 				get2Fold(bufferedImage.getHeight()), 0, srcPixelFormat,
 				GL_UNSIGNED_BYTE, textureBuffer);
