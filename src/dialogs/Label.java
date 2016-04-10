@@ -41,6 +41,8 @@ public class Label extends Component{
 	
 	@Override
 	public void render(Vector2 position, Vector2 scale, float rotation) {
-		font.render(position, scale, rotation);
+		if (isVisible){
+			font.render(position, scale, rotation);
+		}
 	}
 }
