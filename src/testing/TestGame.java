@@ -1,5 +1,6 @@
 package testing;
 
+import utils.FastMath;
 import utils.OverloadRandom;
 import utils.Vector2;
 import controls.AbstractController;
@@ -28,10 +29,14 @@ public class TestGame extends BaseGame{
 		l.setColor(new Color(1.0f, 0.7f, 1.0f));
 		addEntity(l);*/
 		setUpController();
+		
+		System.out.println("next power : 45 - " + FastMath.nextPowerOfTwo(45));
+		System.out.println("next power : 78 - " + FastMath.nextPowerOfTwo(78));
+		System.out.println("next power : 255 - " + FastMath.nextPowerOfTwo(255));
 	}
 	
 	private void setUpController() {
-		Label test = new Label(this, "4444");
+		final Label test = new Label(this, "4444");
 		test.setPosition(new Vector2(1.0f, 1.5f));
 		addEntity(test);
 		
@@ -52,6 +57,27 @@ public class TestGame extends BaseGame{
 			
 			controller.setUnmaskedCallback(listener);
 			controller.startController();
+		}
+		
+		AbstractController keyboard = ControllerManager.getInstance().getController(EController.LWJGLKEYBOARDCONTROLLER);
+		if (keyboard != null){
+			ControllerEventListener left = new ControllerEventListener() {				
+				@Override
+				public void handleEvent(long eventArg, Vector2 pos, int... params) {
+					test.setPosition(test.getPosition().add(-0.001f, 0.0f));
+				}
+			};
+			keyboard.addKeybind(203, left);
+			
+			ControllerEventListener right = new ControllerEventListener() {				
+				@Override
+				public void handleEvent(long eventArg, Vector2 pos, int... params) {
+					test.setPosition(test.getPosition().add(0.001f, 0.0f));
+				}
+			};
+			keyboard.addKeybind(205, right);
+			
+			keyboard.startController();
 		}
 	}
 

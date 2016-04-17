@@ -20,8 +20,6 @@ import engine.Entity;
 /**
  * Wrapper for box2d Body class.
  * 
- * @author Nor-Vartotojas
- * 
  */
 public class PhysicsBody {
 	/**
@@ -86,10 +84,7 @@ public class PhysicsBody {
 		Vec2 pos2 = position.toVec2();
 
 		PolygonShape polygon = new PolygonShape();
-		polygon.setAsBox(size2.x, size2.y);
-		if (position != null) {
-			polygon.centroid(new org.jbox2d.common.Transform(pos2, new Rot(rotation)));
-		}
+		polygon.setAsBox(size2.x, size2.y, pos2, rotation);
 
 		attachCollider(polygon, isSensor);
 	}

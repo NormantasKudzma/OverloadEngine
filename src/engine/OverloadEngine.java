@@ -1,9 +1,5 @@
 package engine;
 
-import static org.lwjgl.opengl.GL11.GL_CLAMP;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import graphics.PhysicsDebugDraw;
 import graphics.Renderer;
 
@@ -140,8 +136,8 @@ public class OverloadEngine {
 		GL11.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 
 		GL11.glViewport(0, 0, frameWidth, frameHeight);
-		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 
 		t0 = t1 = System.currentTimeMillis();
 

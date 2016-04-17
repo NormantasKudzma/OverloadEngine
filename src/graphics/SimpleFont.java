@@ -2,25 +2,25 @@ package graphics;
 
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
-import java.io.File;
-
-import javax.imageio.ImageIO;
 
 import physics.PhysicsBody;
+import utils.FastMath;
 import engine.Entity;
 
 public class SimpleFont extends Entity<Sprite2D> {
-	public static final Font DEFAULT_FONT = new Font("Serif", Font.PLAIN, 32);
+	public static final Font DEFAULT_FONT = new Font("Consolas", Font.PLAIN, 32);
 
 	private String text;
 	private Font font;
 	
-	private BufferedImage measureImage;
-	private Graphics measureGraphics;
+	private BufferedImage bufferedImage;
+	private Graphics2D measureGraphics;
 	private FontRenderContext frc;
 
 	static {
@@ -33,9 +33,24 @@ public class SimpleFont extends Entity<Sprite2D> {
 	
 	public SimpleFont(String text, Font f){
 		super(null);
+		
+		bufferedImage = new BufferedImage(1024, 256, BufferedImage.TYPE_INT_ARGB);
+		measureGraphics = (Graphics2D)bufferedImage.getGraphics();
+		measureGraphics.setColor(java.awt.Color.WHITE);
+		measureGraphics.setBackground(new java.awt.Color(0, true));
+		
+		measureGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		measureGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		setFont(f);
 		setText(text);
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		measureGraphics.dispose();
 	}
 	
 	public String getText() {
@@ -48,10 +63,7 @@ public class SimpleFont extends Entity<Sprite2D> {
 		}
 		
 		font = f;
-		
-		measureImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		measureGraphics = measureImage.getGraphics();
-		measureGraphics.setFont(f);	
+		measureGraphics.setFont(f);
 		frc = measureGraphics.getFontMetrics().getFontRenderContext();
 	}
 	
@@ -70,20 +82,23 @@ public class SimpleFont extends Entity<Sprite2D> {
 		// because dealing with fonts is a nightmare
 		GlyphVector gv = font.createGlyphVector(frc, text);
 		Rectangle rect = gv.getVisualBounds().getBounds();
-		BufferedImage textImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = textImage.getGraphics();
-		g.setFont(font);
-		g.setColor(java.awt.Color.WHITE);
-		g.drawString(text, -rect.x, -rect.y);
-
+		
+		int newWidth = FastMath.nextPowerOfTwo(rect.width + rect.x);
+		int newHeight = FastMath.nextPowerOfTwo(rect.height);
+		int newX = (int)((newWidth - rect.width + rect.x) * 0.5f);
+		int newY = (int)((newHeight - rect.height) * 0.5f);
+		
+		measureGraphics.clearRect(newX, newY, newWidth, newHeight);
+		measureGraphics.drawString(text, newX, -rect.y + newY);
+		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
+		sprite = new Sprite2D(TextureLoader.getInstance().getTexture(textSubImage));
+		
 		// For debugging
 		/*try {
-			ImageIO.write(textImage, "png", new File("C:\\Users\\Nor-Vartotojas\\Desktop\\textimage.png"));
+			ImageIO.write(bufferedImage, "png", new File("C:\\Users\\Nor-Vartotojas\\Desktop\\textimage" + bufferedImage.hashCode() + ".png"));
 		}
 		catch (Exception e){
 			e.printStackTrace();
 		}*/
-		
-		sprite = new Sprite2D(TextureLoader.getInstance().getTexture(textImage));
 	}
 }
