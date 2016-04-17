@@ -141,7 +141,7 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 	
 	public void render(Vector2 position, Vector2 scale, float rotation) {
-		if (!isVisible) {
+		if (!isVisible || sprite == null) {
 			return;
 		}
 		

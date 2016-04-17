@@ -10,9 +10,10 @@ import utils.Paths;
 import utils.Vector2;
 
 public class Button extends SpriteComponent{
+	private static final float DEFAULT_FONT_SIZE = 99.0f;
+	
 	protected Object callbackObject;
 	protected Method callbackMethod;
-	protected Vector2 fontScale = Vector2.one;
 	protected Label label;
 	
 	public Button(){
@@ -23,7 +24,8 @@ public class Button extends SpriteComponent{
 		super(game);
 		callbackObject = obj;
 		callbackMethod = m;
-		label = new Label(game, text == null ? " " : text);
+		label = new Label(game, text);
+		label.setFont(label.getFont().deriveFont(DEFAULT_FONT_SIZE));
 		label.setPosition(Vector2.one);
 		addChild(label);
 		setScale(Vector2.one);
@@ -82,8 +84,7 @@ public class Button extends SpriteComponent{
 	@Override
 	public void setScale(Vector2 scale) {
 		float min = Math.min(scale.x, scale.y);
-		fontScale = (new Vector2(min, min)).mul(7.0f);
-		label.setScale(fontScale);
+		label.setFont(label.getFont().deriveFont(DEFAULT_FONT_SIZE * min));
 		super.setScale(scale);
 	}
 	

@@ -8,6 +8,7 @@ import controls.ControllerEventListener;
 import controls.ControllerManager;
 import controls.EController;
 import dialogs.BaseDialog;
+import dialogs.Button;
 import dialogs.CheckBox;
 import dialogs.Label;
 import engine.BaseGame;
@@ -36,16 +37,26 @@ public class TestGame extends BaseGame{
 	}
 	
 	private void setUpController() {
-		final Label test = new Label(this, "4444");
+		Button b = new Button();
+		b.setScale(new Vector2(0.005f, 1.0f));
+		b.setPosition(Vector2.one);
+		addEntity(b);
+		
+		Button bb = new Button();
+		bb.setScale(new Vector2(1.0f, 0.008f));
+		bb.setPosition(Vector2.one);
+		addEntity(bb);
+		
+		/*final Label test = new Label(this, "4444");
 		test.setPosition(new Vector2(1.0f, 1.5f));
 		addEntity(test);
-		
-		final Label l = new Label(this, "00000000");
+		*/
+		final Label l = new Label(this, "labas");
 		l.setPosition(Vector2.one);
 		l.setScale(new Vector2(1.0f, 1.0f));
 		addEntity(l);
 		
-		AbstractController controller = ControllerManager.getInstance().getController(EController.USBCONTROLLER, 0);
+		/*AbstractController controller = ControllerManager.getInstance().getController(EController.USBCONTROLLER, 0);
 		if (controller != null){
 			ControllerEventListener listener = new ControllerEventListener(){
 				@Override
@@ -57,9 +68,9 @@ public class TestGame extends BaseGame{
 			
 			controller.setUnmaskedCallback(listener);
 			controller.startController();
-		}
+		}*/
 		
-		AbstractController keyboard = ControllerManager.getInstance().getController(EController.LWJGLKEYBOARDCONTROLLER);
+		/*AbstractController keyboard = ControllerManager.getInstance().getController(EController.LWJGLKEYBOARDCONTROLLER);
 		if (keyboard != null){
 			ControllerEventListener left = new ControllerEventListener() {				
 				@Override
@@ -78,7 +89,7 @@ public class TestGame extends BaseGame{
 			keyboard.addKeybind(205, right);
 			
 			keyboard.startController();
-		}
+		}*/
 	}
 
 	private void initBenchmark(){

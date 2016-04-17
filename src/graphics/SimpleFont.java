@@ -1,7 +1,6 @@
 package graphics;
 
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -22,10 +21,7 @@ public class SimpleFont extends Entity<Sprite2D> {
 	private BufferedImage bufferedImage;
 	private Graphics2D measureGraphics;
 	private FontRenderContext frc;
-
-	static {
-		
-	}
+	private Rectangle textBounds = new Rectangle();
 	
 	public SimpleFont(String text) {
 		this(text, DEFAULT_FONT);
@@ -43,8 +39,8 @@ public class SimpleFont extends Entity<Sprite2D> {
 		measureGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
+		this.text = text;
 		setFont(f);
-		setText(text);
 	}
 	
 	@Override
@@ -53,42 +49,37 @@ public class SimpleFont extends Entity<Sprite2D> {
 		measureGraphics.dispose();
 	}
 	
+	public Font getFont(){
+		return font;
+	}
+	
 	public String getText() {
 		return text;
 	}
 	
-	public void setFont(Font f){
-		if (font != null && f.equals(font)){
+	private void prerenderText(){
+		if (text == null || text.isEmpty()){
 			return;
 		}
 		
-		font = f;
-		measureGraphics.setFont(f);
-		frc = measureGraphics.getFontMetrics().getFontRenderContext();
-	}
-	
-	public void setText(String text) {
-		if (this.text != null && text.equals(this.text)){
-			return;
-		}
-		
-		this.text = text;
-
 		if (sprite != null){
 			sprite.destroy();
 		}
-
+		
 		// Prerender text to a texture using default java tools, 
 		// because dealing with fonts is a nightmare
+
+		measureGraphics.clearRect(0, 0, textBounds.width, textBounds.height);
+		
 		GlyphVector gv = font.createGlyphVector(frc, text);
 		Rectangle rect = gv.getVisualBounds().getBounds();
 		
 		int newWidth = FastMath.nextPowerOfTwo(rect.width + rect.x);
 		int newHeight = FastMath.nextPowerOfTwo(rect.height);
-		int newX = (int)((newWidth - rect.width + rect.x) * 0.5f);
+		int newX = (int)((newWidth - rect.width - rect.x) * 0.5f);
 		int newY = (int)((newHeight - rect.height) * 0.5f);
+		textBounds.setBounds(0, 0, newWidth, newHeight);
 		
-		measureGraphics.clearRect(newX, newY, newWidth, newHeight);
 		measureGraphics.drawString(text, newX, -rect.y + newY);
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
 		sprite = new Sprite2D(TextureLoader.getInstance().getTexture(textSubImage));
@@ -100,5 +91,25 @@ public class SimpleFont extends Entity<Sprite2D> {
 		catch (Exception e){
 			e.printStackTrace();
 		}*/
+	}
+	
+	public void setFont(Font f){
+		if (font != null && f.equals(font)){
+			return;
+		}
+		
+		font = f;
+		measureGraphics.setFont(f);
+		frc = measureGraphics.getFontMetrics().getFontRenderContext();
+		prerenderText();
+	}
+	
+	public void setText(String text) {
+		if (this.text != null && text.equals(this.text)){
+			return;
+		}
+		
+		this.text = text;
+		prerenderText();
 	}
 }

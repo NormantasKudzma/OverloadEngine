@@ -3,6 +3,9 @@ package dialogs;
 import engine.BaseGame;
 import graphics.Color;
 import graphics.SimpleFont;
+
+import java.awt.Font;
+
 import utils.Vector2;
 
 public class Label extends Component{
@@ -17,6 +20,10 @@ public class Label extends Component{
 		this.font = font;
 	}
 	
+	public Font getFont(){
+		return font.getFont();
+	}
+	
 	public String getText(){
 		return font.getText();
 	}
@@ -24,6 +31,10 @@ public class Label extends Component{
 	@Override
 	protected void initialize() {
 		
+	}
+	
+	public void setFont(Font f){
+		font.setFont(f);
 	}
 	
 	public void setText(String text){
