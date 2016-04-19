@@ -79,6 +79,14 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 		}
 	}
 	
+	public float getHorizontalVelocity(){
+		return body.getBody().m_linearVelocity.x;
+	}
+	
+	public float getLifetime(){
+		return lifetime;
+	}
+	
 	public PhysicsBody getPhysicsBody() {
 		return body;
 	}

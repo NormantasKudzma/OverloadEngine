@@ -7,7 +7,7 @@ public class EngineTestMain {
 		OverloadEngine engine = new OverloadEngine();
 		TestGame game = new TestGame();
 		engine.setGame(game);
-		engine.setDebugDraw(false);
+		engine.setDebugDraw(true);
 		engine.setFullscreen(false);
 		engine.run();
 	}

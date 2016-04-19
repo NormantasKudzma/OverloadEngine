@@ -1,8 +1,8 @@
 package dialogs;
 
 import utils.Paths;
-import utils.Vector2;
 import engine.BaseGame;
+import graphics.SimpleFont;
 import graphics.Sprite2D;
 
 public class CheckBox extends SpriteComponent{
@@ -19,11 +19,7 @@ public class CheckBox extends SpriteComponent{
 		setSprite(new Sprite2D(Paths.UI + "checkbox_normal.png"), EUIState.NORMAL, false);
 		setSprite(new Sprite2D(Paths.UI + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
 		setSprite(new Sprite2D(Paths.UI + "checkbox_checked.png"), EUIState.CLICKED, false);
-		setSprite(new Sprite2D(Paths.UI + "checkbox_checked_hover.png"), EUIState.CLICKED, true);
-		
-		label = new Label(game, "hi");
-		label.setPosition(getSprite().getHalfSize().x, 0.0f);
-		addChild(label);
+		setSprite(new Sprite2D(Paths.UI + "checkbox_checked_hover.png"), EUIState.CLICKED, true);	
 	}
 	
 	public boolean isChecked(){
@@ -34,5 +30,27 @@ public class CheckBox extends SpriteComponent{
 	public void clickFunction() {
 		isChecked = !isChecked;
 		setState(isChecked ? EUIState.CLICKED : EUIState.NORMAL);
+	}
+	
+	public void setChecked(boolean checked){
+		if (checked != isChecked){
+			clickFunction();
+		}
+	}
+
+	public void setText(SimpleFont text){
+		if (label == null){
+			label = new Label(game, text);
+			label.setPosition(label.getSimpleFont().getSprite().getHalfSize().x + sprite.getHalfSize().x, 0.0f);
+			addChild(label);
+		}
+		else {
+			label.setText(text.getText());
+			label.setFont(text.getFont());
+		}
+	}
+	
+	public void setText(String text){
+		setText(new SimpleFont(text));
 	}
 }

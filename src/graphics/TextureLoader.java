@@ -31,7 +31,6 @@
  */
 package graphics;
 
-import static org.lwjgl.opengl.GL11.GL_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
@@ -66,8 +65,9 @@ import javax.swing.ImageIcon;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+
+import utils.FastMath;
 
 /**
  * A utility class to load textures for OpenGL. This source is based on a
@@ -213,17 +213,8 @@ public class TextureLoader {
 		WritableRaster raster;
 		BufferedImage texImage;
 
-		int texWidth = 2;
-		int texHeight = 2;
-
-		// find the closest power of 2 for the width and height
-		// of the produced texture
-		while (texWidth < bufferedImage.getWidth()) {
-			texWidth *= 2;
-		}
-		while (texHeight < bufferedImage.getHeight()) {
-			texHeight *= 2;
-		}
+		int texWidth = get2Fold(bufferedImage.getWidth());
+		int texHeight = get2Fold(bufferedImage.getHeight());
 
 		texture.setTextureHeight(texHeight);
 		texture.setTextureWidth(texWidth);

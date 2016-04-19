@@ -117,12 +117,16 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 		parent = c;
 	}
 	
-	public void setPosition(float x, float y){
-		Vector2 delta = new Vector2(x, y).sub(getPosition());
+	public void setPosition(Vector2 pos){
+		Vector2 delta = pos.copy().sub(getPosition());
 		for (Component component : children){
-			component.setPosition(component.getPosition().add(delta));
+			component.setPosition(component.getPosition().copy().add(delta));
 		}
-		super.setPosition(x, y);
+		super.setPosition(pos.x, pos.y);
+	}
+	
+	public void setPosition(float x, float y){	
+		setPosition(new Vector2(x, y));
 	}
 	
 	@Override

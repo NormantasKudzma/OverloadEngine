@@ -25,8 +25,7 @@ public class Button extends SpriteComponent{
 		callbackObject = obj;
 		callbackMethod = m;
 		label = new Label(game, text);
-		label.setFont(label.getFont().deriveFont(DEFAULT_FONT_SIZE));
-		label.setPosition(Vector2.one);
+		label.setFont(label.getSimpleFont().getFont().deriveFont(DEFAULT_FONT_SIZE));
 		addChild(label);
 		setScale(Vector2.one);
 		setVisible(true);
@@ -84,7 +83,7 @@ public class Button extends SpriteComponent{
 	@Override
 	public void setScale(Vector2 scale) {
 		float min = Math.min(scale.x, scale.y);
-		label.setFont(label.getFont().deriveFont(DEFAULT_FONT_SIZE * min));
+		label.setFont(label.getSimpleFont().getFont().deriveFont(DEFAULT_FONT_SIZE * min));
 		super.setScale(scale);
 	}
 	

@@ -159,6 +159,18 @@ public final class Vector2 {
 		return this;
 	}
 	
+	public Vector2 rotateAroundPoint(Vector2 point, float angle){
+		float dx = x - point.x;
+		float dy = y - point.y;
+		
+		float sina = FastMath.sin(angle);
+		float cosa = FastMath.cos(angle);
+		
+		x = cosa * dx - sina * dy + point.x;
+		y = sina * dx + cosa * dy + point.y;
+		return this;
+	}
+	
 	public Vector2 sub(Vector2 i){
 		this.x -= i.x;
 		this.y -= i.y;

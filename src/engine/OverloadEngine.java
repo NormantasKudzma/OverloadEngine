@@ -99,7 +99,7 @@ public class OverloadEngine {
 
 		// Create and initialize game
 		if (game == null){
-			System.err.println("You need to setGame() first!");
+			System.err.println("You need to call setGame() first!");
 			return;
 		}
 		game.init();
@@ -139,7 +139,7 @@ public class OverloadEngine {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 
-		t0 = t1 = System.currentTimeMillis();
+		t0 = t1 = System.nanoTime();
 
 		while (!Display.isCloseRequested()) {
 			t0 = System.nanoTime();

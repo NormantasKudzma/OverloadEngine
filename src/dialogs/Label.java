@@ -20,8 +20,8 @@ public class Label extends Component{
 		this.font = font;
 	}
 	
-	public Font getFont(){
-		return font.getFont();
+	public SimpleFont getSimpleFont(){
+		return font;
 	}
 	
 	public String getText(){

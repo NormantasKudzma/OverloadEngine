@@ -128,10 +128,10 @@ public class Sprite2D implements IRenderable, IUpdatable, ICloneable {
 		renderOffset.set(internalScale).mul(scale).mul(0.5f);
 		
 		texture.bind();
-		
+
 		glTranslatef(position.x - renderOffset.x, position.y + renderOffset.y, 0);
-		glScalef(scale.x, -scale.y, 1.0f);
 		glRotatef(rotation, 0, 0, 1.0f);
+		glScalef(scale.x, -scale.y, 1.0f);
  
 		renderer.render(id);
 

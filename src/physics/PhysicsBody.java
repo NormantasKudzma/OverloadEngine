@@ -89,13 +89,13 @@ public class PhysicsBody {
 		attachCollider(polygon, isSensor);
 	}
 
-	public void attachCircleCollider(float radius, Vector2 position) {
-		attachCircleCollider(radius, position, false);
+	public void attachCircleCollider(Vector2 position, float radius) {
+		attachCircleCollider(position, radius, false);
 	}
 	
-	public void attachCircleCollider(float radius, Vector2 position, boolean isSensor) {
+	public void attachCircleCollider(Vector2 position, float radius, boolean isSensor) {
 		CircleShape circle = new CircleShape();
-		circle.setRadius(radius);
+		circle.setRadius(radius * Vector2.VECTOR2_TO_PHYSICS);
 		if (position != null) {
 			circle.m_p.set(position.toVec2());
 		}

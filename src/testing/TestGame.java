@@ -1,20 +1,17 @@
 package testing;
 
-import utils.FastMath;
 import utils.OverloadRandom;
 import utils.Vector2;
-import controls.AbstractController;
-import controls.ControllerEventListener;
-import controls.ControllerManager;
-import controls.EController;
 import dialogs.BaseDialog;
 import dialogs.Button;
 import dialogs.CheckBox;
 import dialogs.Label;
 import engine.BaseGame;
 import graphics.Color;
+import graphics.SimpleFont;
 
-public class TestGame extends BaseGame{
+public class TestGame extends BaseGame {
+	
 	public TestGame() {
 		//
 	}
@@ -23,17 +20,13 @@ public class TestGame extends BaseGame{
 	public void init() {
 		super.init();
 		//initBenchmark();
-		//initDialogs();
+		initDialogs();
 		/*Label l = new Label(this, "01");
 		l.setPosition(Vector2.one);
 		l.setScale(Vector2.one);
 		l.setColor(new Color(1.0f, 0.7f, 1.0f));
 		addEntity(l);*/
 		setUpController();
-		
-		System.out.println("next power : 45 - " + FastMath.nextPowerOfTwo(45));
-		System.out.println("next power : 78 - " + FastMath.nextPowerOfTwo(78));
-		System.out.println("next power : 255 - " + FastMath.nextPowerOfTwo(255));
 	}
 	
 	private void setUpController() {
@@ -113,14 +106,19 @@ public class TestGame extends BaseGame{
 		BaseDialog dialog = new BaseDialog(this, "test1");
 		
 		CheckBox check = new CheckBox(this);
-		check.setPosition(Vector2.one);
+		check.setText("labas");
+		check.setPosition(Vector2.zero);
 		dialog.addChild(check);
 		
+		dialog.setPosition(Vector2.one);
+		
 		addDialog(dialog);
+		dialog.setVisible(true);
 	}
 	
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
+		
 	}
 }
