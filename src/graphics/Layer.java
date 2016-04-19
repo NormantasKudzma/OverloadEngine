@@ -45,6 +45,7 @@ public class Layer implements IRenderable, IUpdatable {
 		}
 		
 		for (int i = 0; i < destroyList.size(); ++i){
+			destroyList.get(i).onDestroy();
 			destroyList.get(i).destroy();
 		}
 		destroyList.clear();

@@ -13,6 +13,7 @@ import graphics.Sprite2D;
 public abstract class Component extends Entity<Sprite2D> implements IClickable{
 	protected Component parent;
 	protected ArrayList<Component> children = new ArrayList<Component>(1);
+	protected ArrayList<Component> destroyList = new ArrayList<Component>(1);
 	protected String name;
 	protected Component lastClickable;
 	
@@ -60,6 +61,14 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 			    pos.y > getPosition().y - sprite.getRenderOffset().y;
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (parent != null){
+			parent.getChildren().remove(this);
+		}
+	}
+	
 	@Override
 	public boolean onHover(Vector2 pos) {
 		if (!isVisible){
@@ -135,7 +144,16 @@ public abstract class Component extends Entity<Sprite2D> implements IClickable{
 			super.update(deltaTime);
 			for (Component component : children){
 				component.update(deltaTime);
+				if (component.isDestroyed()){
+					destroyList.add(component);
+				}
 			}
+			
+			for (int i = 0; i < destroyList.size(); ++i){
+				destroyList.get(i).onDestroy();
+				destroyList.get(i).destroy();
+			}
+			destroyList.clear();
 		}
 	}
 }

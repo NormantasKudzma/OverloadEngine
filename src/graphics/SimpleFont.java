@@ -30,14 +30,7 @@ public class SimpleFont extends Entity<Sprite2D> {
 	public SimpleFont(String text, Font f){
 		super(null);
 		
-		bufferedImage = new BufferedImage(1024, 256, BufferedImage.TYPE_INT_ARGB);
-		measureGraphics = (Graphics2D)bufferedImage.getGraphics();
-		measureGraphics.setColor(java.awt.Color.WHITE);
-		measureGraphics.setBackground(new java.awt.Color(0, true));
-		
-		measureGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		measureGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		
+		initBufferedImage(1024, 128);
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		this.text = text;
 		setFont(f);
@@ -53,8 +46,22 @@ public class SimpleFont extends Entity<Sprite2D> {
 		return font;
 	}
 	
+	public static Font getDefaultFont(){
+		return DEFAULT_FONT;
+	}
+	
 	public String getText() {
 		return text;
+	}
+	
+	private void initBufferedImage(int w, int h){
+		bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		measureGraphics = (Graphics2D)bufferedImage.getGraphics();
+		measureGraphics.setColor(java.awt.Color.WHITE);
+		measureGraphics.setBackground(new java.awt.Color(0, true));
+		
+		measureGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		measureGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	}
 	
 	private void prerenderText(){
@@ -68,8 +75,6 @@ public class SimpleFont extends Entity<Sprite2D> {
 		
 		// Prerender text to a texture using default java tools, 
 		// because dealing with fonts is a nightmare
-
-		measureGraphics.clearRect(0, 0, textBounds.width, textBounds.height);
 		
 		GlyphVector gv = font.createGlyphVector(frc, text);
 		Rectangle rect = gv.getVisualBounds().getBounds();
@@ -78,6 +83,17 @@ public class SimpleFont extends Entity<Sprite2D> {
 		int newHeight = FastMath.nextPowerOfTwo(rect.height);
 		int newX = (int)((newWidth - rect.width - rect.x) * 0.5f);
 		int newY = (int)((newHeight - rect.height) * 0.5f);
+		
+		if (newWidth > bufferedImage.getWidth() || newHeight > bufferedImage.getHeight()){
+			measureGraphics.dispose();
+			initBufferedImage(newWidth, newHeight);
+			measureGraphics.setFont(font);
+		}
+		else
+		{
+			measureGraphics.clearRect(0, 0, textBounds.width, textBounds.height);
+		}
+		
 		textBounds.setBounds(0, 0, newWidth, newHeight);
 		
 		measureGraphics.drawString(text, newX, -rect.y + newY);

@@ -135,10 +135,16 @@ public class BaseGame implements IUpdatable, IClickable {
 
 	}
 
-	/**
-	 * Render method - call render for each and every entity
-	 * 
-	 */
+	public void removeDialog(String name){
+		BaseDialog d;
+		for (int i = 0; i < dialogList.size(); i++){
+			if ((d = dialogList.get(i)).getName().equals(name)){
+				dialogList.remove(i);
+				return;
+			}
+		}
+	}
+
 	public void render() {
 		// If there are visible dialogs, don't render the game
 		BaseDialog d;

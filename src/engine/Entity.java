@@ -126,7 +126,6 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 
 	public void markForDestruction() {
-		onDestroy();
 		isToBeDestroyed = true;
 	}
 
