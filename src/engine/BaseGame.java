@@ -129,7 +129,6 @@ public class BaseGame implements IUpdatable, IClickable {
 	
 	/**
 	 * Game initialization (creating entities, loading map etc.) goes here
-	 * 
 	 */
 	public void init() {
 
@@ -204,7 +203,7 @@ public class BaseGame implements IUpdatable, IClickable {
 	 * Main game update method. Physics and entities should be moved during
 	 * update.
 	 * 
-	 * @param deltaTime - time that has passed since last frame (in ms)
+	 * @param deltaTime - time that has passed since last frame (in seconds)
 	 */
 	public void update(float deltaTime) {
 		if (soundManager != null){

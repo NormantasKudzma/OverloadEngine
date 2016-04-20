@@ -1,14 +1,18 @@
 package testing;
 
+import engine.EngineConfig;
 import engine.OverloadEngine;
 
 public class EngineTestMain {
 	public static void main(String[] args){
-		OverloadEngine engine = new OverloadEngine();
 		TestGame game = new TestGame();
-		engine.setGame(game);
-		engine.setDebugDraw(true);
-		engine.setFullscreen(false);
+		
+		EngineConfig config = new EngineConfig();
+		config.game = game;
+		config.isDebug = true;
+		config.isFullscreen = false;
+		
+		OverloadEngine engine = new OverloadEngine(config);
 		engine.run();
 	}
 }

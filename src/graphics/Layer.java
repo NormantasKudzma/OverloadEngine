@@ -27,7 +27,6 @@ public class Layer implements IRenderable, IUpdatable {
 	
 	public void clear(){
 		entityList.clear();
-		
 		destroyMarkedEntities();
 	}
 	

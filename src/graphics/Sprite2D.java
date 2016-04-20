@@ -62,6 +62,7 @@ public class Sprite2D implements IRenderable, IUpdatable, ICloneable {
 	
 	public void destroy(){
 		renderer.releaseId(id);
+		texture = null;
 	}
 	
 	public Vector2 getInternalScale(){
