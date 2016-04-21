@@ -6,9 +6,9 @@ import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-import engine.IUpdatable;
+import engine.Updatable;
 
-public abstract class AudioManager<T> implements IUpdatable {
+public abstract class AudioManager<T> implements Updatable {
 	public enum EAudioType {
 		OGG("OGG"),
 		MP3("MP3"),

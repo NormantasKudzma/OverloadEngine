@@ -1,4 +1,4 @@
-package dialogs;
+package ui;
 
 import engine.BaseGame;
 import graphics.Color;

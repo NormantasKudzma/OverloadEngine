@@ -1,11 +1,10 @@
-package dialogs;
+package ui;
 
 import java.util.ArrayList;
 
 import physics.PhysicsBody;
 
 import utils.Vector2;
-import controls.IClickable;
 import engine.BaseGame;
 import engine.Entity;
 import graphics.Sprite2D;

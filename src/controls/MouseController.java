@@ -5,7 +5,7 @@ import org.lwjgl.opengl.Display;
 
 import utils.Vector2;
 
-public class LwjglMouseController extends AbstractController {
+public class MouseController extends AbstractController {
 	/**
 	 * 0 - not clicked 1 - on click 2+ - hold
 	 */
@@ -15,7 +15,7 @@ public class LwjglMouseController extends AbstractController {
 	private Vector2 mousePos;
 	private ControllerEventListener mouseMoveListener;
 
-	public LwjglMouseController() {
+	public MouseController() {
 		buttonStates = new int[Mouse.getButtonCount()];
 		mousePos = new Vector2();
 		widthInverse = 2.0f / Display.getWidth();

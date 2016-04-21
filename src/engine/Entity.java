@@ -1,18 +1,18 @@
 package engine;
 
 import graphics.Color;
-import graphics.IRenderable;
+import graphics.Renderable;
 
 import org.jbox2d.dynamics.Fixture;
 
-import physics.ICollidable;
+import physics.Collidable;
 import physics.PhysicsBody;
 import physics.PhysicsWorld;
 import physics.Transform;
 import utils.ICloneable;
 import utils.Vector2;
 
-public abstract class Entity<S extends IRenderable & IUpdatable> implements ICollidable, IRenderable, IUpdatable, Cloneable {
+public abstract class Entity<S extends Renderable & Updatable> implements Collidable, Renderable, Updatable, Cloneable {
 	protected boolean isDestructible = true;
 	protected boolean isLifetimeFinite = false;
 	protected boolean isToBeDestroyed = false;
@@ -63,12 +63,12 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 	}
 	
 	@Override
-	public void collisionEnd(Fixture myFixture, Fixture otherFixture, ICollidable otherCollidable) {
+	public void collisionEnd(Fixture myFixture, Fixture otherFixture, Collidable otherCollidable) {
 		//
 	}
 
 	@Override
-	public void collisionStart(Fixture myFixture, Fixture otherFixture, ICollidable otherCollidable) {
+	public void collisionStart(Fixture myFixture, Fixture otherFixture, Collidable otherCollidable) {
 		//
 	}
 	
@@ -140,11 +140,6 @@ public abstract class Entity<S extends IRenderable & IUpdatable> implements ICol
 
 	public void render() {
 		render(body.getPosition(), body.getScale(), body.getRotation());
-	}
-
-	@Override
-	public void render(Transform t) {
-		render(t.getPosition(), t.getScale(), t.getRotation());
 	}
 	
 	public void render(Vector2 position, Vector2 scale, float rotation) {

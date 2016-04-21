@@ -1,7 +1,7 @@
 package utils;
 
 import physics.PhysicsBody.EBodyType;
-import dialogs.Label;
+import ui.Label;
 
 public class DebugFrameCounter extends Label{
 	private static final Vector2 fpsTextPosition = new Vector2(0.2f, 0.15f);

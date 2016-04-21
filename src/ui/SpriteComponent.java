@@ -1,4 +1,4 @@
-package dialogs;
+package ui;
 
 import utils.Vector2;
 import engine.BaseGame;

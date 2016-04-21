@@ -15,7 +15,7 @@ import utils.Vector2;
 import controls.ControllerEventListener;
 import controls.ControllerManager;
 import controls.EController;
-import controls.LwjglMouseController;
+import controls.MouseController;
 
 public class OverloadEngine {
 	public static float aspectRatio;
@@ -106,7 +106,7 @@ public class OverloadEngine {
 			frameCounter = new DebugFrameCounter();
 		}
 
-		LwjglMouseController c = (LwjglMouseController) ControllerManager.getInstance().getController(EController.LWJGLMOUSECONTROLLER);
+		MouseController c = (MouseController) ControllerManager.getInstance().getController(EController.LWJGLMOUSECONTROLLER);
 		c.addKeybind(0, new ControllerEventListener() {
 
 			@Override

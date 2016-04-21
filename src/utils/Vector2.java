@@ -105,6 +105,12 @@ public final class Vector2 {
 		return x * i.x + y * i.y;
 	}
 	
+	public Vector2 invert(){
+		x = 1.0f / x;
+		y = 1.0f / y;
+		return this;
+	}
+	
 	public float len(){
 		return (float)FastMath.fastSqrt(x * x + y * y);
 	}
@@ -202,6 +208,10 @@ public final class Vector2 {
 	
 	public static Vector2 fromVec2(Vec2 v){
 		return new Vector2(v.x * PHYSICS_TO_VECTOR2, v.y * PHYSICS_TO_VECTOR2);
+	}
+	
+	public static Vector2 invert(Vector2 i){
+		return i.copy().invert();
 	}
 	
 	public static Vector2 mul(Vector2 i, Vector2 j){

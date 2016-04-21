@@ -2,8 +2,8 @@ package controls;
 
 import org.lwjgl.input.Keyboard;
 
-public class LwjglKeyboardController extends AbstractController {
-	public LwjglKeyboardController() {
+public class KeyboardController extends AbstractController {
+	public KeyboardController() {
 
 	}
 

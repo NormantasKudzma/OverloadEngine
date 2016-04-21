@@ -59,14 +59,14 @@ public class PhysicsWorld implements ContactListener {
 	public void beginContact(Contact c) {
 		Object userDataA = c.getFixtureA().getBody().getUserData();
 		Object userDataB = c.getFixtureB().getBody().getUserData();
-		ICollidable collidableA = null;
-		ICollidable collidableB = null;
+		Collidable collidableA = null;
+		Collidable collidableB = null;
 		
-		if (userDataA instanceof ICollidable){
-			collidableA = (ICollidable)userDataA;
+		if (userDataA instanceof Collidable){
+			collidableA = (Collidable)userDataA;
 		}
-		if (userDataB instanceof ICollidable){
-			collidableB = (ICollidable)userDataB;
+		if (userDataB instanceof Collidable){
+			collidableB = (Collidable)userDataB;
 		}
 		
 		if (collidableA != null)
@@ -83,14 +83,14 @@ public class PhysicsWorld implements ContactListener {
 	public void endContact(Contact c) {
 		Object userDataA = c.getFixtureA().getBody().getUserData();
 		Object userDataB = c.getFixtureB().getBody().getUserData();
-		ICollidable collidableA = null;
-		ICollidable collidableB = null;
+		Collidable collidableA = null;
+		Collidable collidableB = null;
 		
-		if (userDataA instanceof ICollidable){
-			collidableA = (ICollidable)userDataA;
+		if (userDataA instanceof Collidable){
+			collidableA = (Collidable)userDataA;
 		}
-		if (userDataB instanceof ICollidable){
-			collidableB = (ICollidable)userDataB;
+		if (userDataB instanceof Collidable){
+			collidableB = (Collidable)userDataB;
 		}
 		
 		if (collidableA != null)

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import physics.Transform;
 import utils.Vector2;
 import engine.Entity;
-import engine.IUpdatable;
+import engine.Updatable;
 
-public class Layer implements IRenderable, IUpdatable {
+public class Layer implements Renderable, Updatable {
 	public static final String DEFAULT_NAME = "default";
 	public static final int DEFAULT_INDEX = 0;
 	
@@ -67,11 +67,6 @@ public class Layer implements IRenderable, IUpdatable {
 		for (int i = 0; i < entityList.size(); ++i){
 			entityList.get(i).render();
 		}
-	}
-
-	@Override
-	public void render(Transform t) {
-		//
 	}
 
 	@Override

@@ -20,8 +20,8 @@ public class ControllerManager {
 	private ArrayList<AbstractController> allControllers = new ArrayList<AbstractController>();
 	private ArrayList<Pair<Short, Short>> allowedUsbProductVendorList;
 	private Context libUsbContext;
-	private LwjglKeyboardController lwjglKeyboardController;
-	private LwjglMouseController lwjglMouseController;
+	private KeyboardController lwjglKeyboardController;
+	private MouseController lwjglMouseController;
 	private ArrayList<UsbController> usbControllerList;
 	private DeviceList usbDeviceList;
 
@@ -73,7 +73,7 @@ public class ControllerManager {
 		switch (type) {
 			case LWJGLKEYBOARDCONTROLLER: {
 				if (lwjglKeyboardController == null) {
-					lwjglKeyboardController = new LwjglKeyboardController();
+					lwjglKeyboardController = new KeyboardController();
 					allControllers.add(lwjglKeyboardController);
 				}
 				return lwjglKeyboardController;
@@ -101,7 +101,7 @@ public class ControllerManager {
 			}
 			case LWJGLMOUSECONTROLLER: {
 				if (lwjglMouseController == null) {
-					lwjglMouseController = new LwjglMouseController();
+					lwjglMouseController = new MouseController();
 					allControllers.add(lwjglMouseController);
 				}
 				return lwjglMouseController;

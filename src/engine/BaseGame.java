@@ -5,13 +5,13 @@ import graphics.Layer;
 import java.util.ArrayList;
 
 import physics.PhysicsWorld;
+import ui.BaseDialog;
+import ui.IClickable;
 import utils.Vector2;
 import audio.MusicManager;
 import audio.SoundManager;
-import controls.IClickable;
-import dialogs.BaseDialog;
 
-public class BaseGame implements IUpdatable, IClickable {
+public class BaseGame implements Updatable, IClickable {
 	private static final int NUM_VELOCITY_ITERATIONS = 2;
 	private static final int NUM_POSITION_ITERATIONS = 4;
 

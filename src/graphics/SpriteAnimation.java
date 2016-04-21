@@ -3,9 +3,9 @@ package graphics;
 import physics.Transform;
 import utils.ICloneable;
 import utils.Vector2;
-import engine.IUpdatable;
+import engine.Updatable;
 
-public class SpriteAnimation implements IRenderable, IUpdatable, ICloneable{
+public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 	protected Sprite2D spriteArray[][];
 	protected int currentFrame = 0;
 	protected int currentState = 0;
@@ -49,11 +49,6 @@ public class SpriteAnimation implements IRenderable, IUpdatable, ICloneable{
 	@Override
 	public void render() {
 		render(Vector2.one, Vector2.one, 0.0f);
-	}
-	
-	@Override
-	public void render(Transform t) {
-		render(t.getPosition(), t.getScale(), t.getRotation());
 	}
 	
 	@Override

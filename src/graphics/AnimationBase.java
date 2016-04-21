@@ -1,8 +1,8 @@
 package graphics;
 
-import engine.IUpdatable;
+import engine.Updatable;
 
-public abstract class AnimationBase implements IUpdatable{
+public abstract class AnimationBase implements Updatable{
 	protected float duration;
 	protected float position = 0.0f;
 	protected boolean isFinished = false;

@@ -1,4 +1,4 @@
-package controls;
+package ui;
 
 import utils.Vector2;
 

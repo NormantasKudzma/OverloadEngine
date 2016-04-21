@@ -13,9 +13,9 @@ import org.lwjgl.opengl.GL11;
 import physics.Transform;
 import utils.ICloneable;
 import utils.Vector2;
-import engine.IUpdatable;
+import engine.Updatable;
 
-public class Sprite2D implements IRenderable, IUpdatable, ICloneable {
+public class Sprite2D implements Renderable, Updatable, ICloneable {
 	private Renderer renderer;
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
@@ -113,11 +113,6 @@ public class Sprite2D implements IRenderable, IUpdatable, ICloneable {
 	
 	public void render(){
 		render(Vector2.one, Vector2.one, 0.0f);
-	}
-	
-	@Override
-	public void render(Transform t) {
-		render(t.getPosition(), t.getScale(), t.getRotation());
 	}
 	
 	@Override

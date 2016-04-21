@@ -1,11 +1,11 @@
 package testing;
 
+import ui.BaseDialog;
+import ui.Button;
+import ui.CheckBox;
+import ui.Label;
 import utils.OverloadRandom;
 import utils.Vector2;
-import dialogs.BaseDialog;
-import dialogs.Button;
-import dialogs.CheckBox;
-import dialogs.Label;
 import engine.BaseGame;
 import graphics.Color;
 import graphics.SimpleFont;

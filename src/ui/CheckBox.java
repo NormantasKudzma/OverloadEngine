@@ -1,4 +1,4 @@
-package dialogs;
+package ui;
 
 import utils.Paths;
 import engine.BaseGame;

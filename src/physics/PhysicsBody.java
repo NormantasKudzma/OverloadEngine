@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
-import org.jbox2d.common.Rot;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
@@ -241,6 +240,30 @@ public class PhysicsBody {
 		return transform;
 	}
 	
+	public void resizeColliders(Vector2 scale){
+		if (body == null){
+			return;
+		}
+		
+		Fixture f = body.m_fixtureList;
+		while (f != null){
+			Shape s = f.getShape();
+			if (s instanceof PolygonShape){
+				PolygonShape poly = (PolygonShape)s;
+				for (int j = 0; j < poly.m_count; ++j){
+					Vec2 vert = poly.m_vertices[j];
+					poly.m_vertices[j].set(vert.x * scale.x, vert.y * scale.y);
+				}
+			}
+			if (s instanceof CircleShape){
+				CircleShape circ = (CircleShape)s;
+				circ.m_radius *= scale.x;
+			}
+			
+			f = f.m_next;
+		}
+	}
+	
 	public void setBodyType(EBodyType type, Entity<?> userData){
 		this.bodyType = type;
 		switch (type){
@@ -337,11 +360,6 @@ public class PhysicsBody {
 		}
 	}
 	
-	/**
-	 * Set scale for sprite, WARNING: DOES NOT RESIZE COLLIDERS
-	 * 
-	 * @param scale - desired sprite scale
-	 */
 	public void setScale(Vector2 scale) {
 		setScale(scale.x, scale.y);
 	}
