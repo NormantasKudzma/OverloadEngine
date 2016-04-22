@@ -36,14 +36,16 @@ public abstract class AudioManager<T> implements Updatable {
 		stopAll();
 	}
 	
-	public void loadAudio(String path, EAudioType type, T key){
+	public Audio loadAudio(String path, EAudioType type, T key){
 		try {
 			Audio audio = AudioLoader.getAudio(type.getName(), ResourceLoader.getResourceAsStream(path));
 			audioList.put(key, audio);
+			return audio;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	public abstract void pause();

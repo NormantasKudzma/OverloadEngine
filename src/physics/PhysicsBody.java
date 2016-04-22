@@ -258,6 +258,8 @@ public class PhysicsBody {
 			if (s instanceof CircleShape){
 				CircleShape circ = (CircleShape)s;
 				circ.m_radius *= scale.x;
+				Vec2 pos = circ.m_p;
+				circ.m_p.set(pos.x * scale.x, pos.y * scale.y);
 			}
 			
 			f = f.m_next;

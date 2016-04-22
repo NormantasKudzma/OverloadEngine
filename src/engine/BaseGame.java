@@ -4,6 +4,11 @@ import graphics.Layer;
 
 import java.util.ArrayList;
 
+import controls.ControllerEventListener;
+import controls.ControllerManager;
+import controls.EController;
+import controls.MouseController;
+
 import physics.PhysicsWorld;
 import ui.BaseDialog;
 import ui.IClickable;
@@ -131,7 +136,26 @@ public class BaseGame implements Updatable, IClickable {
 	 * Game initialization (creating entities, loading map etc.) goes here
 	 */
 	public void init() {
+		MouseController c = (MouseController) ControllerManager.getInstance().getController(EController.LWJGLMOUSECONTROLLER);
+		c.addKeybind(0, new ControllerEventListener() {
 
+			@Override
+			public void handleEvent(long eventArg, Vector2 pos, int... params) {
+				if (params[0] == 1) {
+					onClick(pos);
+				}
+			}
+			
+		});
+
+		c.setMouseMoveListener(new ControllerEventListener() {
+			
+			@Override
+			public void handleEvent(long eventArg, Vector2 pos, int... params) {
+				onHover(pos);
+			}
+			
+		});
 	}
 
 	public void removeDialog(String name){

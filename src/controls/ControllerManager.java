@@ -18,7 +18,7 @@ public class ControllerManager {
 	private static final ControllerManager INSTANCE = new ControllerManager();
 
 	private ArrayList<AbstractController> allControllers = new ArrayList<AbstractController>();
-	private ArrayList<Pair<Short, Short>> allowedUsbProductVendorList;
+	private ArrayList<Pair<Integer, Integer>> allowedUsbProductVendorList;
 	private Context libUsbContext;
 	private KeyboardController lwjglKeyboardController;
 	private MouseController lwjglMouseController;
@@ -45,7 +45,7 @@ public class ControllerManager {
 			usbControllerList = new ArrayList<UsbController>();
 		}
 		if (allowedUsbProductVendorList == null) {
-			allowedUsbProductVendorList = new ArrayList<Pair<Short, Short>>();
+			allowedUsbProductVendorList = new ArrayList<Pair<Integer, Integer>>();
 			loadAllowedUsbDeviceList(Paths.ALLOWED_DEVICES);
 		}
 
@@ -56,7 +56,7 @@ public class ControllerManager {
 				throw new LibUsbException("Unable to read device descriptor", result);
 			}
 
-			for (Pair<Short, Short> pair : allowedUsbProductVendorList) {
+			for (Pair<Integer, Integer> pair : allowedUsbProductVendorList) {
 				if (descriptor.idProduct() == pair.key && descriptor.idVendor() == pair.value) {
 					String bp = LibUsb.getBusNumber(device) + ":" + LibUsb.getPortNumber(device);
 					usbControllerList.add(new UsbController(bp, libUsbContext, device, pair));
@@ -149,10 +149,16 @@ public class ControllerManager {
 			return;
 		}
 
-		allowedUsbProductVendorList = new ArrayList<Pair<Short, Short>>();
+		allowedUsbProductVendorList = new ArrayList<Pair<Integer, Integer>>();
 		Config<String, String> cfg = ConfigManager.loadConfigAsPairs(Paths.ALLOWED_DEVICES);
 		for (Pair<String, String> pair : cfg.contents) {
-			allowedUsbProductVendorList.add(new Pair<Short, Short>(Short.parseShort(pair.key, 16), Short.parseShort(pair.value, 16)));
+			if (pair.key.startsWith("0x")){
+				pair.key = pair.key.substring(2);
+			}
+			if (pair.value.startsWith("0x")){
+				pair.value = pair.value.substring(2);
+			}
+			allowedUsbProductVendorList.add(new Pair<Integer, Integer>(Integer.parseInt(pair.key, 16), Integer.parseInt(pair.value, 16)));
 		}
 	}
 

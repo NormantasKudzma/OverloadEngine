@@ -27,11 +27,10 @@ public class UsbController extends AbstractController {
 	private Device device;
 	private DeviceHandle deviceHandle = new DeviceHandle();
 	private boolean isDeviceAttachedToKernel;
-	private Pair<Short, Short> productVendor;
+	private Pair<Integer, Integer> productVendor;
 	private long lastBitmask = 0;
 
-	public UsbController(String bp, Context ctx, Device device,
-			Pair<Short, Short> pv) {
+	public UsbController(String bp, Context ctx, Device device, Pair<Integer, Integer> pv) {
 		busPort = bp;
 		context = ctx;
 		this.device = device;
@@ -61,7 +60,7 @@ public class UsbController extends AbstractController {
 		return device;
 	}
 
-	public Pair<Short, Short> getProductVendor() {
+	public Pair<Integer, Integer> getProductVendor() {
 		return productVendor;
 	}
 

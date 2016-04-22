@@ -105,24 +105,6 @@ public class OverloadEngine {
 		if (config.isDebug) {
 			frameCounter = new DebugFrameCounter();
 		}
-
-		MouseController c = (MouseController) ControllerManager.getInstance().getController(EController.LWJGLMOUSECONTROLLER);
-		c.addKeybind(0, new ControllerEventListener() {
-
-			@Override
-			public void handleEvent(long eventArg, Vector2 pos, int... params) {
-				if (params[0] == 1) {
-					game.onClick(pos);
-				}
-			}
-		});
-
-		c.setMouseMoveListener(new ControllerEventListener() {
-			@Override
-			public void handleEvent(long eventArg, Vector2 pos, int... params) {
-				game.onHover(pos);
-			}
-		});
 	}
 
 	private void initGL(){
