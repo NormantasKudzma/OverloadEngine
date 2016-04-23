@@ -3,7 +3,7 @@ package ui;
 import utils.Paths;
 import engine.BaseGame;
 import graphics.SimpleFont;
-import graphics.Sprite2D;
+import graphics.Sprite;
 
 public class CheckBox extends SpriteComponent{
 	private boolean isChecked = false;
@@ -16,10 +16,10 @@ public class CheckBox extends SpriteComponent{
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setSprite(new Sprite2D(Paths.UI + "checkbox_normal.png"), EUIState.NORMAL, false);
-		setSprite(new Sprite2D(Paths.UI + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
-		setSprite(new Sprite2D(Paths.UI + "checkbox_checked.png"), EUIState.CLICKED, false);
-		setSprite(new Sprite2D(Paths.UI + "checkbox_checked_hover.png"), EUIState.CLICKED, true);	
+		setSprite(new Sprite(Paths.UI + "checkbox_normal.png"), EUIState.NORMAL, false);
+		setSprite(new Sprite(Paths.UI + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
+		setSprite(new Sprite(Paths.UI + "checkbox_checked.png"), EUIState.CLICKED, false);
+		setSprite(new Sprite(Paths.UI + "checkbox_checked_hover.png"), EUIState.CLICKED, true);	
 	}
 	
 	public boolean isChecked(){

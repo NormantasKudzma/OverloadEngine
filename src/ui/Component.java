@@ -7,9 +7,9 @@ import physics.PhysicsBody;
 import utils.Vector2;
 import engine.BaseGame;
 import engine.Entity;
-import graphics.Sprite2D;
+import graphics.Sprite;
 
-public abstract class Component extends Entity<Sprite2D> implements IClickable{
+public abstract class Component extends Entity<Sprite> implements IClickable{
 	protected Component parent;
 	protected ArrayList<Component> children = new ArrayList<Component>(1);
 	protected ArrayList<Component> destroyList = new ArrayList<Component>(1);

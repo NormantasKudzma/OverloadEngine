@@ -15,7 +15,7 @@ import utils.ICloneable;
 import utils.Vector2;
 import engine.Updatable;
 
-public class Sprite2D implements Renderable, Updatable, ICloneable {
+public class Sprite implements Renderable, Updatable, ICloneable {
 	private Renderer renderer;
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
@@ -26,32 +26,32 @@ public class Sprite2D implements Renderable, Updatable, ICloneable {
 	// Internal vector for render calculations
 	private Vector2 renderOffset = new Vector2();
 	
-	private Sprite2D(){
+	private Sprite(){
 		
 	}
 	
-	public Sprite2D(String path){
+	public Sprite(String path){
 		this(path, new Vector2(), null);
 	}
 	
-	public Sprite2D(Texture tex){
+	public Sprite(Texture tex){
 		this(tex, new Vector2(), null);
 	}
 	
-	public Sprite2D(String path, Vector2 tl, Vector2 br){
+	public Sprite(String path, Vector2 tl, Vector2 br){
 		init();
 		loadTexture(path);
 		setClippingBounds(tl, br);
 	}
 	
-	public Sprite2D(Texture tex, Vector2 tl, Vector2 br){
+	public Sprite(Texture tex, Vector2 tl, Vector2 br){
 		init();
 		texture = tex;
 		setClippingBounds(tl, br);
 	}
 	
-	public Sprite2D clone(){
-		Sprite2D clone = new Sprite2D();
+	public Sprite clone(){
+		Sprite clone = new Sprite();
 		clone.init();
 		clone.texture = texture;
 		clone.setClippingBounds(topLeft.copy(), botRight.copy());
@@ -63,6 +63,11 @@ public class Sprite2D implements Renderable, Updatable, ICloneable {
 	public void destroy(){
 		renderer.releaseId(id);
 		texture = null;
+		renderer = null;
+		topLeft = null;
+		botRight = null;
+		internalScale = null;
+		renderOffset = null;
 	}
 	
 	public Vector2 getInternalScale(){
@@ -81,7 +86,7 @@ public class Sprite2D implements Renderable, Updatable, ICloneable {
 		return renderOffset;
 	}
 	
-	public static Sprite2D getSpriteFromSheet(int x, int y, int w, int h, Sprite2D sheet){
+	public static Sprite getSpriteFromSheet(int x, int y, int w, int h, Sprite sheet){
 		Vector2 sheetSizeCoef = new Vector2(sheet.getTexture().getWidth(), sheet.getTexture().getHeight());
 		sheetSizeCoef.div(sheet.getTexture().getImageWidth(), sheet.getTexture().getImageHeight());
 		
@@ -91,7 +96,7 @@ public class Sprite2D implements Renderable, Updatable, ICloneable {
 		topLeft.mul(sheetSizeCoef);
 		botRight.mul(sheetSizeCoef);
 		
-		Sprite2D sprite = new Sprite2D(sheet.getTexture(), topLeft, botRight);
+		Sprite sprite = new Sprite(sheet.getTexture(), topLeft, botRight);
 		sprite.setInternalScale(w, h);
 		return sprite;
 	}	

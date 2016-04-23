@@ -3,7 +3,7 @@ package ui;
 import utils.Vector2;
 import engine.BaseGame;
 import graphics.Color;
-import graphics.Sprite2D;
+import graphics.Sprite;
 
 public class SpriteComponent extends Component{
 	public enum EUIState {
@@ -22,7 +22,7 @@ public class SpriteComponent extends Component{
 	}
 
 	private boolean isHoveredOver = false;
-	private Sprite2D[] sprites;
+	private Sprite[] sprites;
 	private EUIState state = EUIState.NORMAL;
 					
 	public SpriteComponent(BaseGame game) {
@@ -30,7 +30,7 @@ public class SpriteComponent extends Component{
 	}
 	
 	@Override
-	public Sprite2D getSprite() {
+	public Sprite getSprite() {
 		return sprites[EUIState.NORMAL.getIndex(false)];
 	}
 	
@@ -40,7 +40,7 @@ public class SpriteComponent extends Component{
 	
 	@Override
 	protected void initialize() {
-		sprites = new Sprite2D[EUIState.values().length * 2];
+		sprites = new Sprite[EUIState.values().length * 2];
 	}
 	
 	public boolean isHovered(){
@@ -69,16 +69,16 @@ public class SpriteComponent extends Component{
 	}
 	
 	@Override
-	public void setSprite(Sprite2D spr) {
+	public void setSprite(Sprite spr) {
 		setSprite(spr, EUIState.NORMAL, false);
 	}
 	
-	public void setSprite(Sprite2D spr, EUIState state, boolean isHover){
+	public void setSprite(Sprite spr, EUIState state, boolean isHover){
 		sprites[state.getIndex(isHover)] = spr;
 		setState(EUIState.NORMAL);
 	}
 	
-	public void setSprites(Sprite2D[] sprites){
+	public void setSprites(Sprite[] sprites){
 		for (int i = 0; i < this.sprites.length && i < sprites.length; ++i){
 			this.sprites[i] = sprites[i];
 		}

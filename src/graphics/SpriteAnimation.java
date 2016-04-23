@@ -1,12 +1,11 @@
 package graphics;
 
-import physics.Transform;
 import utils.ICloneable;
 import utils.Vector2;
 import engine.Updatable;
 
 public class SpriteAnimation implements Renderable, Updatable, ICloneable{
-	protected Sprite2D spriteArray[][];
+	protected Sprite spriteArray[][];
 	protected int currentFrame = 0;
 	protected int currentState = 0;
 	protected int numStates = 0;
@@ -20,9 +19,9 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 
 	public SpriteAnimation clone(){
 		SpriteAnimation clone = new SpriteAnimation();
-		Sprite2D sprites[][] = new Sprite2D[spriteArray.length][];
+		Sprite sprites[][] = new Sprite[spriteArray.length][];
 		for (int i = 0; i < spriteArray.length; ++i){
-			Sprite2D state[] = new Sprite2D[spriteArray[i].length];
+			Sprite state[] = new Sprite[spriteArray[i].length];
 			for (int j = 0; j < spriteArray[i].length; ++j){
 				state[j] = spriteArray[i][j].clone();
 			}
@@ -44,6 +43,15 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 				spriteArray[i][j].destroy();
 			}
 		}
+		spriteArray = null;
+	}
+	
+	public float getDuration(){
+		return spriteArray[currentState].length * frameDelay;
+	}
+	
+	public void onAnimationEnd(){
+		//
 	}
 	
 	@Override
@@ -74,7 +82,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		}
 	}
 	
-	public void setSpriteArray(Sprite2D[][] sprites){
+	public void setSpriteArray(Sprite[][] sprites){
 		spriteArray = sprites;
 		numStates = sprites.length;
 	}
@@ -93,6 +101,9 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		if (timePassed >= frameDelay){
 			timePassed = 0.0f;
 			currentFrame = (currentFrame + 1) % spriteArray[currentState].length;
+			if (currentFrame == 0){
+				onAnimationEnd();
+			}
 		}
 	}
 }

@@ -74,9 +74,12 @@ public abstract class Entity<S extends Renderable & Updatable> implements Collid
 	
 	public void destroy() {
 		body.destroyBody();
+		body = null;
 		if (sprite != null){
 			sprite.destroy();
+			sprite = null;
 		}
+		game = null;
 	}
 	
 	public float getHorizontalVelocity(){

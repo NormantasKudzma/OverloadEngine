@@ -2,7 +2,7 @@ package ui;
 
 import engine.BaseGame;
 import graphics.Color;
-import graphics.Sprite2D;
+import graphics.Sprite;
 
 import java.lang.reflect.Method;
 
@@ -38,8 +38,8 @@ public class Button extends SpriteComponent{
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setSprite(new Sprite2D(Paths.UI + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
-		setSprite(new Sprite2D(Paths.UI + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
+		setSprite(new Sprite(Paths.UI + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
+		setSprite(new Sprite(Paths.UI + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
 
 		addChild(label);
 	}

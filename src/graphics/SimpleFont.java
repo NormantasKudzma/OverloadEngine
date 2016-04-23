@@ -12,7 +12,7 @@ import physics.PhysicsBody;
 import utils.FastMath;
 import engine.Entity;
 
-public class SimpleFont extends Entity<Sprite2D> {
+public class SimpleFont extends Entity<Sprite> {
 	public static final Font DEFAULT_FONT = new Font("Consolas", Font.PLAIN, 32);
 
 	private String text;
@@ -98,7 +98,7 @@ public class SimpleFont extends Entity<Sprite2D> {
 		
 		measureGraphics.drawString(text, newX, -rect.y + newY);
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
-		sprite = new Sprite2D(TextureLoader.getInstance().getTexture(textSubImage));
+		sprite = new Sprite(TextureLoader.getInstance().getTexture(textSubImage));
 		
 		// For debugging
 		/*try {
