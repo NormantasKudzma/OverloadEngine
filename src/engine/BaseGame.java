@@ -35,11 +35,11 @@ public class BaseGame implements Updatable, IClickable {
 		dialogList.add(d);
 	}
 	
-	public void addEntity(Entity<?> e){
+	public void addEntity(GameObject<?> e){
 		addEntity(e, Layer.DEFAULT_NAME);
 	}
 	
-	public void addEntity(Entity<?> e, String layerName){
+	public void addEntity(GameObject<?> e, String layerName){
 		for (Layer l : layers){
 			if (l.getName().equalsIgnoreCase(layerName)){
 				l.addEntity(e);

@@ -125,8 +125,9 @@ public class ConfigManager {
 			buffer = BufferUtils.createByteBuffer(bufferSize);
 
 			InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-			if (source == null)
-				throw new FileNotFoundException(resource);
+			if (source == null){
+				return null;
+			}
 
 			try {
 				ReadableByteChannel rbc = Channels.newChannel(source);

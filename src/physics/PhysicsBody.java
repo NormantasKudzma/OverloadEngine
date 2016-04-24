@@ -14,7 +14,7 @@ import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
 import utils.Vector2;
-import engine.Entity;
+import engine.GameObject;
 
 /**
  * Wrapper for box2d Body class.
@@ -51,7 +51,7 @@ public class PhysicsBody {
 	private Transform transform = new Transform();
 	private EBodyType bodyType = EBodyType.INTERACTIVE;
 
-	public PhysicsBody(EBodyType type, Entity e){
+	public PhysicsBody(EBodyType type, GameObject e){
 		bodyType = type;
 		if (type == EBodyType.INTERACTIVE){
 			createBody(null, e);
@@ -129,7 +129,7 @@ public class PhysicsBody {
 		return fixture;
 	}
 
-	public PhysicsBody clone(Entity userData){
+	public PhysicsBody clone(GameObject userData){
 		try {
 			PhysicsBody clone = new PhysicsBody(bodyType, userData);
 			clone.transform = transform.clone();
@@ -171,7 +171,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	private void createBody(BodyDef def, Entity e) {
+	private void createBody(BodyDef def, GameObject e) {
 		if (def == null) {
 			def = new BodyDef();
 			/*if (def.type == BodyType.STATIC){
@@ -266,7 +266,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	public void setBodyType(EBodyType type, Entity<?> userData){
+	public void setBodyType(EBodyType type, GameObject<?> userData){
 		this.bodyType = type;
 		switch (type){
 			case INTERACTIVE:{

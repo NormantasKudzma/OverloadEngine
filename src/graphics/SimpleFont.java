@@ -10,9 +10,9 @@ import java.awt.image.BufferedImage;
 
 import physics.PhysicsBody;
 import utils.FastMath;
-import engine.Entity;
+import engine.GameObject;
 
-public class SimpleFont extends Entity<Sprite> {
+public class SimpleFont extends GameObject<Sprite> {
 	public static final Font DEFAULT_FONT = new Font("Consolas", Font.PLAIN, 32);
 
 	private String text;

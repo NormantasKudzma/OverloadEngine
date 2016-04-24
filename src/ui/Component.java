@@ -6,10 +6,10 @@ import physics.PhysicsBody;
 
 import utils.Vector2;
 import engine.BaseGame;
-import engine.Entity;
+import engine.GameObject;
 import graphics.Sprite;
 
-public abstract class Component extends Entity<Sprite> implements IClickable{
+public abstract class Component extends GameObject<Sprite> implements IClickable{
 	protected Component parent;
 	protected ArrayList<Component> children = new ArrayList<Component>(1);
 	protected ArrayList<Component> destroyList = new ArrayList<Component>(1);

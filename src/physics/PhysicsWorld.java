@@ -1,6 +1,6 @@
 package physics;
 
-import engine.Entity;
+import engine.GameObject;
 
 import java.util.ArrayList;
 
@@ -45,7 +45,7 @@ public class PhysicsWorld implements ContactListener {
 		return bodyList;
 	}
 	
-	public PhysicsBody getNewBody(PhysicsBody.EBodyType type, Entity e){
+	public PhysicsBody getNewBody(PhysicsBody.EBodyType type, GameObject e){
 		PhysicsBody b = new PhysicsBody(type, e);
 		bodyList.add(b);
 		return b;

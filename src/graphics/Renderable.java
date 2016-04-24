@@ -1,8 +1,5 @@
 package graphics;
 
-import graphics.Color;
-
-import physics.Transform;
 import utils.Vector2;
 
 public interface Renderable {

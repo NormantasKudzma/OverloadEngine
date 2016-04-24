@@ -2,17 +2,16 @@ package graphics;
 
 import java.util.ArrayList;
 
-import physics.Transform;
 import utils.Vector2;
-import engine.Entity;
+import engine.GameObject;
 import engine.Updatable;
 
 public class Layer implements Renderable, Updatable {
 	public static final String DEFAULT_NAME = "default";
 	public static final int DEFAULT_INDEX = 0;
 	
-	private ArrayList<Entity> entityList = new ArrayList<Entity>();
-	private ArrayList<Entity> destroyList = new ArrayList<Entity>();
+	private ArrayList<GameObject> entityList = new ArrayList<GameObject>();
+	private ArrayList<GameObject> destroyList = new ArrayList<GameObject>();
 	private String layerName;
 	private int index;
 	
@@ -21,7 +20,7 @@ public class Layer implements Renderable, Updatable {
 		this.index = index;
 	}
 	
-	public void addEntity(Entity e){
+	public void addEntity(GameObject e){
 		entityList.add(e);
 	}
 	
@@ -32,7 +31,7 @@ public class Layer implements Renderable, Updatable {
 	
 	@Override
 	public void destroy() {
-		for (Entity<?> i : entityList) {
+		for (GameObject<?> i : entityList) {
 			i.destroy();
 		}
 		clear();
@@ -50,7 +49,7 @@ public class Layer implements Renderable, Updatable {
 		destroyList.clear();
 	}
 
-	public ArrayList<Entity> getDestroyList(){
+	public ArrayList<GameObject> getDestroyList(){
 		return destroyList;
 	}
 	
@@ -81,7 +80,7 @@ public class Layer implements Renderable, Updatable {
 
 	@Override
 	public void update(float deltaTime) {
-		Entity e;
+		GameObject e;
 		for (int i = 0; i < entityList.size(); ++i){
 			e = entityList.get(i);
 			e.update(deltaTime);

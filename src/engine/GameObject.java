@@ -8,11 +8,10 @@ import org.jbox2d.dynamics.Fixture;
 import physics.Collidable;
 import physics.PhysicsBody;
 import physics.PhysicsWorld;
-import physics.Transform;
 import utils.ICloneable;
 import utils.Vector2;
 
-public abstract class Entity<S extends Renderable & Updatable> implements Collidable, Renderable, Updatable, Cloneable {
+public abstract class GameObject<S extends Renderable & Updatable> implements Collidable, Renderable, Updatable, Cloneable {
 	protected boolean isDestructible = true;
 	protected boolean isLifetimeFinite = false;
 	protected boolean isToBeDestroyed = false;
@@ -22,7 +21,7 @@ public abstract class Entity<S extends Renderable & Updatable> implements Collid
 	protected BaseGame game = null;
 	protected S sprite;
 
-	public Entity(BaseGame game) {
+	public GameObject(BaseGame game) {
 		this.game = game;
 	}
 
@@ -34,12 +33,12 @@ public abstract class Entity<S extends Renderable & Updatable> implements Collid
 		body.applyImpulse(dir);
 	}
 
-	public Entity<S> clone(){
-		Entity<S> clone = null;
+	public GameObject<S> clone(){
+		GameObject<S> clone = null;
 		try {
 			Object obj = super.clone();
-			if (obj instanceof Entity){
-				clone = (Entity<S>)obj;
+			if (obj instanceof GameObject){
+				clone = (GameObject<S>)obj;
 				clone.body = body.clone(clone);
 				clone.initEntity(body.getType());
 				clone.isDestructible = isDestructible;
