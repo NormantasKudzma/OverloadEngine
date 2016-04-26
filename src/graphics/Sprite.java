@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import physics.Transform;
 import utils.ICloneable;
 import utils.Vector2;
+import engine.OverloadEngine;
 import engine.Updatable;
 
 public class Sprite implements Renderable, Updatable, ICloneable {
@@ -124,16 +125,17 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 	public void render(Vector2 position, Vector2 scale, float rotation) {
 		// store the current model matrix
 		glPushMatrix();
- 
+
 		// calculate the center of object
-		renderOffset.set(internalScale).mul(scale).mul(0.5f);
+		float scaleY = rotation != 0.0f ? scale.y / OverloadEngine.aspectRatio : scale.y;
+		renderOffset.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
 		
 		texture.bind();
 
 		glTranslatef(position.x, position.y, 0);
 		glRotatef(rotation, 0, 0, 1.0f);
 		glTranslatef(-renderOffset.x, renderOffset.y, 0);
-		glScalef(scale.x, -scale.y, 1.0f);
+		glScalef(scale.x, -scaleY, 1.0f);
  
 		renderer.render(id);
 
