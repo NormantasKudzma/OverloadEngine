@@ -1,14 +1,17 @@
 package testing;
 
+import physics.PhysicsBody.EBodyType;
 import ui.BaseDialog;
 import ui.Button;
 import ui.CheckBox;
 import ui.Label;
 import utils.OverloadRandom;
+import utils.Paths;
 import utils.Vector2;
 import engine.BaseGame;
 import graphics.Color;
 import graphics.SimpleFont;
+import graphics.Sprite;
 
 public class TestGame extends BaseGame {
 	
@@ -19,14 +22,22 @@ public class TestGame extends BaseGame {
 	@Override
 	public void init() {
 		super.init();
+		
+		RotObject o = new RotObject(this);
+		o.initEntity(EBodyType.NON_INTERACTIVE);
+		o.setPosition(Vector2.one);
+		o.setScale(new Vector2(2.0f, 2.0f));
+		o.setSprite(new Sprite(Paths.UI + "checkbox_checked_hover.png"));
+		addEntity(o);
+		
 		//initBenchmark();
-		initDialogs();
+		//initDialogs();
 		/*Label l = new Label(this, "01");
 		l.setPosition(Vector2.one);
 		l.setScale(Vector2.one);
 		l.setColor(new Color(1.0f, 0.7f, 1.0f));
 		addEntity(l);*/
-		setUpController();
+		//setUpController();
 	}
 	
 	private void setUpController() {

@@ -21,13 +21,14 @@ public class OverloadEngine {
 	public static float aspectRatio;
 	public static int frameHeight;
 	public static int frameWidth;
+	private static boolean isCloseRequested = false;
 
-	private BaseGame game;
-	private Renderer renderer;
 	private float deltaTime;
 	private long t0, t1; // Frame start/end time
 	private DebugFrameCounter frameCounter;
 	private EngineConfig config;
+	private BaseGame game;
+	private Renderer renderer;
 
 	public OverloadEngine(EngineConfig config){
 		this.config = config;
@@ -114,7 +115,8 @@ public class OverloadEngine {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
-
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glTranslatef(-1.0f, -1.0f, 0.0f);
 		GL11.glViewport(0, 0, config.viewportWidth, config.viewportHeight);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
@@ -122,8 +124,7 @@ public class OverloadEngine {
 	
 	private void loop() {
 		t0 = t1 = System.nanoTime();
-
-		while (!Display.isCloseRequested()) {
+		while (!Display.isCloseRequested() && !isCloseRequested) {
 			t0 = System.nanoTime();
 			deltaTime = (t0 - t1) * 0.000000001f;
 			t1 = t0;
@@ -133,12 +134,6 @@ public class OverloadEngine {
 
 			// Update game logic
 			game.update(deltaTime);
-
-			// Prepare for rendering
-			GL11.glLoadIdentity();
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			GL11.glTranslatef(-1.0f, -1.0f, 0.0f);
-			GL11.glPopMatrix();
 
 			// Render game and swap buffers
 			renderer.preRender();
@@ -153,7 +148,9 @@ public class OverloadEngine {
 			}
 			renderer.postRender();
 
+			//
 			Display.update();
+			Display.sync(config.targetFps);
 		}
 	}
 
@@ -161,5 +158,9 @@ public class OverloadEngine {
 		init();
 		loop();
 		destroy();
+	}
+
+	public static void requestClose(){
+		isCloseRequested = true;
 	}
 }

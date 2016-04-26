@@ -1,7 +1,5 @@
 package physics;
 
-import engine.GameObject;
-
 import java.util.ArrayList;
 
 import org.jbox2d.callbacks.ContactImpulse;
@@ -11,6 +9,9 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
+
+import utils.Vector2;
+import engine.GameObject;
 
 public class PhysicsWorld implements ContactListener {
 	private static final PhysicsWorld INSTANCE = new PhysicsWorld();
@@ -27,34 +28,6 @@ public class PhysicsWorld implements ContactListener {
 		bodyList.add(body);
 	}
 	
-	public static PhysicsWorld getInstance(){
-		return INSTANCE;
-	}
-	
-	public World getWorld(){
-		return world;
-	}
-	
-	public PhysicsBody getBodyFromDef(PhysicsBody.EBodyType type, BodyDef def){
-		PhysicsBody b = new PhysicsBody(type, def);
-		bodyList.add(b);
-		return b;
-	}
-	
-	public final ArrayList<PhysicsBody> getBodyList(){
-		return bodyList;
-	}
-	
-	public PhysicsBody getNewBody(PhysicsBody.EBodyType type, GameObject e){
-		PhysicsBody b = new PhysicsBody(type, e);
-		bodyList.add(b);
-		return b;
-	}
-	
-	public BodyDef getRawBodyDef(){
-		return new BodyDef();
-	}
-
 	@Override
 	public void beginContact(Contact c) {
 		Object userDataA = c.getFixtureA().getBody().getUserData();
@@ -102,6 +75,34 @@ public class PhysicsWorld implements ContactListener {
 			collidableB.collisionEnd(c.getFixtureB(), c.getFixtureA(), collidableA);
 		}
 	}
+	
+	public static PhysicsWorld getInstance(){
+		return INSTANCE;
+	}
+	
+	public World getWorld(){
+		return world;
+	}
+	
+	public PhysicsBody getBodyFromDef(PhysicsBody.EBodyType type, BodyDef def){
+		PhysicsBody b = new PhysicsBody(type, def);
+		bodyList.add(b);
+		return b;
+	}
+	
+	public final ArrayList<PhysicsBody> getBodyList(){
+		return bodyList;
+	}
+	
+	public PhysicsBody getNewBody(PhysicsBody.EBodyType type, GameObject e){
+		PhysicsBody b = new PhysicsBody(type, e);
+		bodyList.add(b);
+		return b;
+	}
+	
+	public BodyDef getRawBodyDef(){
+		return new BodyDef();
+	}
 
 	@Override
 	public void postSolve(Contact c, ContactImpulse i) {
@@ -111,5 +112,9 @@ public class PhysicsWorld implements ContactListener {
 	@Override
 	public void preSolve(Contact c, Manifold m) {
 		//stub
+	}
+	
+	public void setGravity(Vector2 gravity){
+		world.setGravity(gravity.toVec2());
 	}
 }

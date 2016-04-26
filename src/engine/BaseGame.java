@@ -4,9 +4,12 @@ import graphics.Layer;
 
 import java.util.ArrayList;
 
+import org.lwjgl.input.Keyboard;
+
 import controls.ControllerEventListener;
 import controls.ControllerManager;
 import controls.EController;
+import controls.KeyboardController;
 import controls.MouseController;
 
 import physics.PhysicsWorld;
@@ -17,15 +20,16 @@ import audio.MusicManager;
 import audio.SoundManager;
 
 public class BaseGame implements Updatable, IClickable {
-	private static final int NUM_VELOCITY_ITERATIONS = 2;
-	private static final int NUM_POSITION_ITERATIONS = 4;
+	protected static final int NUM_VELOCITY_ITERATIONS = 2;
+	protected static final int NUM_POSITION_ITERATIONS = 4;
+	protected static final float PHYSICS_STEP = 0.017f;
 
 	protected SoundManager<?> soundManager = new SoundManager<String>();
 	protected MusicManager<?> musicManager = new MusicManager<String>();
 	protected ArrayList<BaseDialog> dialogList = new ArrayList<BaseDialog>();
 	protected ArrayList<Layer> layers = new ArrayList<Layer>();
 	protected PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
-	private boolean isGameOver = false;
+	protected float accumulatedTime = 0.0f;
 
 	public BaseGame() {
 		layers.add(new Layer(Layer.DEFAULT_NAME, Layer.DEFAULT_INDEX));
@@ -92,6 +96,19 @@ public class BaseGame implements Updatable, IClickable {
 			layers.get(i).destroy();
 		}
 		layers.clear();
+		
+		for (int i = 0; i < dialogList.size(); ++i){
+			dialogList.get(i).destroy();
+		}
+		dialogList.clear();
+		
+		if (musicManager != null){
+			musicManager.destroy();
+		}
+		
+		if (soundManager != null){
+			soundManager.destroy();
+		}
 	}
 
 	public BaseDialog getDialog(String name){
@@ -153,6 +170,16 @@ public class BaseGame implements Updatable, IClickable {
 			@Override
 			public void handleEvent(long eventArg, Vector2 pos, int... params) {
 				onHover(pos);
+			}
+			
+		});
+	
+		KeyboardController k = (KeyboardController) ControllerManager.getInstance().getController(EController.LWJGLKEYBOARDCONTROLLER);
+		k.addKeybind(Keyboard.KEY_ESCAPE, new ControllerEventListener(){
+			
+			@Override
+			public void handleEvent(long eventArg, Vector2 pos, int... params) {
+				OverloadEngine.requestClose();
 			}
 			
 		});
@@ -248,7 +275,11 @@ public class BaseGame implements Updatable, IClickable {
 		}
 		
 		// Update physics
-		physicsWorld.getWorld().step(deltaTime, NUM_VELOCITY_ITERATIONS, NUM_POSITION_ITERATIONS);
+		accumulatedTime += deltaTime;
+		while (accumulatedTime >= PHYSICS_STEP){
+			physicsWorld.getWorld().step(PHYSICS_STEP, NUM_VELOCITY_ITERATIONS, NUM_POSITION_ITERATIONS);
+			accumulatedTime -= PHYSICS_STEP;
+		}
 
 		// Update all entities
 		Layer layer = null;
@@ -257,10 +288,6 @@ public class BaseGame implements Updatable, IClickable {
 			layer.update(deltaTime);
 			layer.destroyMarkedEntities();
 		}
-	}
-	
-	public boolean isGameOver(){
-		return isGameOver;
 	}
 	
 	@Override

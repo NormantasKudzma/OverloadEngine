@@ -71,7 +71,9 @@ public class Renderer {
 
 		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);	
+
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 	}
 	
 	public void releaseId(int id){

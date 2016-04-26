@@ -125,13 +125,14 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 		// store the current model matrix
 		glPushMatrix();
  
-		// translate to the right location and prepare to draw
+		// calculate the center of object
 		renderOffset.set(internalScale).mul(scale).mul(0.5f);
 		
 		texture.bind();
 
-		glTranslatef(position.x - renderOffset.x, position.y + renderOffset.y, 0);
+		glTranslatef(position.x, position.y, 0);
 		glRotatef(rotation, 0, 0, 1.0f);
+		glTranslatef(-renderOffset.x, renderOffset.y, 0);
 		glScalef(scale.x, -scale.y, 1.0f);
  
 		renderer.render(id);
