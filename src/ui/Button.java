@@ -20,6 +20,10 @@ public class Button extends SpriteComponent{
 		this(null, null, null, null);
 	}
 	
+	public Button(BaseGame game, String text){
+		this(game, null, null, text);
+	}
+	
 	public Button(BaseGame game, Object obj, Method m, String text){
 		super(game);
 		callbackObject = obj;

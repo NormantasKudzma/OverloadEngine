@@ -1,17 +1,15 @@
 package testing;
 
-import physics.PhysicsBody.EBodyType;
+import org.jbox2d.dynamics.Fixture;
+
 import ui.BaseDialog;
 import ui.Button;
 import ui.CheckBox;
 import ui.Label;
 import utils.OverloadRandom;
-import utils.Paths;
 import utils.Vector2;
 import engine.BaseGame;
 import graphics.Color;
-import graphics.SimpleFont;
-import graphics.Sprite;
 
 public class TestGame extends BaseGame {
 	
@@ -23,12 +21,18 @@ public class TestGame extends BaseGame {
 	public void init() {
 		super.init();
 		
-		RotObject o = new RotObject(this);
+		/*RotObject o = new RotObject(this);
 		o.initEntity(EBodyType.NON_INTERACTIVE);
 		o.setPosition(Vector2.one);
 		o.setScale(new Vector2(2.0f, 2.0f));
-		o.setSprite(new Sprite(Paths.UI + "checkbox_checked_hover.png"));
-		addEntity(o);
+		o.setSprite(new Sprite(Paths.RESOURCES + "cross.png"));
+		addEntity(o);*/
+		
+		CheckBox c = new CheckBox(this);
+		c.setPosition(new Vector2(1.5f, 1.5f));
+		c.setScale(new Vector2(2.0f, 2.0f));
+		c.setRotation(45.0f);
+		addEntity(c);
 		
 		//initBenchmark();
 		//initDialogs();

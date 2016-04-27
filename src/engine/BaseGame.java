@@ -153,7 +153,7 @@ public class BaseGame implements Updatable, IClickable {
 	 * Game initialization (creating entities, loading map etc.) goes here
 	 */
 	public void init() {
-		MouseController c = (MouseController) ControllerManager.getInstance().getController(EController.LWJGLMOUSECONTROLLER);
+		MouseController c = (MouseController) ControllerManager.getInstance().getController(EController.MOUSE_CONTROLLER);
 		c.addKeybind(0, new ControllerEventListener() {
 
 			@Override
@@ -173,8 +173,9 @@ public class BaseGame implements Updatable, IClickable {
 			}
 			
 		});
+		c.startController();
 	
-		KeyboardController k = (KeyboardController) ControllerManager.getInstance().getController(EController.LWJGLKEYBOARDCONTROLLER);
+		KeyboardController k = (KeyboardController) ControllerManager.getInstance().getController(EController.KEYBOARD_CONTROLLER);
 		k.addKeybind(Keyboard.KEY_ESCAPE, new ControllerEventListener(){
 			
 			@Override
@@ -183,6 +184,7 @@ public class BaseGame implements Updatable, IClickable {
 			}
 			
 		});
+		k.startController();
 	}
 
 	public void removeDialog(String name){

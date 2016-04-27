@@ -6,16 +6,14 @@ import org.lwjgl.opengl.Display;
 import utils.Vector2;
 
 public class MouseController extends AbstractController {
-	/**
-	 * 0 - not clicked 1 - on click 2+ - hold
-	 */
 	private int buttonStates[];
 	private float widthInverse;
 	private float heightInverse;
 	private Vector2 mousePos;
 	private ControllerEventListener mouseMoveListener;
 
-	public MouseController() {
+	public MouseController(EController type, int index) {
+		super(type, index);
 		buttonStates = new int[Mouse.getButtonCount()];
 		mousePos = new Vector2();
 		widthInverse = 2.0f / Display.getWidth();
@@ -24,6 +22,10 @@ public class MouseController extends AbstractController {
 
 	@Override
 	public void pollController() {
+		if (!isActive()){
+			return;
+		}
+		
 		mousePos.set(Mouse.getX(), Mouse.getY()).mul(widthInverse, heightInverse);
 		int intmask;
 
@@ -44,15 +46,5 @@ public class MouseController extends AbstractController {
 
 	public void setMouseMoveListener(ControllerEventListener listener) {
 		mouseMoveListener = listener;
-	}
-
-	@Override
-	public void startController() {
-		//stub
-	}
-
-	@Override
-	protected void destroyController() {
-		//stub
 	}
 }

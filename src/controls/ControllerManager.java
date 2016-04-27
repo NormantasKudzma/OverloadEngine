@@ -18,17 +18,34 @@ public class ControllerManager {
 	private static final ControllerManager INSTANCE = new ControllerManager();
 
 	private ArrayList<AbstractController> allControllers = new ArrayList<AbstractController>();
+	private ArrayList<AbstractController> activeControllers = new ArrayList<AbstractController>();
 	private ArrayList<Pair<Integer, Integer>> allowedUsbProductVendorList;
 	private Context libUsbContext;
-	private KeyboardController lwjglKeyboardController;
-	private MouseController lwjglMouseController;
-	private ArrayList<UsbController> usbControllerList;
 	private DeviceList usbDeviceList;
 
 	private ControllerManager() {
-
+		libUsbContext = new Context();
+		int result = LibUsb.init(libUsbContext);
+		if (result != LibUsb.SUCCESS) {
+			throw new LibUsbException("Unable to initialize libusb.", result);
+		}
+		loadAllowedUsbDeviceList(Paths.ALLOWED_DEVICES);
+		loadUsbDevices();
+		
+		allControllers.add(new KeyboardController(EController.KEYBOARD_CONTROLLER, 0));
+		allControllers.add(new MouseController(EController.MOUSE_CONTROLLER, 0));
 	}
 
+	void controllerStarted(AbstractController controller){
+		if (!activeControllers.contains(controller)){
+			activeControllers.add(controller);
+		}
+	}
+	
+	void controllerStopped(AbstractController controller){
+		activeControllers.remove(controller);
+	}
+	
 	public void destroyManager() {
 		for (AbstractController c : allControllers) {
 			c.destroyController();
@@ -41,14 +58,12 @@ public class ControllerManager {
 	}
 
 	private void filterUsbDevices() {
-		if (usbControllerList == null) {
-			usbControllerList = new ArrayList<UsbController>();
-		}
 		if (allowedUsbProductVendorList == null) {
 			allowedUsbProductVendorList = new ArrayList<Pair<Integer, Integer>>();
 			loadAllowedUsbDeviceList(Paths.ALLOWED_DEVICES);
 		}
 
+		int index = 0;
 		for (Device device : usbDeviceList) {
 			DeviceDescriptor descriptor = new DeviceDescriptor();
 			int result = LibUsb.getDeviceDescriptor(device, descriptor);
@@ -59,7 +74,8 @@ public class ControllerManager {
 			for (Pair<Integer, Integer> pair : allowedUsbProductVendorList) {
 				if (descriptor.idProduct() == pair.key && descriptor.idVendor() == pair.value) {
 					String bp = LibUsb.getBusNumber(device) + ":" + LibUsb.getPortNumber(device);
-					usbControllerList.add(new UsbController(bp, libUsbContext, device, pair));
+					allControllers.add(new UsbController(EController.USB_CONTROLLER, index, bp, device, pair));
+					++index;
 				}
 			}
 		}
@@ -70,47 +86,12 @@ public class ControllerManager {
 	}
 
 	public AbstractController getController(EController type, int index) {
-		switch (type) {
-			case LWJGLKEYBOARDCONTROLLER: {
-				if (lwjglKeyboardController == null) {
-					lwjglKeyboardController = new KeyboardController();
-					allControllers.add(lwjglKeyboardController);
-				}
-				return lwjglKeyboardController;
-			}
-			case USBCONTROLLER: {
-				if (usbDeviceList == null) {
-					libUsbContext = new Context();
-					int result = LibUsb.init(libUsbContext);
-					if (result != LibUsb.SUCCESS) {
-						throw new LibUsbException("Unable to initialize libusb.", result);
-					}
-
-					loadAllowedUsbDeviceList(Paths.ALLOWED_DEVICES);
-					loadUsbDevices();
-					filterUsbDevices();
-
-					for (UsbController u : usbControllerList) {
-						allControllers.add(u);
-					}
-				}
-				if (usbDeviceList != null && index >= 0 && index < usbControllerList.size()) {
-					return usbControllerList.get(index);
-				}
-				return null;
-			}
-			case LWJGLMOUSECONTROLLER: {
-				if (lwjglMouseController == null) {
-					lwjglMouseController = new MouseController();
-					allControllers.add(lwjglMouseController);
-				}
-				return lwjglMouseController;
-			}
-			default: {
-				// Invalid request,
-				return null;
+		for (AbstractController c : allControllers){
+			if (c.getType() == type && c.getIndex() == index){
+				return c;
 			}
 		}
+		return null;
 	}
 
 	public static ControllerManager getInstance() {
@@ -118,30 +99,11 @@ public class ControllerManager {
 	}
 
 	public int getNumControllers(EController type) {
-		switch (type) {
-			case INVALIDCONTROLLER: {
-				return 0;
-			}
-			case LWJGLKEYBOARDCONTROLLER: {
-				return 1;
-			}
-			case LWJGLMOUSECONTROLLER: {
-				return 1;
-			}
-			case USBCONTROLLER: {
-				return usbControllerList.size();
-			}
-			default: {
-				return 0;
-			}
+		int numControllers = 0;
+		while (getController(type, numControllers) != null){
+			++numControllers;
 		}
-	}
-
-	public ArrayList<UsbController> getUsbControllerList() {
-		if (usbControllerList == null) {
-			filterUsbDevices();
-		}
-		return usbControllerList;
+		return numControllers;
 	}
 
 	public void loadAllowedUsbDeviceList(String path) {
@@ -155,14 +117,23 @@ public class ControllerManager {
 			if (pair.key.startsWith("0x")){
 				pair.key = pair.key.substring(2);
 			}
+			
 			if (pair.value.startsWith("0x")){
 				pair.value = pair.value.substring(2);
 			}
+			
 			allowedUsbProductVendorList.add(new Pair<Integer, Integer>(Integer.parseInt(pair.key, 16), Integer.parseInt(pair.value, 16)));
 		}
 	}
-
+	
 	private void loadUsbDevices() {
+		int index = 0;
+		AbstractController c = null;
+		while ((c = getController(EController.USB_CONTROLLER, index)) != null){
+			allControllers.remove(c);
+			++index;
+		}
+		
 		if (usbDeviceList != null) {
 			LibUsb.freeDeviceList(usbDeviceList, true);
 		}
@@ -172,10 +143,12 @@ public class ControllerManager {
 		if (result < 0) {
 			throw new LibUsbException("Unable to get device list", result);
 		}
+
+		filterUsbDevices();
 	}
 
 	public void pollControllers() {
-		for (AbstractController c : allControllers) {
+		for (AbstractController c : activeControllers) {
 			c.pollController();
 		}
 	}

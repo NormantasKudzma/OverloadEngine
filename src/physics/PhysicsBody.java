@@ -74,36 +74,36 @@ public class PhysicsBody {
 		body.applyLinearImpulse(dir.toVec2(), body.getPosition());
 	}
 
-	public void attachBoxCollider(Vector2 size, Vector2 position, float rotation) {
-		attachBoxCollider(size, position, rotation, false);
+	public Fixture attachBoxCollider(Vector2 size, Vector2 position, float rotation) {
+		return attachBoxCollider(size, position, rotation, false);
 	}
 	
-	public void attachBoxCollider(Vector2 size, Vector2 position, float rotation, boolean isSensor) {
+	public Fixture attachBoxCollider(Vector2 size, Vector2 position, float rotation, boolean isSensor) {
 		Vec2 size2 = size.toVec2().mul(0.5f);
 		Vec2 pos2 = position.toVec2();
 
 		PolygonShape polygon = new PolygonShape();
 		polygon.setAsBox(size2.x, size2.y, pos2, rotation);
 
-		attachCollider(polygon, isSensor);
+		return attachCollider(polygon, isSensor);
 	}
 
-	public void attachCircleCollider(Vector2 position, float radius) {
-		attachCircleCollider(position, radius, false);
+	public Fixture attachCircleCollider(Vector2 position, float radius) {
+		return attachCircleCollider(position, radius, false);
 	}
 	
-	public void attachCircleCollider(Vector2 position, float radius, boolean isSensor) {
+	public Fixture attachCircleCollider(Vector2 position, float radius, boolean isSensor) {
 		CircleShape circle = new CircleShape();
 		circle.setRadius(radius * Vector2.VECTOR2_TO_PHYSICS);
 		if (position != null) {
 			circle.m_p.set(position.toVec2());
 		}
 
-		attachCollider(circle, isSensor);
+		return attachCollider(circle, isSensor);
 	}
 
-	public void attachPolygonCollider(Vector2[] vertices){
-		attachPolygonCollider(vertices, false);
+	public Fixture attachPolygonCollider(Vector2[] vertices){
+		return attachPolygonCollider(vertices, false);
 	}
 	
 	public Fixture attachPolygonCollider(Vector2[] vertices, boolean isSensor) {

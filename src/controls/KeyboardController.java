@@ -3,16 +3,15 @@ package controls;
 import org.lwjgl.input.Keyboard;
 
 public class KeyboardController extends AbstractController {
-	public KeyboardController() {
-
-	}
-
-	@Override
-	protected void destroyController() {
-
+	public KeyboardController(EController type, int index) {
+		super(type, index);
 	}
 
 	public void pollController() {
+		if (!isActive()){
+			return;
+		}
+		
 		int key = Keyboard.getEventKey();
 
 		if (defaultCallback != null) {
@@ -29,10 +28,5 @@ public class KeyboardController extends AbstractController {
 				bind.getCallback().handleEvent(bind.getBitmask(), null);
 			}
 		}
-	}
-
-	@Override
-	public void startController() {
-
 	}
 }

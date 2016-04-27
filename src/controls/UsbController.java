@@ -16,6 +16,8 @@ import org.usb4java.LibUsbException;
 import utils.Pair;
 
 public class UsbController extends AbstractController {
+	public static final long DEFAULT_POLL_TIMEOUT_MCS = 20000; // Poll sleep time in microseconds	
+	
 	private ByteBuffer buffer;
 	private int dataLength = 8;
 	private byte endpoint = (byte) 0x81;
@@ -23,20 +25,17 @@ public class UsbController extends AbstractController {
 	private IntBuffer transferred = BufferUtils.allocateIntBuffer();
 
 	private String busPort;
-	private Context context;
 	private Device device;
 	private DeviceHandle deviceHandle = new DeviceHandle();
 	private boolean isDeviceAttachedToKernel;
 	private Pair<Integer, Integer> productVendor;
 	private long lastBitmask = 0;
 
-	public UsbController(String bp, Context ctx, Device device, Pair<Integer, Integer> pv) {
+	public UsbController(EController type, int index, String bp, Device device, Pair<Integer, Integer> pv) {
+		super(type, index);
 		busPort = bp;
-		context = ctx;
 		this.device = device;
 		productVendor = pv;
-		isActive = false;
-		isStopped = false;
 
 		int result = LibUsb.open(device, deviceHandle);
 		if (result != LibUsb.SUCCESS) {
@@ -65,11 +64,10 @@ public class UsbController extends AbstractController {
 	}
 
 	public void startController() {
-		if (isStopped) {
+		if (isActive()){
 			return;
 		}
-
-		isActive = true;
+		super.startController();
 
 		boolean isDeviceAttachedToKernel = LibUsb.hasCapability(LibUsb.CAP_SUPPORTS_DETACH_KERNEL_DRIVER) && LibUsb.kernelDriverActive(deviceHandle, interfaceNum) == 1;
 
@@ -88,7 +86,7 @@ public class UsbController extends AbstractController {
 		eventThread = new Thread() {
 			@Override
 			public void run() {
-				while (isActive) {
+				while (UsbController.this.isActive()) {
 					read();
 				}
 			}
@@ -116,9 +114,14 @@ public class UsbController extends AbstractController {
 					throw new LibUsbException("Unable to re-attach kernel driver", result);
 			}
 		}
+		super.destroyController();
 	}
 
 	public void pollController() {
+		if (!isActive()){
+			return;
+		}
+		
 		if (lastBitmask != 0) {
 			if (defaultCallback != null) {
 				defaultCallback.getCallback().handleEvent(lastBitmask, null);
