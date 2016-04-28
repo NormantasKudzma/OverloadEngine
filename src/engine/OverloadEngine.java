@@ -6,6 +6,7 @@ import graphics.Renderer;
 import java.io.File;
 
 import org.lwjgl.LWJGLUtil;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -42,6 +43,7 @@ public class OverloadEngine {
 		game.destroy();
 		ControllerManager.getInstance().destroyManager();
 		Display.destroy();
+		AL.destroy();
 	}
 
 	private void init() {

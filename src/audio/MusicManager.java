@@ -18,6 +18,16 @@ public class MusicManager<T> extends AudioManager<T> {
 		
 	}
 
+	public void loadAll(ArrayList<String> paths, ArrayList<T> keys){
+		String type = null;
+		String path = null;
+		for (int i = 0; i < paths.size(); ++i){
+			path = paths.get(i);
+			type = path.substring(path.lastIndexOf(".") + 1);
+			loadAudio(path, EAudioType.typeFromName(type), keys.get(i));
+		}
+	}
+	
 	public void play(T audio){
 		play(audio, isLooped);
 	}
@@ -52,16 +62,16 @@ public class MusicManager<T> extends AudioManager<T> {
 		}
 	}
 
-	public void playAll(ArrayList<T> list, boolean repeat, boolean shuffle){
+	public void playAll(ArrayList<T> keys, boolean repeat, boolean shuffle){
 		isAllLooped = repeat;
 		isLooped = false;
 		isShuffled = shuffle;
 		if (shuffle){
-			Collections.shuffle(list);
+			Collections.shuffle(keys);
 		}
-		playlist = list;
+		playlist = keys;
 		currentIndex = 0;
-		play(list.get(currentIndex));
+		play(keys.get(currentIndex));
 	}
 	
 	@Override

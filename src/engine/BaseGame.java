@@ -24,8 +24,9 @@ public class BaseGame implements Updatable, IClickable {
 	protected static final int NUM_POSITION_ITERATIONS = 4;
 	protected static final float PHYSICS_STEP = 0.017f;
 
-	protected SoundManager<?> soundManager = new SoundManager<String>();
-	protected MusicManager<?> musicManager = new MusicManager<String>();
+	protected MusicManager musicManager;
+	protected SoundManager soundManager;
+	
 	protected ArrayList<BaseDialog> dialogList = new ArrayList<BaseDialog>();
 	protected ArrayList<Layer> layers = new ArrayList<Layer>();
 	protected PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
@@ -141,11 +142,11 @@ public class BaseGame implements Updatable, IClickable {
 		return null;
 	}
 	
-	public MusicManager<?> getMusicManager(){
+	public MusicManager getMusicManager(){
 		return musicManager;
 	}
 	
-	public SoundManager<?> getSoundManager(){
+	public SoundManager getSoundManager(){
 		return soundManager;
 	}
 	

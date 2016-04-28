@@ -24,6 +24,15 @@ public abstract class AudioManager<T> implements Updatable {
 		public String getName(){
 			return name;
 		}
+	
+		public static EAudioType typeFromName(String name){
+			for (EAudioType t : values()){
+				if (t.getName().equalsIgnoreCase(name)){
+					return t;
+				}
+			}
+			return INVALID;
+		}
 	}
 	
 	protected HashMap<T, Audio> audioList = new HashMap<T, Audio>(16);
@@ -43,6 +52,7 @@ public abstract class AudioManager<T> implements Updatable {
 			return audio;
 		}
 		catch (Exception e) {
+			System.out.println("Error loading " + path);
 			e.printStackTrace();
 		}
 		return null;
