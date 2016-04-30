@@ -183,11 +183,6 @@ public abstract class GameObject<S extends Renderable & Updatable> implements Co
 		body.setRotation(angle);
 	}
 
-	/**
-	 * Set scale for sprite, WARNING: CURRENTLY DOES NOT RESIZE COLLIDERS
-	 * 
-	 * @param scale - desired sprite scale
-	 */
 	public void setScale(Vector2 scale) {
 		body.setScale(scale);
 	}

@@ -22,7 +22,7 @@ import audio.SoundManager;
 public class BaseGame implements Updatable, IClickable {
 	protected static final int NUM_VELOCITY_ITERATIONS = 2;
 	protected static final int NUM_POSITION_ITERATIONS = 4;
-	protected static final float PHYSICS_STEP = 0.017f;
+	protected static final float PHYSICS_STEP = 0.01f;
 
 	protected MusicManager musicManager;
 	protected SoundManager soundManager;
@@ -189,9 +189,8 @@ public class BaseGame implements Updatable, IClickable {
 	}
 
 	public void removeDialog(String name){
-		BaseDialog d;
 		for (int i = 0; i < dialogList.size(); i++){
-			if ((d = dialogList.get(i)).getName().equals(name)){
+			if (dialogList.get(i).getName().equals(name)){
 				dialogList.remove(i);
 				return;
 			}

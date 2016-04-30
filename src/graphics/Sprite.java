@@ -113,6 +113,7 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 			texture = TextureLoader.getInstance().getTexture(path);
 		}
 		catch (IOException e){
+			System.err.println("Could not load texture from " + path);
 			e.printStackTrace();
 		}
 	}

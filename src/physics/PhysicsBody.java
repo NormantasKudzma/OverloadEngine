@@ -119,6 +119,10 @@ public class PhysicsBody {
 	}
 
 	private Fixture attachCollider(Shape shape, boolean isSensor) {
+		if (body == null || bodyType == EBodyType.NON_INTERACTIVE){
+			System.err.println("Cannot attach fixture to a physics body.");
+			return null;
+		}
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
 		fixtureDef.userData = body.m_userData;

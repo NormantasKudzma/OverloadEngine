@@ -91,6 +91,7 @@ public class ControllerManager {
 				return c;
 			}
 		}
+		System.err.println("Controller with type " + type.toString() + " and index " + index + " was not found.");
 		return null;
 	}
 

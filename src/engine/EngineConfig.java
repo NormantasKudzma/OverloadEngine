@@ -20,20 +20,37 @@ public class EngineConfig {
 		
 	}
 	
-	public boolean validateConfig(){
-		boolean isOk = true;
+	public boolean validateConfig(){		
+		if (game == null){
+			System.err.println("No game was specified in engine configuration.");
+			return false;
+		}
 		
-		isOk &= game != null;
-		
-		isOk &= title != null;
+		if (title == null){
+			System.err.println("Window title cannot be null.");
+			return false;
+		}
 
-		isOk &= frameHeight > 0;
-		isOk &= frameWidth > 0;
-		isOk &= targetFps > 0;
-		isOk &= targetBpp > 0 && targetBpp % 2 == 0;
-		isOk &= viewportHeight > 0;
-		isOk &= viewportWidth > 0;
+		if (frameWidth <= 0 || frameHeight <= 0){
+			System.err.println("Window size cannot be smaller than 1x1.");
+			return false;
+		}
+
+		if (targetFps <= 0){
+			System.err.println("Target fps cannot be less than 1.");
+			return false;
+		}
+
+		if (targetBpp <= 1){
+			System.err.println("Target bpp cannot be less than 1.");
+			return false;
+		}
+
+		if (viewportHeight <= 0 || viewportWidth <= 0){
+			System.err.println("Viewport height and width must be bigger than 1.");
+			return false;
+		}
 				
-		return isOk;
+		return true;
 	}
 }

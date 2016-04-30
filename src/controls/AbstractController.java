@@ -2,7 +2,7 @@ package controls;
 
 import java.util.ArrayList;
 
-public abstract class AbstractController implements IController {
+public abstract class AbstractController {
 	protected enum ControllerState {
 		INACTIVE,
 		STARTED,
@@ -25,6 +25,10 @@ public abstract class AbstractController implements IController {
 	}
 	
 	public void addKeybind(long bitmask, ControllerEventListener callback) {
+		if (callback == null){
+			System.err.println("Keybind callback cannot be null.");
+			return;
+		}
 		addKeybind(new ControllerKeybind(bitmask, callback));
 	}
 
@@ -36,6 +40,18 @@ public abstract class AbstractController implements IController {
 		keyBindings.clear();
 	}
 
+	protected void destroyController(){
+		stopController();
+		state = ControllerState.INVALID;
+		defaultCallback = null;
+		eventThread = null;
+		oneClickCallback = null;
+		if (keyBindings != null){
+			keyBindings.clear();
+			keyBindings = null;
+		}
+	}
+	
 	public ArrayList<ControllerKeybind> getAllKeybinds() {
 		return keyBindings;
 	}
@@ -56,6 +72,8 @@ public abstract class AbstractController implements IController {
 		return state == ControllerState.STARTED;
 	}
 
+	public abstract void pollController();	
+	
 	public ControllerKeybind removeKeybind(ControllerEventListener callback){
 		ControllerKeybind temp = null;
 		for (ControllerKeybind bind : keyBindings) {
@@ -94,25 +112,25 @@ public abstract class AbstractController implements IController {
 		defaultCallback = new ControllerKeybind(-1, callback);
 	}
 
-	public void startController(){
+	public boolean startController(){
+		if (state == ControllerState.INVALID){
+			System.err.println("Controller " + type.toString() + " cannot be used after destruction!");
+			return false;
+		}
+		
 		ControllerManager.getInstance().controllerStarted(this);
 		state = ControllerState.STARTED;
+		return true;
 	}
 
-	public void stopController() {
+	public boolean stopController() {
+		if (state == ControllerState.INVALID){
+			System.err.println("Controller " + type.toString() + " cannot be used after destruction!");
+			return false;
+		}
+		
 		ControllerManager.getInstance().controllerStopped(this);
 		state = ControllerState.STOPPED;
-	}
-
-	protected void destroyController(){
-		stopController();
-		state = ControllerState.INVALID;
-		defaultCallback = null;
-		eventThread = null;
-		oneClickCallback = null;
-		if (keyBindings != null){
-			keyBindings.clear();
-			keyBindings = null;
-		}
+		return true;
 	}
 }

@@ -92,7 +92,9 @@ public class OverloadEngine {
 			Display.create();
 		}
 		catch (Exception e) {
+			System.err.println("Could not create display.");
 			e.printStackTrace();
+			return;
 		}
 
 		initGL();

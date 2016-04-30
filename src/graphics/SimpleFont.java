@@ -99,14 +99,6 @@ public class SimpleFont extends GameObject<Sprite> {
 		measureGraphics.drawString(text, newX, -rect.y + newY);
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
 		sprite = new Sprite(TextureLoader.getInstance().getTexture(textSubImage));
-		
-		// For debugging
-		/*try {
-			ImageIO.write(bufferedImage, "png", new File("C:\\Users\\Nor-Vartotojas\\Desktop\\textimage" + bufferedImage.hashCode() + ".png"));
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}*/
 	}
 	
 	public void setFont(Font f){

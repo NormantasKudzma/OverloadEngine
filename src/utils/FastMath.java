@@ -7,7 +7,7 @@ public class FastMath {
 	private static final int SIN_COUNT = 360;
 	public static final float ONEQTR_PI = (float) (Math.PI / 4.0f);
 	public static final float THRQTR_PI = 3.0f * (float) (Math.PI / 4.0f);
-	public static final float PI = 3.14159f;
+	public static final float PI = (float)Math.PI;
 
 	static {
 		DEG2RAD = (float) Math.PI / 180.0f;

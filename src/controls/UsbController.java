@@ -63,19 +63,19 @@ public class UsbController extends AbstractController {
 		return productVendor;
 	}
 
-	public void startController() {
-		if (isActive()){
-			return;
+	public boolean startController() {
+		if (isActive() || !super.startController()){
+			return false;
 		}
-		super.startController();
 
 		boolean isDeviceAttachedToKernel = LibUsb.hasCapability(LibUsb.CAP_SUPPORTS_DETACH_KERNEL_DRIVER) && LibUsb.kernelDriverActive(deviceHandle, interfaceNum) == 1;
 
 		int result;
 		if (isDeviceAttachedToKernel) {
 			result = LibUsb.detachKernelDriver(deviceHandle, interfaceNum);
-			if (result != LibUsb.SUCCESS)
+			if (result != LibUsb.SUCCESS){
 				throw new LibUsbException("Unable to detach kernel driver", result);
+			}
 		}
 
 		result = LibUsb.claimInterface(deviceHandle, interfaceNum);
@@ -92,6 +92,8 @@ public class UsbController extends AbstractController {
 			}
 		};
 		eventThread.start();
+		
+		return true;
 	}
 
 	protected void destroyController() {

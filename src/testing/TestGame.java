@@ -1,7 +1,5 @@
 package testing;
 
-import org.jbox2d.dynamics.Fixture;
-
 import ui.BaseDialog;
 import ui.Button;
 import ui.CheckBox;
@@ -9,7 +7,10 @@ import ui.Label;
 import utils.OverloadRandom;
 import utils.Vector2;
 import engine.BaseGame;
+import engine.GameObject;
 import graphics.Color;
+import graphics.Layer;
+import graphics.Sprite;
 
 public class TestGame extends BaseGame {
 	
@@ -42,6 +43,21 @@ public class TestGame extends BaseGame {
 		l.setColor(new Color(1.0f, 0.7f, 1.0f));
 		addEntity(l);*/
 		//setUpController();
+		
+		class Žaidėjas extends GameObject<Sprite>{
+			public Žaidėjas(BaseGame game, String p) {
+				super(game);
+			}
+		}
+		
+		Layer žaidėjųSluoksnis = new Layer("žaidėjai", 10);
+		žaidėjųSluoksnis.addEntity(new Žaidėjas(this, "pirmasŽaidėjas"));
+		žaidėjųSluoksnis.addEntity(new Žaidėjas(this, "antrasŽaidėjas"));
+		
+		Layer fonoSluoksnis = new Layer("fonas", 25);
+		
+		addLayer(žaidėjųSluoksnis);
+		addLayer(fonoSluoksnis);
 	}
 	
 	private void setUpController() {
