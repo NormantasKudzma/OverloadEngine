@@ -90,6 +90,7 @@ public class OverloadEngine {
 			Display.setDisplayMode(bestMatch);
 			Display.setVSyncEnabled(config.vSyncEnabled);
 			Display.create();
+			Display.setLocation(Display.getX(), 0);
 		}
 		catch (Exception e) {
 			System.err.println("Could not create display.");
@@ -148,7 +149,7 @@ public class OverloadEngine {
 				PhysicsDebugDraw.render();
 
 				frameCounter.update(deltaTime);
-				frameCounter.render();
+				//frameCounter.render();
 			}
 			renderer.postRender();
 

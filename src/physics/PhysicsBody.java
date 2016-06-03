@@ -74,11 +74,19 @@ public class PhysicsBody {
 		body.applyLinearImpulse(dir.toVec2(), body.getPosition());
 	}
 
+	public Fixture attachBoxCollider(Vector2 size){
+		return attachBoxCollider(size, new Vector2(), 0.0f);
+	}
+	
 	public Fixture attachBoxCollider(Vector2 size, Vector2 position, float rotation) {
 		return attachBoxCollider(size, position, rotation, false);
 	}
 	
 	public Fixture attachBoxCollider(Vector2 size, Vector2 position, float rotation, boolean isSensor) {
+		if (size == null || position == null){
+			return null;
+		}
+		
 		Vec2 size2 = size.toVec2().mul(0.5f);
 		Vec2 pos2 = position.toVec2();
 
@@ -93,11 +101,13 @@ public class PhysicsBody {
 	}
 	
 	public Fixture attachCircleCollider(Vector2 position, float radius, boolean isSensor) {
+		if (position == null || radius <= 0.0f){
+			return null;
+		}
+		
 		CircleShape circle = new CircleShape();
 		circle.setRadius(radius * Vector2.VECTOR2_TO_PHYSICS);
-		if (position != null) {
-			circle.m_p.set(position.toVec2());
-		}
+		circle.m_p.set(position.toVec2());
 
 		return attachCollider(circle, isSensor);
 	}
@@ -107,6 +117,10 @@ public class PhysicsBody {
 	}
 	
 	public Fixture attachPolygonCollider(Vector2[] vertices, boolean isSensor) {
+		if (vertices == null || vertices.length < 3 || vertices.length > 8){
+			return null;
+		}
+		
 		Vec2[] vec2Verts = new Vec2[vertices.length];
 		for (int i = 0; i < vertices.length; i++) {
 			vec2Verts[i] = vertices[i].toVec2();
@@ -209,7 +223,9 @@ public class PhysicsBody {
 	}
 	
 	public void destroyFixture(Fixture f){
-		body.destroyFixture(f);
+		if (f != null){
+			body.destroyFixture(f);
+		}
 	}
 	
 	public Body getBody() {

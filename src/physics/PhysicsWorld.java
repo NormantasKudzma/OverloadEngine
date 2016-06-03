@@ -76,6 +76,10 @@ public class PhysicsWorld implements ContactListener {
 		}
 	}
 	
+	public Vector2 getGravity(){
+		return Vector2.fromVec2(world.getGravity());
+	}
+	
 	public static PhysicsWorld getInstance(){
 		return INSTANCE;
 	}
@@ -115,6 +119,8 @@ public class PhysicsWorld implements ContactListener {
 	}
 	
 	public void setGravity(Vector2 gravity){
-		world.setGravity(gravity.toVec2());
+		if (gravity != null){
+			world.setGravity(gravity.toVec2());
+		}
 	}
 }

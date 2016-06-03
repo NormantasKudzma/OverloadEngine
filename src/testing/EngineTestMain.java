@@ -9,12 +9,12 @@ public class EngineTestMain {
 		
 		EngineConfig config = new EngineConfig();
 		config.game = game;
-		config.isDebug = false;
+		config.isDebug = true;
 		config.isFullscreen = false;
-		/*config.frameHeight = 640;
+		config.frameHeight = 640;
 		config.frameWidth = 640;
 		config.viewportHeight = 640;
-		config.viewportWidth = 640;*/
+		config.viewportWidth = 640;
 		
 		OverloadEngine engine = new OverloadEngine(config);
 		engine.run();

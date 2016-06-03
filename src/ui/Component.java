@@ -20,7 +20,7 @@ public abstract class Component extends GameObject<Sprite> implements IClickable
 		super(game);
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		initialize();
-	}	
+	}
 	
 	public void addChild(Component c){
 		if (c != null){

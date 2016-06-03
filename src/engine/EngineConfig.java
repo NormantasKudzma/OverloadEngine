@@ -20,7 +20,7 @@ public class EngineConfig {
 		
 	}
 	
-	public boolean validateConfig(){		
+	public boolean validateConfig(){
 		if (game == null){
 			System.err.println("No game was specified in engine configuration.");
 			return false;

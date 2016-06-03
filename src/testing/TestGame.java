@@ -1,15 +1,20 @@
 package testing;
 
+import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.Fixture;
+
+import physics.PhysicsWorld;
+import physics.PhysicsBody.EBodyType;
 import ui.BaseDialog;
 import ui.Button;
 import ui.CheckBox;
 import ui.Label;
 import utils.OverloadRandom;
+import utils.Paths;
 import utils.Vector2;
 import engine.BaseGame;
 import engine.GameObject;
 import graphics.Color;
-import graphics.Layer;
 import graphics.Sprite;
 
 public class TestGame extends BaseGame {
@@ -20,44 +25,22 @@ public class TestGame extends BaseGame {
 
 	@Override
 	public void init() {
-		super.init();
+		PhysicsWorld.getInstance().setGravity(new Vector2(0.0f, -9.8f));
 		
-		/*RotObject o = new RotObject(this);
-		o.initEntity(EBodyType.NON_INTERACTIVE);
-		o.setPosition(Vector2.one);
-		o.setScale(new Vector2(2.0f, 2.0f));
-		o.setSprite(new Sprite(Paths.RESOURCES + "cross.png"));
-		addEntity(o);*/
-		
-		CheckBox c = new CheckBox(this);
-		c.setPosition(new Vector2(1.5f, 1.5f));
-		c.setScale(new Vector2(2.0f, 2.0f));
-		c.setRotation(45.0f);
-		addEntity(c);
-		
-		//initBenchmark();
-		//initDialogs();
-		/*Label l = new Label(this, "01");
-		l.setPosition(Vector2.one);
-		l.setScale(Vector2.one);
-		l.setColor(new Color(1.0f, 0.7f, 1.0f));
-		addEntity(l);*/
-		//setUpController();
-		
-		class Žaidėjas extends GameObject<Sprite>{
-			public Žaidėjas(BaseGame game, String p) {
-				super(game);
-			}
-		}
-		
-		Layer žaidėjųSluoksnis = new Layer("žaidėjai", 10);
-		žaidėjųSluoksnis.addEntity(new Žaidėjas(this, "pirmasŽaidėjas"));
-		žaidėjųSluoksnis.addEntity(new Žaidėjas(this, "antrasŽaidėjas"));
-		
-		Layer fonoSluoksnis = new Layer("fonas", 25);
-		
-		addLayer(žaidėjųSluoksnis);
-		addLayer(fonoSluoksnis);
+		GameObject<Sprite> kamuolys = new GameObject<Sprite>(this);
+		kamuolys.initEntity(EBodyType.INTERACTIVE);		
+		kamuolys.setPosition(1.0f, 1.5f);	
+		Fixture karkasas = kamuolys.getPhysicsBody().attachBoxCollider(new Vector2(0.2f, 0.2f));
+		karkasas.m_restitution = 1.02f;		
+		kamuolys.setSprite(new Sprite(Paths.RESOURCES + "1.png"));
+		addEntity(kamuolys);	
+		GameObject<Sprite> siena = new GameObject<Sprite>(this);
+		siena.initEntity(EBodyType.INTERACTIVE);
+		siena.setPosition(1.0f, 0.25f);	
+		Fixture karkasas2 = siena.getPhysicsBody().attachBoxCollider(new Vector2(1.0f, 0.2f));
+		siena.getPhysicsBody().getBody().setType(BodyType.STATIC);
+		siena.setSprite(new Sprite(Paths.RESOURCES + "2.png"));
+		addEntity(siena);
 	}
 	
 	private void setUpController() {

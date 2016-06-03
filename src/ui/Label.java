@@ -3,6 +3,7 @@ package ui;
 import engine.BaseGame;
 import graphics.Color;
 import graphics.SimpleFont;
+import graphics.Sprite;
 
 import java.awt.Font;
 

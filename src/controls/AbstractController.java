@@ -33,6 +33,10 @@ public abstract class AbstractController {
 	}
 
 	public void addKeybind(ControllerKeybind keybind) {
+		if (keybind == null){
+			System.err.println("Keybind cannot be null.");
+			return;
+		}
 		keyBindings.add(keybind);
 	}
 

@@ -11,7 +11,7 @@ import physics.PhysicsWorld;
 import utils.ICloneable;
 import utils.Vector2;
 
-public abstract class GameObject<S extends Renderable & Updatable> implements Collidable, Renderable, Updatable, Cloneable {
+public class GameObject<S extends Renderable & Updatable> implements Collidable, Renderable, Updatable, Cloneable {
 	protected boolean isDestructible = true;
 	protected boolean isLifetimeFinite = false;
 	protected boolean isToBeDestroyed = false;
