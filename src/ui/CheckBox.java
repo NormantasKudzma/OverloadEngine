@@ -41,7 +41,7 @@ public class CheckBox extends SpriteComponent{
 	public void setText(SimpleFont text){
 		if (label == null){
 			label = new Label(game, text);
-			label.setPosition(label.getSimpleFont().getSprite().getHalfSize().x + sprite.getHalfSize().x, 0.0f);
+			label.setPosition(label.getSimpleFont().getSprite().getSize().x * 0.5f + sprite.getSize().x * 0.5f, 0.0f);
 			addChild(label);
 		}
 		else {

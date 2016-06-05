@@ -3,13 +3,11 @@ package ui;
 import java.util.ArrayList;
 
 import physics.PhysicsBody;
-
 import utils.Vector2;
 import engine.BaseGame;
 import engine.GameObject;
-import graphics.Sprite;
 
-public abstract class Component extends GameObject<Sprite> implements IClickable{
+public abstract class Component extends GameObject implements IClickable{
 	protected Component parent;
 	protected ArrayList<Component> children = new ArrayList<Component>(1);
 	protected ArrayList<Component> destroyList = new ArrayList<Component>(1);
@@ -54,10 +52,11 @@ public abstract class Component extends GameObject<Sprite> implements IClickable
 			return false;
 		}
 		
-		return  pos.x < getPosition().x + sprite.getRenderOffset().x &&
-				pos.x > getPosition().x - sprite.getRenderOffset().x &&
-				pos.y < getPosition().y + sprite.getRenderOffset().y &&
-			    pos.y > getPosition().y - sprite.getRenderOffset().y;
+		Vector2 size = sprite.getSize().copy().mul(getScale()).mul(0.5f);
+		return  pos.x < getPosition().x + size.x &&
+				pos.x > getPosition().x - size.x &&
+				pos.y < getPosition().y + size.y &&
+			    pos.y > getPosition().y - size.y;
 	}
 
 	@Override

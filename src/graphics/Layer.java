@@ -20,8 +20,8 @@ public class Layer implements Renderable, Updatable {
 		this.index = index;
 	}
 	
-	public void addEntity(GameObject e){
-		entityList.add(e);
+	public void addEntity(GameObject gameObject){
+		entityList.add(gameObject);
 	}
 	
 	public void clear(){
@@ -31,7 +31,7 @@ public class Layer implements Renderable, Updatable {
 	
 	@Override
 	public void destroy() {
-		for (GameObject<?> i : entityList) {
+		for (GameObject i : entityList) {
 			i.destroy();
 		}
 		clear();
@@ -59,6 +59,10 @@ public class Layer implements Renderable, Updatable {
 	
 	public String getName(){
 		return layerName;
+	}
+	
+	public Vector2 getSize(){
+		return null;
 	}
 	
 	@Override

@@ -1,9 +1,9 @@
 package ui;
 
-import utils.Vector2;
 import engine.BaseGame;
-import graphics.Color;
+import graphics.Renderable;
 import graphics.Sprite;
+import utils.Vector2;
 
 public class SpriteComponent extends Component{
 	public enum EUIState {
@@ -22,7 +22,7 @@ public class SpriteComponent extends Component{
 	}
 
 	private boolean isHoveredOver = false;
-	private Sprite[] sprites;
+	private Renderable[] sprites;
 	private EUIState state = EUIState.NORMAL;
 					
 	public SpriteComponent(BaseGame game) {
@@ -30,7 +30,7 @@ public class SpriteComponent extends Component{
 	}
 	
 	@Override
-	public Sprite getSprite() {
+	public Renderable getSprite() {
 		return sprites[EUIState.NORMAL.getIndex(false)];
 	}
 	
@@ -69,16 +69,16 @@ public class SpriteComponent extends Component{
 	}
 	
 	@Override
-	public void setSprite(Sprite spr) {
+	public void setSprite(Renderable spr) {
 		setSprite(spr, EUIState.NORMAL, false);
 	}
 	
-	public void setSprite(Sprite spr, EUIState state, boolean isHover){
+	public void setSprite(Renderable spr, EUIState state, boolean isHover){
 		sprites[state.getIndex(isHover)] = spr;
 		setState(EUIState.NORMAL);
 	}
 	
-	public void setSprites(Sprite[] sprites){
+	public void setSprites(Renderable[] sprites){
 		for (int i = 0; i < this.sprites.length && i < sprites.length; ++i){
 			this.sprites[i] = sprites[i];
 		}

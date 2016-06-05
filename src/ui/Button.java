@@ -49,10 +49,10 @@ public class Button extends SpriteComponent{
 	}
 	
 	public boolean isMouseOver(Vector2 pos){
-		return pos.x < getPosition().x + sprite.getRenderOffset().x &&
-			   pos.x > getPosition().x - sprite.getRenderOffset().x &&
-			   pos.y < getPosition().y + sprite.getRenderOffset().y &&
-			   pos.y > getPosition().y - sprite.getRenderOffset().y;
+		return pos.x < getPosition().x + sprite.getSize().x &&
+			   pos.x > getPosition().x - sprite.getSize().x &&
+			   pos.y < getPosition().y + sprite.getSize().y &&
+			   pos.y > getPosition().y - sprite.getSize().y;
 	}
 	
 	@Override

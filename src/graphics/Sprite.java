@@ -25,7 +25,7 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 	private int id;
 	
 	// Internal vector for render calculations
-	private Vector2 renderOffset = new Vector2();
+	private Vector2 size = new Vector2();
 	
 	private Sprite(){
 		
@@ -57,7 +57,7 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 		clone.texture = texture;
 		clone.setClippingBounds(topLeft.copy(), botRight.copy());
 		clone.setInternalScale(internalScale.copy());
-		clone.renderOffset = renderOffset.copy();
+		clone.size = size.copy();
 		return clone;
 	}
 	
@@ -68,23 +68,19 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 		topLeft = null;
 		botRight = null;
 		internalScale = null;
-		renderOffset = null;
+		size = null;
 	}
 	
 	public Vector2 getInternalScale(){
 		return internalScale;
 	}
 	
-	public Vector2 getHalfSize(){
-		return internalScale.copy().mul(0.5f);
+	public Vector2 getSize(){
+		return internalScale.copy();
 	}
 	
 	public Texture getTexture(){
 		return texture;
-	}
-	
-	public Vector2 getRenderOffset(){
-		return renderOffset;
 	}
 	
 	public static Sprite getSpriteFromSheet(int x, int y, int w, int h, Sprite sheet){
@@ -127,15 +123,16 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 		// store the current model matrix
 		glPushMatrix();
 
-		// calculate the center of object
+		// calculate the center pivot of object
+		// TODO: implement pivot points
 		float scaleY = rotation != 0.0f ? scale.y / OverloadEngine.aspectRatio : scale.y;
-		renderOffset.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
+		size.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
 		
 		texture.bind();
 
 		glTranslatef(position.x, position.y, 0);
 		glRotatef(rotation, 0, 0, 1.0f);
-		glTranslatef(-renderOffset.x, renderOffset.y, 0);
+		glTranslatef(-size.x, size.y, 0);
 		glScalef(scale.x, -scaleY, 1.0f);
  
 		renderer.render(id);

@@ -12,6 +12,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 	protected float frameDelay = 0.15f;
 	protected float timePassed = 0.0f;
 	protected boolean isPaused = true;
+	protected Vector2 size = new Vector2();
 	
 	public SpriteAnimation(){
 
@@ -50,6 +51,10 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		return spriteArray[currentState].length * frameDelay;
 	}
 	
+	public Vector2 getSize(){
+		return size;
+	}
+	
 	public void onAnimationEnd(){
 		//
 	}
@@ -62,6 +67,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 	@Override
 	public void render(Vector2 position, Vector2 scale, float rotation) {
 		spriteArray[currentState][currentFrame].render(position, scale, rotation);
+		size = spriteArray[currentState][currentFrame].getSize();
 	}
 	
 	public void setColor(Color c){

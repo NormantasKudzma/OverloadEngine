@@ -22,7 +22,7 @@ import audio.SoundManager;
 public class BaseGame implements Updatable, IClickable {
 	protected static final int NUM_VELOCITY_ITERATIONS = 2;
 	protected static final int NUM_POSITION_ITERATIONS = 4;
-	protected static final float PHYSICS_STEP = 0.01f;
+	protected static final float PHYSICS_STEP = 0.02f;
 
 	protected MusicManager musicManager;
 	protected SoundManager soundManager;
@@ -40,14 +40,14 @@ public class BaseGame implements Updatable, IClickable {
 		dialogList.add(d);
 	}
 	
-	public void addEntity(GameObject<?> e){
-		addEntity(e, Layer.DEFAULT_NAME);
+	public void addEntity(GameObject gameObject){
+		addEntity(gameObject, Layer.DEFAULT_NAME);
 	}
 	
-	public void addEntity(GameObject<?> e, String layerName){
+	public void addEntity(GameObject gameObject, String layerName){
 		for (Layer l : layers){
 			if (l.getName().equalsIgnoreCase(layerName)){
-				l.addEntity(e);
+				l.addEntity(gameObject);
 				break;
 			}
 		}

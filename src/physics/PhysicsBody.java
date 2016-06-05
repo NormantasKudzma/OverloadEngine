@@ -189,7 +189,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	private void createBody(BodyDef def, GameObject e) {
+	private void createBody(BodyDef def, GameObject gameObject) {
 		if (def == null) {
 			def = new BodyDef();
 			/*if (def.type == BodyType.STATIC){
@@ -201,7 +201,7 @@ public class PhysicsBody {
 			def.linearDamping = 0.1f;
 			def.fixedRotation = true;
 			def.type = BodyType.DYNAMIC;
-			def.userData = e;
+			def.userData = gameObject;
 		}
 		body = PhysicsWorld.getInstance().getWorld().createBody(def);
 	}
@@ -286,7 +286,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	public void setBodyType(EBodyType type, GameObject<?> userData){
+	public void setBodyType(EBodyType type, GameObject userData){
 		this.bodyType = type;
 		switch (type){
 			case INTERACTIVE:{

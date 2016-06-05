@@ -11,7 +11,7 @@ import physics.PhysicsWorld;
 import utils.ICloneable;
 import utils.Vector2;
 
-public class GameObject<S extends Renderable & Updatable> implements Collidable, Renderable, Updatable, Cloneable {
+public class GameObject implements Collidable, Renderable, Updatable, Cloneable {
 	protected boolean isDestructible = true;
 	protected boolean isLifetimeFinite = false;
 	protected boolean isToBeDestroyed = false;
@@ -19,7 +19,8 @@ public class GameObject<S extends Renderable & Updatable> implements Collidable,
 	protected float lifetime = 0.0f;
 	protected PhysicsBody body;
 	protected BaseGame game = null;
-	protected S sprite;
+	protected Renderable sprite;
+	protected Updatable spriteUpdatable;
 
 	public GameObject(BaseGame game) {
 		this.game = game;
@@ -33,12 +34,12 @@ public class GameObject<S extends Renderable & Updatable> implements Collidable,
 		body.applyImpulse(dir);
 	}
 
-	public GameObject<S> clone(){
-		GameObject<S> clone = null;
+	public GameObject clone(){
+		GameObject clone = null;
 		try {
 			Object obj = super.clone();
 			if (obj instanceof GameObject){
-				clone = (GameObject<S>)obj;
+				clone = (GameObject)obj;
 				clone.body = body.clone(clone);
 				clone.initEntity(body.getType());
 				clone.isDestructible = isDestructible;
@@ -46,11 +47,13 @@ public class GameObject<S extends Renderable & Updatable> implements Collidable,
 				clone.isToBeDestroyed = isToBeDestroyed;
 				clone.isVisible = isVisible;
 				clone.lifetime = lifetime;
+				
 				if (sprite instanceof ICloneable){
-					clone.sprite = (S)((ICloneable)sprite).clone();
+					clone.sprite = (Renderable)((ICloneable)sprite).clone();
 				}
 				else {
-					clone.sprite = sprite;
+					// If current renderable does not support cloning, leave it null
+					clone.sprite = null;
 				}
 			}
 		}
@@ -105,7 +108,14 @@ public class GameObject<S extends Renderable & Updatable> implements Collidable,
 		return body.getScale();
 	}
 
-	public S getSprite() {
+	public Vector2 getSize(){
+		if (sprite != null){
+			return sprite.getSize();
+		}
+		return null;
+	}
+	
+	public Renderable getSprite() {
 		return sprite;
 	}
 
@@ -191,8 +201,14 @@ public class GameObject<S extends Renderable & Updatable> implements Collidable,
 		body.setScale(x, y);
 	}
 	
-	public void setSprite(S spr) {
+	public void setSprite(Renderable spr) {
 		sprite = spr;
+		if (spr instanceof Updatable){
+			spriteUpdatable = (Updatable)spr;
+		}
+		else {
+			spriteUpdatable = null;
+		}
 	}
 	
 	public void setVerticalVelocity(float v){
@@ -204,8 +220,8 @@ public class GameObject<S extends Renderable & Updatable> implements Collidable,
 	}
 
 	public void update(float deltaTime) {
-		if (sprite != null) {
-			sprite.update(deltaTime);
+		if (spriteUpdatable != null) {
+			spriteUpdatable.update(deltaTime);
 		}
 
 		if (isLifetimeFinite) {

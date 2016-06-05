@@ -12,7 +12,7 @@ import physics.PhysicsBody;
 import utils.FastMath;
 import engine.GameObject;
 
-public class SimpleFont extends GameObject<Sprite> {
+public class SimpleFont extends GameObject {
 	public static final Font DEFAULT_FONT = new Font("Consolas", Font.PLAIN, 32);
 
 	private String text;
