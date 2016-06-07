@@ -3,9 +3,8 @@ package ui;
 import engine.BaseGame;
 import graphics.Renderable;
 import graphics.Sprite;
-import utils.Vector2;
 
-public class SpriteComponent extends Component{
+public class SpriteComponent extends Composite{
 	public enum EUIState {
 		NORMAL(0),
 		CLICKED(2);
@@ -39,19 +38,22 @@ public class SpriteComponent extends Component{
 	}
 	
 	@Override
+	protected void hoverEnded() {
+		setHovered(false);
+	}
+	
+	protected void hoverStarted(){
+		setHovered(true);
+	}
+	
+	@Override
 	protected void initialize() {
+		super.initialize();
 		sprites = new Sprite[EUIState.values().length * 2];
 	}
 	
 	public boolean isHovered(){
 		return isHoveredOver;
-	}
-	
-	@Override
-	public boolean onHover(Vector2 pos) {
-		boolean ret = isMouseOver(pos);
-		setHovered(ret);
-		return ret;
 	}
 	
 	public void setHovered(boolean isHovered){

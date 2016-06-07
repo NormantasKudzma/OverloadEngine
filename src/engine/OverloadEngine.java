@@ -33,7 +33,7 @@ public class OverloadEngine {
 
 	public OverloadEngine(EngineConfig config){
 		this.config = config;
-		if (!config.validateConfig()){
+		if (config == null || !config.validateConfig()){
 			System.err.println("Invalid configuration. Check settings first.");
 			return;
 		}
@@ -122,7 +122,7 @@ public class OverloadEngine {
 		GL11.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glTranslatef(-1.0f, -1.0f, 0.0f);
-		GL11.glViewport(0, 0, config.viewportWidth, config.viewportHeight);
+		GL11.glViewport(0, 0, config.frameWidth, config.frameHeight);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 	}

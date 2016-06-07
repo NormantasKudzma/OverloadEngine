@@ -9,8 +9,6 @@ public class EngineConfig {
 	public int frameWidth = 1280;
 	public int targetFps = 60;
 	public int targetBpp = 32;
-	public int viewportHeight = frameHeight;
-	public int viewportWidth = frameWidth;
 
 	public boolean isDebug = false;
 	public boolean isFullscreen = true;
@@ -43,11 +41,6 @@ public class EngineConfig {
 
 		if (targetBpp <= 1){
 			System.err.println("Target bpp cannot be less than 1.");
-			return false;
-		}
-
-		if (viewportHeight <= 0 || viewportWidth <= 0){
-			System.err.println("Viewport height and width must be bigger than 1.");
 			return false;
 		}
 				

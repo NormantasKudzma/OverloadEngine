@@ -14,12 +14,12 @@ import controls.MouseController;
 
 import physics.PhysicsWorld;
 import ui.BaseDialog;
-import ui.IClickable;
+import ui.OnClickListener;
 import utils.Vector2;
 import audio.MusicManager;
 import audio.SoundManager;
 
-public class BaseGame implements Updatable, IClickable {
+public class BaseGame implements Updatable {
 	protected static final int NUM_VELOCITY_ITERATIONS = 2;
 	protected static final int NUM_POSITION_ITERATIONS = 4;
 	protected static final float PHYSICS_STEP = 0.02f;
@@ -40,14 +40,14 @@ public class BaseGame implements Updatable, IClickable {
 		dialogList.add(d);
 	}
 	
-	public void addEntity(GameObject gameObject){
-		addEntity(gameObject, Layer.DEFAULT_NAME);
+	public void addObject(GameObject gameObject){
+		addObject(gameObject, Layer.DEFAULT_NAME);
 	}
 	
-	public void addEntity(GameObject gameObject, String layerName){
+	public void addObject(GameObject gameObject, String layerName){
 		for (Layer l : layers){
 			if (l.getName().equalsIgnoreCase(layerName)){
-				l.addEntity(gameObject);
+				l.addObject(gameObject);
 				break;
 			}
 		}
@@ -288,16 +288,10 @@ public class BaseGame implements Updatable, IClickable {
 		for (int i = 0; i < layers.size(); i++) {
 			layer = layers.get(i);
 			layer.update(deltaTime);
-			layer.destroyMarkedEntities();
+			layer.destroyMarkedObjects();
 		}
 	}
-	
-	@Override
-	public boolean isMouseOver(Vector2 pos) {
-		return true;
-	}
 
-	@Override
 	public boolean onHover(Vector2 pos) {
 		for (int i = 0; i < dialogList.size(); i++){
 			if (dialogList.get(i).onHover(pos)){
@@ -307,7 +301,6 @@ public class BaseGame implements Updatable, IClickable {
 		return false;
 	}
 
-	@Override
 	public boolean onClick(Vector2 pos) {
 		for (int i = 0; i < dialogList.size(); i++){
 			if (dialogList.get(i).onClick(pos)){

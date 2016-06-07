@@ -6,18 +6,18 @@ import engine.BaseGame;
 import graphics.Sprite;
 
 
-public class BaseDialog extends Component{	
+public class BaseDialog extends Composite {	
 	public BaseDialog(BaseGame game, String name){
-		super(game);
-		isVisible = false;
-		this.name = name;
-		this.setSprite(new Sprite(Paths.UI + "square_blue.png"));		
-		getScale().mul(40f);
-		setPosition(Vector2.one);		
+		super(game);	
+		this.name = name;		
 	}
 	
 	@Override
-	protected void initialize() {
-
+	protected void initialize(){
+		super.initialize();
+		isVisible = false;
+		this.setSprite(new Sprite(Paths.UI + "square_blue.png"));		
+		getScale().mul(40f);
+		setPosition(Vector2.one);	
 	}
 }

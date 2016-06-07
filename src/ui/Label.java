@@ -3,13 +3,12 @@ package ui;
 import engine.BaseGame;
 import graphics.Color;
 import graphics.SimpleFont;
-import graphics.Sprite;
 
 import java.awt.Font;
 
 import utils.Vector2;
 
-public class Label extends Component{
+public class Label extends Component {
 	private SimpleFont font;
 	
 	public Label(BaseGame game, String text){
@@ -27,11 +26,6 @@ public class Label extends Component{
 	
 	public String getText(){
 		return font.getText();
-	}
-	
-	@Override
-	protected void initialize() {
-		
 	}
 	
 	public void setFont(Font f){

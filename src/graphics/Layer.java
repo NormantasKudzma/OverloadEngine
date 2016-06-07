@@ -10,7 +10,7 @@ public class Layer implements Renderable, Updatable {
 	public static final String DEFAULT_NAME = "default";
 	public static final int DEFAULT_INDEX = 0;
 	
-	private ArrayList<GameObject> entityList = new ArrayList<GameObject>();
+	private ArrayList<GameObject> gameObjectList = new ArrayList<GameObject>();
 	private ArrayList<GameObject> destroyList = new ArrayList<GameObject>();
 	private String layerName;
 	private int index;
@@ -20,24 +20,24 @@ public class Layer implements Renderable, Updatable {
 		this.index = index;
 	}
 	
-	public void addEntity(GameObject gameObject){
-		entityList.add(gameObject);
+	public void addObject(GameObject gameObject){
+		gameObjectList.add(gameObject);
 	}
 	
 	public void clear(){
-		entityList.clear();
-		destroyMarkedEntities();
+		gameObjectList.clear();
+		destroyMarkedObjects();
 	}
 	
 	@Override
 	public void destroy() {
-		for (GameObject i : entityList) {
+		for (GameObject i : gameObjectList) {
 			i.destroy();
 		}
 		clear();
 	}
 	
-	public void destroyMarkedEntities(){
+	public void destroyMarkedObjects(){
 		if (destroyList.isEmpty()){
 			return;
 		}
@@ -67,8 +67,8 @@ public class Layer implements Renderable, Updatable {
 	
 	@Override
 	public void render() {
-		for (int i = 0; i < entityList.size(); ++i){
-			entityList.get(i).render();
+		for (int i = 0; i < gameObjectList.size(); ++i){
+			gameObjectList.get(i).render();
 		}
 	}
 
@@ -85,12 +85,12 @@ public class Layer implements Renderable, Updatable {
 	@Override
 	public void update(float deltaTime) {
 		GameObject e;
-		for (int i = 0; i < entityList.size(); ++i){
-			e = entityList.get(i);
+		for (int i = 0; i < gameObjectList.size(); ++i){
+			e = gameObjectList.get(i);
 			e.update(deltaTime);
 			if (e.isDestroyed()){
 				destroyList.add(e);
-				entityList.remove(e);
+				gameObjectList.remove(e);
 			}
 		}
 	}

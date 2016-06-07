@@ -1,11 +1,20 @@
 package ui;
 
 import utils.Paths;
+import utils.Vector2;
 import engine.BaseGame;
 import graphics.SimpleFont;
 import graphics.Sprite;
 
 public class CheckBox extends SpriteComponent{
+	public class CheckBoxClickListener implements OnClickListener {
+		@Override
+		public void clickFunction(Vector2 pos) {
+			isChecked = !isChecked;
+			setState(isChecked ? EUIState.CLICKED : EUIState.NORMAL);
+		}
+	}
+	
 	private boolean isChecked = false;
 	private Label label;
 	
@@ -19,22 +28,17 @@ public class CheckBox extends SpriteComponent{
 		setSprite(new Sprite(Paths.UI + "checkbox_normal.png"), EUIState.NORMAL, false);
 		setSprite(new Sprite(Paths.UI + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
 		setSprite(new Sprite(Paths.UI + "checkbox_checked.png"), EUIState.CLICKED, false);
-		setSprite(new Sprite(Paths.UI + "checkbox_checked_hover.png"), EUIState.CLICKED, true);	
+		setSprite(new Sprite(Paths.UI + "checkbox_checked_hover.png"), EUIState.CLICKED, true);
+		clickListener = new CheckBoxClickListener();
 	}
 	
 	public boolean isChecked(){
 		return isChecked;
 	}
 	
-	@Override
-	public void clickFunction() {
-		isChecked = !isChecked;
-		setState(isChecked ? EUIState.CLICKED : EUIState.NORMAL);
-	}
-	
 	public void setChecked(boolean checked){
 		if (checked != isChecked){
-			clickFunction();
+			clickListener.clickFunction(null);
 		}
 	}
 

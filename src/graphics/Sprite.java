@@ -63,8 +63,8 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 	
 	public void destroy(){
 		renderer.releaseId(id);
-		texture = null;
 		renderer = null;
+		texture = null;
 		topLeft = null;
 		botRight = null;
 		internalScale = null;

@@ -1,39 +1,19 @@
 package ui;
 
-import java.util.ArrayList;
-
 import physics.PhysicsBody;
 import utils.Vector2;
 import engine.BaseGame;
 import engine.GameObject;
 
-public abstract class Component extends GameObject implements IClickable{
+public class Component extends GameObject {
 	protected Component parent;
-	protected ArrayList<Component> children = new ArrayList<Component>(1);
-	protected ArrayList<Component> destroyList = new ArrayList<Component>(1);
 	protected String name;
-	protected Component lastClickable;
-	
+	protected OnClickListener clickListener;
+
 	public Component(BaseGame game){
 		super(game);
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		initialize();
-	}
-	
-	public void addChild(Component c){
-		if (c != null){
-			c.setParent(this);
-			children.add(c);
-			c.setPosition(c.getPosition().add(getPosition()));
-		}
-	}
-	
-	public void clickFunction(){
-		//
-	}
-	
-	public ArrayList<Component> getChildren(){
-		return children;
 	}
 	
 	public String getName(){
@@ -44,15 +24,24 @@ public abstract class Component extends GameObject implements IClickable{
 		return parent;
 	}
 
-	protected abstract void initialize();
+	protected void hoverEnded(){
+		
+	}
 	
-	@Override
+	protected void hoverStarted(){
+		
+	}
+	
+	protected void initialize(){
+		
+	}
+	
 	public boolean isMouseOver(Vector2 pos) {
 		if (!isVisible || sprite == null){
 			return false;
 		}
 		
-		Vector2 size = sprite.getSize().copy().mul(getScale()).mul(0.5f);
+		final Vector2 size = sprite.getSize().copy().mul(getScale()).mul(0.5f);
 		return  pos.x < getPosition().x + size.x &&
 				pos.x > getPosition().x - size.x &&
 				pos.y < getPosition().y + size.y &&
@@ -62,45 +51,39 @@ public abstract class Component extends GameObject implements IClickable{
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (parent != null){
-			parent.getChildren().remove(this);
+		if (parent != null && parent instanceof Composite){
+			Composite compositeParent = (Composite)parent;
+			compositeParent.getChildren().remove(this);
 		}
 	}
 	
-	@Override
 	public boolean onHover(Vector2 pos) {
 		if (!isVisible){
 			return false;
 		}
-		
-		boolean ret = isMouseOver(pos);
-		
-		lastClickable = null;
-		if (ret){
-			for (Component child : children){
-				if (child.onHover(pos)){
-					lastClickable = child;
-					break;
-				}
-			}
+
+		if (isMouseOver(pos)){
+			hoverStarted();
+			return true;
 		}
-	     
-		return ret;
+	    
+		hoverEnded();
+		return false;
 	}
 
-	@Override
 	public boolean onClick(Vector2 pos) {
 		if (!isVisible){
 			return false;
 		}
-		
-		boolean ret = isMouseOver(pos);
-		
-		if (lastClickable != null){
-			lastClickable.clickFunction();
+
+		if (isMouseOver(pos)){
+			if (clickListener != null){
+				clickListener.clickFunction(pos);
+			}
+			return true;
 		}
 		
-		return ret;
+		return false;
 	}
 	
 	@Override
@@ -109,11 +92,11 @@ public abstract class Component extends GameObject implements IClickable{
 			if (sprite != null){
 				super.render();
 			}
-			
-			for (Component component : children){
-				component.render();
-			}
 		}
+	}
+	
+	public void setClickListener(OnClickListener listener){
+		clickListener = listener;
 	}
 	
 	public void setName(String name){
@@ -122,36 +105,5 @@ public abstract class Component extends GameObject implements IClickable{
 	
 	public void setParent(Component c){
 		parent = c;
-	}
-	
-	public void setPosition(Vector2 pos){
-		Vector2 delta = pos.copy().sub(getPosition());
-		for (Component component : children){
-			component.setPosition(component.getPosition().copy().add(delta));
-		}
-		super.setPosition(pos.x, pos.y);
-	}
-	
-	public void setPosition(float x, float y){	
-		setPosition(new Vector2(x, y));
-	}
-	
-	@Override
-	public void update(float deltaTime) {
-		if (isVisible){
-			super.update(deltaTime);
-			for (Component component : children){
-				component.update(deltaTime);
-				if (component.isDestroyed()){
-					destroyList.add(component);
-				}
-			}
-			
-			for (int i = 0; i < destroyList.size(); ++i){
-				destroyList.get(i).onDestroy();
-				destroyList.get(i).destroy();
-			}
-			destroyList.clear();
-		}
 	}
 }
