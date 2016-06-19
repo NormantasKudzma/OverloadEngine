@@ -12,11 +12,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import utils.DebugFrameCounter;
-import utils.Vector2;
-import controls.ControllerEventListener;
 import controls.ControllerManager;
-import controls.EController;
-import controls.MouseController;
 
 public class OverloadEngine {
 	public static float aspectRatio;
@@ -149,7 +145,7 @@ public class OverloadEngine {
 				PhysicsDebugDraw.render();
 
 				frameCounter.update(deltaTime);
-				//frameCounter.render();
+				frameCounter.render();
 			}
 			renderer.postRender();
 

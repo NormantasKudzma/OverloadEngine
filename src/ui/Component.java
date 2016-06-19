@@ -1,6 +1,9 @@
 package ui;
 
+import java.util.ArrayList;
+
 import physics.PhysicsBody;
+import ui.animations.TransformAnimation;
 import utils.Vector2;
 import engine.BaseGame;
 import engine.GameObject;
@@ -9,11 +12,16 @@ public class Component extends GameObject {
 	protected Component parent;
 	protected String name;
 	protected OnClickListener clickListener;
+	protected ArrayList<TransformAnimation> animations = new ArrayList<TransformAnimation>(1);
 
 	public Component(BaseGame game){
 		super(game);
 		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
 		initialize();
+	}
+	
+	public void addAnimation(TransformAnimation anim){
+		animations.add(anim);
 	}
 	
 	public String getName(){
@@ -51,6 +59,7 @@ public class Component extends GameObject {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		removeAllAnimations();
 		if (parent != null && parent instanceof Composite){
 			Composite compositeParent = (Composite)parent;
 			compositeParent.getChildren().remove(this);
@@ -86,6 +95,14 @@ public class Component extends GameObject {
 		return false;
 	}
 	
+	public void removeAnimation(TransformAnimation anim){
+		animations.remove(anim);
+	}
+	
+	public void removeAllAnimations(){
+		animations.clear();
+	}
+	
 	@Override
 	public void render() {
 		if (isVisible){
@@ -105,5 +122,15 @@ public class Component extends GameObject {
 	
 	public void setParent(Component c){
 		parent = c;
+	}
+
+	@Override
+	public void update(float deltaTime) {
+		if (isVisible){
+			super.update(deltaTime);
+			for (TransformAnimation anim : animations){
+				anim.update(deltaTime);
+			}
+		}
 	}
 }

@@ -3,6 +3,8 @@ package ui;
 import engine.BaseGame;
 import graphics.Renderable;
 import graphics.Sprite;
+import ui.animations.ScaleAnimation;
+import utils.Vector2;
 
 public class SpriteComponent extends Composite{
 	public enum EUIState {
@@ -23,9 +25,12 @@ public class SpriteComponent extends Composite{
 	private boolean isHoveredOver = false;
 	private Renderable[] sprites;
 	private EUIState state = EUIState.NORMAL;
+	private ScaleAnimation growAnimation = new ScaleAnimation(this, null, null);
 					
 	public SpriteComponent(BaseGame game) {
 		super(game);
+		growAnimation.setDuration(0.1f);
+		addAnimation(growAnimation);
 	}
 	
 	@Override
@@ -39,11 +44,35 @@ public class SpriteComponent extends Composite{
 	
 	@Override
 	protected void hoverEnded() {
-		setHovered(false);
+		if (isHoveredOver){
+			setHovered(false);			
+
+			if (!growAnimation.isReversed()){
+				growAnimation.reverse();
+			}
+			
+			if (!growAnimation.isPlaying()){
+				growAnimation.start();
+			}
+		}
 	}
 	
 	protected void hoverStarted(){
-		setHovered(true);
+		if (!isHoveredOver){
+			setHovered(true);
+			
+			if (growAnimation.getFrom() == null){
+				Vector2 from = getScale().copy();
+				Vector2 to = from.copy().mul(1.1f);
+				growAnimation.setBounds(from, to);
+			}
+			
+			if (growAnimation.isReversed()){
+				growAnimation.reverse();
+			}	
+			
+			growAnimation.start();
+		}
 	}
 	
 	@Override

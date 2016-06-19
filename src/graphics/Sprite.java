@@ -8,15 +8,11 @@ import static org.lwjgl.opengl.GL11.glTranslatef;
 
 import java.io.IOException;
 
-import org.lwjgl.opengl.GL11;
-
-import physics.Transform;
 import utils.ICloneable;
 import utils.Vector2;
 import engine.OverloadEngine;
-import engine.Updatable;
 
-public class Sprite implements Renderable, Updatable, ICloneable {
+public class Sprite implements Renderable, ICloneable {
 	private Renderer renderer;
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
@@ -125,6 +121,7 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 
 		// calculate the center pivot of object
 		// TODO: implement pivot points
+		// TODO: fix rotating
 		float scaleY = rotation != 0.0f ? scale.y / OverloadEngine.aspectRatio : scale.y;
 		size.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
 		
@@ -175,10 +172,5 @@ public class Sprite implements Renderable, Updatable, ICloneable {
 	public void setInternalScale(Vector2 v){
 		internalScale = v;
 		renderer.setVertexData(id, internalScale);
-	}
-	
-	@Override
-	public void update(float deltaTime) {
-		// stub
 	}
 }

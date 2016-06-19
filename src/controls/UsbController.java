@@ -6,7 +6,6 @@ import java.nio.IntBuffer;
 
 import org.usb4java.BufferUtils;
 import org.usb4java.ConfigDescriptor;
-import org.usb4java.Context;
 import org.usb4java.Device;
 import org.usb4java.DeviceHandle;
 import org.usb4java.InterfaceDescriptor;

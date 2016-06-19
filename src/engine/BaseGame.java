@@ -6,18 +6,16 @@ import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 
+import physics.PhysicsWorld;
+import ui.BaseDialog;
+import utils.Vector2;
+import audio.MusicManager;
+import audio.SoundManager;
 import controls.ControllerEventListener;
 import controls.ControllerManager;
 import controls.EController;
 import controls.KeyboardController;
 import controls.MouseController;
-
-import physics.PhysicsWorld;
-import ui.BaseDialog;
-import ui.OnClickListener;
-import utils.Vector2;
-import audio.MusicManager;
-import audio.SoundManager;
 
 public class BaseGame implements Updatable {
 	protected static final int NUM_VELOCITY_ITERATIONS = 2;

@@ -194,7 +194,7 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 	}
 
 	public void setScale(Vector2 scale) {
-		body.setScale(scale);
+		setScale(scale.x, scale.y);
 	}
 
 	public void setScale(float x, float y){

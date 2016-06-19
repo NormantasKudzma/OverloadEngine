@@ -10,6 +10,9 @@ public class EngineTestMain {
 		config.isDebug = true;
 		config.isFullscreen = false;
 		
+		config.frameHeight = 640;
+		config.frameWidth = 640;
+		
 		OverloadEngine engine = new OverloadEngine(config);
 		engine.run();
 	}

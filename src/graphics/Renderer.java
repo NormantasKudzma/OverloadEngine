@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL15;
 
 import utils.Vector2;
 
-public class Renderer {
+public final class Renderer {
 	private static Renderer INSTANCE = new Renderer();
 	
 	public static final int DATA_PER_VERTEX = 8;

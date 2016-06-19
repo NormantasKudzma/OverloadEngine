@@ -67,8 +67,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.GL11;
 
-import utils.FastMath;
-
 /**
  * A utility class to load textures for OpenGL. This source is based on a
  * texture that can be found in the Java Gaming (www.javagaming.org) Wiki. It
