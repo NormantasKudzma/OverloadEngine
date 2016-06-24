@@ -3,28 +3,32 @@ package ui.animations;
 import utils.Vector2;
 
 public class QuadInterpolator implements Interpolator {
-	private float a;
-	private float aisq;
+	private float a, a1, a2;
 	private Vector2 vertex;
-	private float d;
+	private float value;
 	
 	public QuadInterpolator(){
 		this(new Vector2(0.75f, 1.25f));
 	}
 	
 	public QuadInterpolator(Vector2 vertex){
-		a = -(vertex.y) / (vertex.x * vertex.x);
+		setVertex(vertex);
+	}
+	
+	public void setVertex(Vector2 vertex){
 		this.vertex = vertex;
 		
-		aisq = a * vertex.x * vertex.x;
+		a1 = -vertex.y / (vertex.x * vertex.x);
+		a2 = (1.0f - vertex.y) / ((1.0f - vertex.x) * (1.0f - vertex.x));
+		
+		a = a1;
 	}
 	
 	@Override
 	public void interpolate(Vector2 startVal, Vector2 endVal, Vector2 out, float t) {
-		d = startVal.x + (endVal.x - startVal.x) * t;		
-		out.x = a * d * d - aisq + vertex.y;
+		a = t <= 0.5f ? a1 : a2;
 		
-		d = startVal.y + (endVal.y - startVal.y) * t;		
-		out.y = a * d * d - aisq + vertex.y;
+		value = a * (t - vertex.x) * (t - vertex.x) + vertex.y;
+		out.set(startVal.x + (endVal.x - startVal.x) * value, startVal.y + (endVal.y - startVal.y) * value);
 	}
 }

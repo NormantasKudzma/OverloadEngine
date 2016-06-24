@@ -9,9 +9,10 @@ public class EngineTestMain {
 		config.game = new TestGame();
 		config.isDebug = true;
 		config.isFullscreen = false;
+		config.vSyncEnabled = true;
 		
-		config.frameHeight = 640;
 		config.frameWidth = 640;
+		config.frameHeight = 480;
 		
 		OverloadEngine engine = new OverloadEngine(config);
 		engine.run();

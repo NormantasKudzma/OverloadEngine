@@ -3,6 +3,7 @@ package ui;
 import engine.BaseGame;
 import graphics.Renderable;
 import graphics.Sprite;
+import ui.animations.QuadInterpolator;
 import ui.animations.ScaleAnimation;
 import utils.Vector2;
 
@@ -30,6 +31,7 @@ public class SpriteComponent extends Composite{
 	public SpriteComponent(BaseGame game) {
 		super(game);
 		growAnimation.setDuration(0.1f);
+		growAnimation.setFunction(new QuadInterpolator());
 		addAnimation(growAnimation);
 	}
 	
