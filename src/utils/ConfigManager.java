@@ -5,7 +5,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +15,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
+import java.util.regex.PatternSyntaxException;
 
 import org.json.JSONObject;
 import org.lwjgl.BufferUtils;
@@ -24,6 +25,7 @@ import sun.misc.IOUtils;
 public class ConfigManager {
 	private static String commentDelim = "#";
 	private static String kvDelim = "=";
+	public static ArrayList<String> gameConfiguration = null;
 
 	public static ArrayList<String> loadFileLines(String path){
 		try {
@@ -54,29 +56,7 @@ public class ConfigManager {
 			URL url = Thread.currentThread().getContextClassLoader().getResource(path);
 			System.out.println("Tryload " + url.toString());
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-			Config<String, String> cfg = new Config<String, String>();
-			String line;
-			String[] params;
-
-			while ((line = br.readLine()) != null) {
-				if (line.isEmpty() || line.startsWith(commentDelim)) {
-					continue;
-				}
-
-				params = line.split(kvDelim);
-				// Discard mangled lines
-				if (params.length != 2) {
-					continue;
-				}
-
-				if (isHeaderUnique) {
-					isHeaderUnique = false;
-					cfg.firstLine = new Pair<Object, Object>(params[0], params[1]);
-					continue;
-				}
-
-				cfg.contents.add(new Pair<String, String>(params[0], params[1]));
-			}
+			Config<String, String> cfg = parseConfigFromBuffer(br, isHeaderUnique);
 			br.close();
 			return cfg;
 		}
@@ -105,6 +85,21 @@ public class ConfigManager {
 		return null;
 	}
 
+	public static Config<String, String> loadFileAsPairs(String path){
+		try {
+			System.out.println("Tryload " + path);
+			File file = new File(path);
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			Config<String, String> cfg = parseConfigFromBuffer(br, false);
+			br.close();
+			return cfg;
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
 		ByteBuffer buffer;
 
@@ -153,6 +148,38 @@ public class ConfigManager {
 		return buffer;
 	}
 
+	public static Config<String, String> parseConfigFromBuffer(BufferedReader br, boolean isHeaderUnique){
+		Config<String, String> cfg = new Config<String, String>();
+		String line;
+		String[] params;
+
+		try {
+			while ((line = br.readLine()) != null) {
+				if (line.isEmpty() || line.startsWith(commentDelim)) {
+					continue;
+				}
+	
+				params = line.split(kvDelim);
+				// Discard mangled lines
+				if (params.length != 2) {
+					continue;
+				}
+	
+				if (isHeaderUnique) {
+					isHeaderUnique = false;
+					cfg.firstLine = new Pair<Object, Object>(params[0], params[1]);
+					continue;
+				}
+	
+				cfg.contents.add(new Pair<String, String>(params[0], params[1]));
+			}
+		}
+		catch (IOException | NullPointerException | PatternSyntaxException e){
+			e.printStackTrace();
+		}
+		return cfg;
+	}
+	
 	private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
 		ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
 		buffer.flip();

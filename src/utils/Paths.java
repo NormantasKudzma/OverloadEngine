@@ -15,6 +15,5 @@ public final class Paths {
 	public static final String DEFAULT_FONT_IMG = FONTS + "simplefont.png";
 	public static final String DEFAULT_FONT_JSON = FONTS + "simplefont.json";
 
-	public static final String USER_CONFIG_DIR = (System.getProperty("user.dir") + "\\usercfg\\").substring(3).replace("\\", "/");
-	public static final String USER_CONFIGS = USER_CONFIG_DIR + "Keybinds.json";
+	public static final String USER_CONFIG = "config.dat";
 }

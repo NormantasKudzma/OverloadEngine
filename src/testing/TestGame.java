@@ -26,21 +26,5 @@ public class TestGame extends BaseGame {
 		dialog.addChild(button);
 		dialog.setVisible(true);
 		addDialog(dialog);
-		
-		Interpolator quad = new QuadInterpolator();
-		Vector2 out = new Vector2();
-		System.out.println("0 --- > 1");
-		for (int i = 0; i <= 10; ++i){
-			quad.interpolate(Vector2.zero, Vector2.one, out, i * 0.1f);
-			System.out.println(out);
-		}
-		System.out.println("------------");
-		System.out.println("4 --- > 9");
-		Vector2 four = new Vector2(4.0f, 4.0f);
-		Vector2 nine = new Vector2(9.0f, 9.0f);
-		for (int i = 0; i <= 10; ++i){
-			quad.interpolate(four, nine, out, i * 0.1f);
-			System.out.println(out);
-		}
 	}
 }

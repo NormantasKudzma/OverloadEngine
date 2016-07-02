@@ -186,6 +186,17 @@ public class BaseGame implements Updatable {
 		k.startController();
 	}
 
+	/** 
+	 * Configuration is loaded once at the creation of engine, then this method is called.
+	 * User should parse and use whatever values he needs from the configuration file.
+	 * User can use this method whenever the game configuration values must be refreshed.
+	 * 
+	 * @param config - Configuration file as lines
+	 */
+	public void onGameConfigurationLoaded(ArrayList<String> config){
+		//
+	}
+	
 	public void removeDialog(String name){
 		for (int i = 0; i < dialogList.size(); i++){
 			if (dialogList.get(i).getName().equals(name)){

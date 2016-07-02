@@ -1,18 +1,14 @@
 package engine;
 
+import utils.Paths;
+
 public class EngineConfig {
 	public BaseGame game = null;
 	
 	public String title = "Game";
-
-	public int frameHeight = 720;
-	public int frameWidth = 1280;
-	public int targetFps = 60;
-	public int targetBpp = 32;
-
+	public String configPath = System.getProperty("user.dir") + "\\" + Paths.USER_CONFIG;
 	public boolean isDebug = false;
-	public boolean isFullscreen = true;
-	public boolean vSyncEnabled = true;
+	public int targetFps = 60;
 	
 	public EngineConfig(){
 		
@@ -29,18 +25,13 @@ public class EngineConfig {
 			return false;
 		}
 
-		if (frameWidth <= 0 || frameHeight <= 0){
-			System.err.println("Window size cannot be smaller than 1x1.");
-			return false;
-		}
-
 		if (targetFps <= 0){
 			System.err.println("Target fps cannot be less than 1.");
 			return false;
 		}
 
-		if (targetBpp <= 1){
-			System.err.println("Target bpp cannot be less than 1.");
+		if (configPath == null){
+			System.err.println("Configuration file path must not be null.");
 			return false;
 		}
 				
