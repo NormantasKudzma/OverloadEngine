@@ -22,6 +22,10 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 	protected Renderable sprite;
 	protected Updatable spriteUpdatable;
 
+	public GameObject(){
+		this(null);
+	}
+	
 	public GameObject(BaseGame game) {
 		this.game = game;
 	}
@@ -82,6 +86,10 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 			sprite = null;
 		}
 		game = null;
+	}
+	
+	public Color getColor(){
+		return sprite == null ? null : sprite.getColor();
 	}
 	
 	public float getHorizontalVelocity(){

@@ -18,7 +18,7 @@ import controls.ControllerManager;
 
 public class OverloadEngine {
 	private enum Settings {
-		frameWidth {
+		framewidth {
 			String get(){
 				return "" + OverloadEngine.frameWidth;
 			}
@@ -32,7 +32,7 @@ public class OverloadEngine {
 				}
 			}
 		},
-		frameHeight {
+		frameheight {
 			String get() {
 				return "" + OverloadEngine.frameHeight;
 			}
@@ -46,7 +46,7 @@ public class OverloadEngine {
 				}
 			}
 		},
-		fullScreen {
+		fullscreen {
 			@Override
 			String get() {
 				return "" + engine.isFullScreen;
@@ -101,11 +101,12 @@ public class OverloadEngine {
 					continue;
 				}
 				
-				Settings setting = Settings.valueOf(params[0]);
-				if (setting == null){
-					continue;
+				try {
+					Settings.valueOf(params[0]).set(params[1]);
 				}
-				setting.set(params[1]);
+				catch (Exception e){
+					e.printStackTrace();
+				}
 			}
 		}
 	}

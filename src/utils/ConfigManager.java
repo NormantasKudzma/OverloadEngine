@@ -28,10 +28,11 @@ public class ConfigManager {
 	public static ArrayList<String> gameConfiguration = null;
 
 	public static ArrayList<String> loadFileLines(String path){
+		BufferedReader br = null;
 		try {
-			URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-			System.out.println("Tryload " + url.toString());
-			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			File file = new File(path);
+			System.out.println("Tryload " + path);
+			br = new BufferedReader(new FileReader(file));
 			ArrayList<String> lines = new ArrayList<String>();
 			String line;
 			
@@ -39,10 +40,17 @@ public class ConfigManager {
 				lines.add(line);
 			}
 			
+			br.close();
+			
 			return lines;
 		}
 		catch (Exception e){
 			e.printStackTrace();
+		}
+		finally {
+			if (br != null){
+				try { br.close(); } catch (Exception e){}
+			}
 		}
 		return null;
 	}

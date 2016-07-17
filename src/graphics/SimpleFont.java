@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 
 import physics.PhysicsBody;
 import utils.FastMath;
+import utils.Vector2;
 import engine.GameObject;
 
 public class SimpleFont extends GameObject {
@@ -22,6 +23,9 @@ public class SimpleFont extends GameObject {
 	private Graphics2D measureGraphics;
 	private FontRenderContext frc;
 	private Rectangle textBounds = new Rectangle();
+	
+	private Vector2 textSize = new Vector2();
+	private Vector2 textOffset = new Vector2();
 	
 	public SimpleFont(String text) {
 		this(text, DEFAULT_FONT);
@@ -54,6 +58,14 @@ public class SimpleFont extends GameObject {
 		return text;
 	}
 	
+	public Vector2 getTextOffset(){
+		return textOffset;
+	}
+	
+	public Vector2 getTextSize(){
+		return textSize;
+	}
+	
 	private void initBufferedImage(int w, int h){
 		bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		measureGraphics = (Graphics2D)bufferedImage.getGraphics();
@@ -69,7 +81,9 @@ public class SimpleFont extends GameObject {
 			return;
 		}
 		
+		Color oldColor = null;
 		if (sprite != null){
+			oldColor = sprite.getColor();
 			sprite.destroy();
 		}
 		
@@ -78,6 +92,9 @@ public class SimpleFont extends GameObject {
 		
 		GlyphVector gv = font.createGlyphVector(frc, text);
 		Rectangle rect = gv.getVisualBounds().getBounds();
+		
+		Vector2.pixelCoordsToNormal(textSize.set(rect.width, rect.height));
+		Vector2.pixelCoordsToNormal(textOffset.set(rect.x, rect.y));
 		
 		int newWidth = FastMath.nextPowerOfTwo(rect.width + rect.x);
 		int newHeight = FastMath.nextPowerOfTwo(rect.height);
@@ -99,6 +116,7 @@ public class SimpleFont extends GameObject {
 		measureGraphics.drawString(text, newX, -rect.y + newY);
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
 		sprite = new Sprite(TextureLoader.getInstance().getTexture(textSubImage));
+		sprite.setColor(oldColor);
 	}
 	
 	public void setFont(Font f){

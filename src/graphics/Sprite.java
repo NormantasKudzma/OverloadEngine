@@ -18,6 +18,7 @@ public class Sprite implements Renderable, ICloneable {
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
 	private Vector2 botRight;
+	private Color color;
 	private int id;
 	
 	// Internal vector for render calculations
@@ -65,6 +66,10 @@ public class Sprite implements Renderable, ICloneable {
 		botRight = null;
 		internalScale = null;
 		size = null;
+	}
+	
+	public Color getColor(){
+		return color;
 	}
 	
 	public Vector2 getInternalScale(){
@@ -140,6 +145,7 @@ public class Sprite implements Renderable, ICloneable {
 	
 	public void setColor(Color c){
 		if (c != null){
+			color = c;
 			renderer.setColorData(id, c);
 		}
 	}

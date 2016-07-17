@@ -49,6 +49,10 @@ public class Layer implements Renderable, Updatable {
 		destroyList.clear();
 	}
 
+	public Color getColor(){
+		return null;
+	}
+	
 	public ArrayList<GameObject> getDestroyList(){
 		return destroyList;
 	}

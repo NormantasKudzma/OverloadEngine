@@ -33,13 +33,14 @@ public class MouseController extends AbstractController {
 			mouseMoveListener.handleEvent(0, mousePos);
 		}
 
+		for (int i = 0; i < Mouse.getButtonCount(); ++i){
+			buttonStates[i] += Mouse.isButtonDown(i) ? 1 : -buttonStates[i];
+		}
+		
 		for (ControllerKeybind bind : keyBindings) {
 			intmask = bind.getIntmask();
-			if (Mouse.isButtonDown(intmask)) {
-				bind.getCallback().handleEvent(intmask, mousePos, ++buttonStates[intmask]);
-			}
-			else {
-				buttonStates[intmask] = 0;
+			if (Mouse.isButtonDown(intmask)){
+				bind.getCallback().handleEvent(intmask, mousePos, buttonStates[intmask]);
 			}
 		}
 	}

@@ -47,6 +47,10 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		spriteArray = null;
 	}
 	
+	public Color getColor(){
+		return spriteArray[currentState][currentFrame].getColor();
+	}
+	
 	public float getDuration(){
 		return spriteArray[currentState].length * frameDelay;
 	}
