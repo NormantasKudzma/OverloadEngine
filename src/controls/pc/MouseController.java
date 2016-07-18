@@ -1,19 +1,23 @@
-package controls;
+package controls.pc;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import utils.Vector2;
+import controls.Controller;
+import controls.ControllerEventListener;
+import controls.ControllerKeybind;
 
-public class MouseController extends AbstractController {
+public class MouseController extends Controller {
 	private int buttonStates[];
 	private float widthInverse;
 	private float heightInverse;
 	private Vector2 mousePos;
 	private ControllerEventListener mouseMoveListener;
 
-	public MouseController(EController type, int index) {
-		super(type, index);
+	public MouseController(int index) {
+		super(index);
+		type = Type.TYPE_MOUSE;
 		buttonStates = new int[Mouse.getButtonCount()];
 		mousePos = new Vector2();
 		widthInverse = 2.0f / Display.getWidth();

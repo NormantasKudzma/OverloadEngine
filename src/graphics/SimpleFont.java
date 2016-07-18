@@ -12,6 +12,8 @@ import physics.PhysicsBody;
 import utils.FastMath;
 import utils.Vector2;
 import engine.GameObject;
+import engine.OverloadEngine;
+import graphics.pc.TextureLoaderPc;
 
 public class SimpleFont extends GameObject {
 	public static final Font DEFAULT_FONT = new Font("Consolas", Font.PLAIN, 32);
@@ -115,7 +117,7 @@ public class SimpleFont extends GameObject {
 		
 		measureGraphics.drawString(text, newX, -rect.y + newY);
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
-		sprite = new Sprite(TextureLoader.getInstance().getTexture(textSubImage));
+		sprite = new Sprite(OverloadEngine.getInstance().renderer.getTextureLoader().getTexture(textSubImage));
 		sprite.setColor(oldColor);
 	}
 	

@@ -1,16 +1,11 @@
 package graphics;
 
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glRotatef;
-import static org.lwjgl.opengl.GL11.glScalef;
-import static org.lwjgl.opengl.GL11.glTranslatef;
-
 import java.io.IOException;
 
 import utils.ICloneable;
 import utils.Vector2;
 import engine.OverloadEngine;
+import engine.Renderer;
 
 public class Sprite implements Renderable, ICloneable {
 	private Renderer renderer;
@@ -100,14 +95,14 @@ public class Sprite implements Renderable, ICloneable {
 	}	
 	
 	private void init(){
-		renderer = Renderer.getInstance();
+		renderer = OverloadEngine.getInstance().renderer;
 		id = renderer.genSpriteId();
 		renderer.setColorData(id, Color.WHITE);
 	}
 	
 	public void loadTexture(String path){
 		try {
-			texture = TextureLoader.getInstance().getTexture(path);
+			texture = renderer.getTextureLoader().getTexture(path);
 		}
 		catch (IOException e){
 			System.err.println("Could not load texture from " + path);
@@ -121,26 +116,10 @@ public class Sprite implements Renderable, ICloneable {
 	
 	@Override
 	public void render(Vector2 position, Vector2 scale, float rotation) {
-		// store the current model matrix
-		glPushMatrix();
-
-		// calculate the center pivot of object
-		// TODO: implement pivot points
-		// TODO: fix rotating
-		float scaleY = rotation != 0.0f ? scale.y / OverloadEngine.aspectRatio : scale.y;
+		float scaleY = rotation != 0.0f ? scale.y / OverloadEngine.getInstance().aspectRatio : scale.y;
 		size.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
 		
-		texture.bind();
-
-		glTranslatef(position.x, position.y, 0);
-		glRotatef(rotation, 0, 0, 1.0f);
-		glTranslatef(-size.x, size.y, 0);
-		glScalef(scale.x, -scaleY, 1.0f);
- 
-		renderer.render(id);
-
-        // Restore the model view matrix to prevent contamination
-		glPopMatrix();
+		renderer.render(id, texture, size, position, scale, rotation);
 	}
 	
 	public void setColor(Color c){

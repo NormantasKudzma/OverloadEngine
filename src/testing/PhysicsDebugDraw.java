@@ -1,4 +1,4 @@
-package graphics;
+package testing;
 
 import org.jbox2d.collision.AABB;
 import org.jbox2d.dynamics.Fixture;

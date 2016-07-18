@@ -17,8 +17,8 @@ import utils.Paths;
 public class ControllerManager {
 	private static final ControllerManager INSTANCE = new ControllerManager();
 
-	private ArrayList<AbstractController> allControllers = new ArrayList<AbstractController>();
-	private ArrayList<AbstractController> activeControllers = new ArrayList<AbstractController>();
+	private ArrayList<Controller> allControllers = new ArrayList<Controller>();
+	private ArrayList<Controller> activeControllers = new ArrayList<Controller>();
 	private ArrayList<Pair<Integer, Integer>> allowedUsbProductVendorList;
 	private Context libUsbContext;
 	private DeviceList usbDeviceList;
@@ -31,23 +31,26 @@ public class ControllerManager {
 		}
 		loadAllowedUsbDeviceList(Paths.ALLOWED_DEVICES);
 		loadUsbDevices();
-		
-		allControllers.add(new KeyboardController(EController.KEYBOARD_CONTROLLER, 0));
-		allControllers.add(new MouseController(EController.MOUSE_CONTROLLER, 0));
 	}
 
-	void controllerStarted(AbstractController controller){
+	public void addController(Controller controller){
+		if (!allControllers.contains(controller)){
+			allControllers.add(controller);
+		}
+	}
+	
+	public void controllerStarted(Controller controller){
 		if (!activeControllers.contains(controller)){
 			activeControllers.add(controller);
 		}
 	}
 	
-	void controllerStopped(AbstractController controller){
+	public void controllerStopped(Controller controller){
 		activeControllers.remove(controller);
 	}
 	
 	public void destroyManager() {
-		for (AbstractController c : allControllers) {
+		for (Controller c : allControllers) {
 			c.destroyController();
 		}
 		
@@ -74,24 +77,24 @@ public class ControllerManager {
 			for (Pair<Integer, Integer> pair : allowedUsbProductVendorList) {
 				if (descriptor.idProduct() == pair.key && descriptor.idVendor() == pair.value) {
 					String bp = LibUsb.getBusNumber(device) + ":" + LibUsb.getPortNumber(device);
-					allControllers.add(new UsbController(EController.USB_CONTROLLER, index, bp, device, pair));
+					allControllers.add(new UsbController(index, bp, device, pair));
 					++index;
 				}
 			}
 		}
 	}
 
-	public AbstractController getController(EController type) {
+	public Controller getController(Controller.Type type) {
 		return getController(type, 0);
 	}
 
-	public AbstractController getController(EController type, int index) {
-		for (AbstractController c : allControllers){
+	public Controller getController(Controller.Type type, int index) {
+		for (Controller c : allControllers){
 			if (c.getType() == type && c.getIndex() == index){
 				return c;
 			}
 		}
-		System.err.println("Controller with type " + type.toString() + " and index " + index + " was not found.");
+
 		return null;
 	}
 
@@ -99,7 +102,7 @@ public class ControllerManager {
 		return INSTANCE;
 	}
 
-	public int getNumControllers(EController type) {
+	public int getNumControllers(Controller.Type type) {
 		int numControllers = 0;
 		while (getController(type, numControllers) != null){
 			++numControllers;
@@ -129,8 +132,8 @@ public class ControllerManager {
 	
 	private void loadUsbDevices() {
 		int index = 0;
-		AbstractController c = null;
-		while ((c = getController(EController.USB_CONTROLLER, index)) != null){
+		Controller c = null;
+		while ((c = getController(Controller.Type.TYPE_USB, index)) != null){
 			allControllers.remove(c);
 			++index;
 		}
@@ -149,7 +152,7 @@ public class ControllerManager {
 	}
 
 	public void pollControllers() {
-		for (AbstractController c : activeControllers) {
+		for (Controller c : activeControllers) {
 			c.pollController();
 		}
 	}

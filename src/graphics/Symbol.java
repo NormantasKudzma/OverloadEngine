@@ -2,7 +2,7 @@ package graphics;
 
 import utils.Vector2;
 
-public class Symbol implements Cloneable{
+public class Symbol implements Cloneable {
 	public Sprite sprite;
 	public Vector2 offset;
 	

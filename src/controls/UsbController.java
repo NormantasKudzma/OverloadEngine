@@ -14,7 +14,7 @@ import org.usb4java.LibUsbException;
 
 import utils.Pair;
 
-public class UsbController extends AbstractController {
+public class UsbController extends Controller {
 	public static final long DEFAULT_POLL_TIMEOUT_MCS = 20000; // Poll sleep time in microseconds	
 	
 	private ByteBuffer buffer;
@@ -30,8 +30,9 @@ public class UsbController extends AbstractController {
 	private Pair<Integer, Integer> productVendor;
 	private long lastBitmask = 0;
 
-	public UsbController(EController type, int index, String bp, Device device, Pair<Integer, Integer> pv) {
-		super(type, index);
+	public UsbController(int index, String bp, Device device, Pair<Integer, Integer> pv) {
+		super(index);
+		type = Type.TYPE_USB;
 		busPort = bp;
 		this.device = device;
 		productVendor = pv;

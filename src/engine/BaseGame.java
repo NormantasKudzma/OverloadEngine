@@ -4,18 +4,11 @@ import graphics.Layer;
 
 import java.util.ArrayList;
 
-import org.lwjgl.input.Keyboard;
-
 import physics.PhysicsWorld;
 import ui.BaseDialog;
 import utils.Vector2;
 import audio.MusicManager;
 import audio.SoundManager;
-import controls.ControllerEventListener;
-import controls.ControllerManager;
-import controls.EController;
-import controls.KeyboardController;
-import controls.MouseController;
 
 public class BaseGame implements Updatable {
 	protected static final int NUM_VELOCITY_ITERATIONS = 2;
@@ -152,7 +145,7 @@ public class BaseGame implements Updatable {
 	 * Game initialization (creating entities, loading map etc.) goes here
 	 */
 	public void init() {
-		MouseController c = (MouseController) ControllerManager.getInstance().getController(EController.MOUSE_CONTROLLER);
+		/*MouseController c = (MouseController) ControllerManager.getInstance().getController(EController.MOUSE_CONTROLLER);
 		c.addKeybind(0, new ControllerEventListener() {
 
 			@Override
@@ -183,7 +176,7 @@ public class BaseGame implements Updatable {
 			}
 			
 		});
-		k.startController();
+		k.startController();*/
 	}
 
 	/** 

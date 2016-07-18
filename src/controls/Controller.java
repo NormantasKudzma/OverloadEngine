@@ -2,7 +2,25 @@ package controls;
 
 import java.util.ArrayList;
 
-public abstract class AbstractController {
+public abstract class Controller {
+	public enum Type {
+		TYPE_INVALID, 
+		TYPE_USB, 
+		TYPE_KEYBOARD, 
+		TYPE_MOUSE;
+
+		public static Type getFromString(String name) {
+			Type types[] = Type.values();
+			for (Type i : types) {
+				if (i.toString().equalsIgnoreCase(name)) {
+					return i;
+				}
+			}
+
+			return TYPE_INVALID;
+		}
+	}
+	
 	protected enum ControllerState {
 		INACTIVE,
 		STARTED,
@@ -16,12 +34,12 @@ public abstract class AbstractController {
 	protected Thread eventThread;
 	protected ArrayList<ControllerKeybind> keyBindings = new ArrayList<ControllerKeybind>();
 	protected ControllerKeybind oneClickCallback;
-	protected EController type;
+	protected Type type;
 	protected int index;
 
-	public AbstractController(EController type, int index){
-		this.type = type;
+	public Controller(int index){
 		this.index = index;
+		type = Type.TYPE_INVALID;
 	}
 	
 	public void addKeybind(long bitmask, ControllerEventListener callback) {
@@ -68,7 +86,7 @@ public abstract class AbstractController {
 		return index;
 	}
 	
-	public EController getType(){
+	public Type getType(){
 		return type;
 	}
 	

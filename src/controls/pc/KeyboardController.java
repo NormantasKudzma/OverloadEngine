@@ -1,10 +1,14 @@
-package controls;
+package controls.pc;
 
 import org.lwjgl.input.Keyboard;
 
-public class KeyboardController extends AbstractController {
-	public KeyboardController(EController type, int index) {
-		super(type, index);
+import controls.Controller;
+import controls.ControllerKeybind;
+
+public class KeyboardController extends Controller {
+	public KeyboardController(int index) {
+		super(index);
+		type = Type.TYPE_KEYBOARD;
 	}
 
 	public void pollController() {
