@@ -1,6 +1,5 @@
 package graphics.pc;
 
-import engine.OverloadEngine;
 import graphics.Color;
 import graphics.CustomFont;
 import graphics.SimpleFont;
@@ -18,8 +17,7 @@ import utils.FastMath;
 import utils.Vector2;
 
 public class SimpleFontPc extends SimpleFont {
-	private String text;
-	private CustomFont font;
+	private CustomFontPc font;
 	
 	private BufferedImage bufferedImage;
 	private Graphics2D measureGraphics;
@@ -37,6 +35,10 @@ public class SimpleFontPc extends SimpleFont {
 	public void destroy() {
 		super.destroy();
 		measureGraphics.dispose();
+	}
+	
+	public CustomFont getFont(){
+		return font;
 	}
 	
 	protected void initBufferedImage(int w, int h){
@@ -63,7 +65,7 @@ public class SimpleFontPc extends SimpleFont {
 		// Prerender text to a texture using default java tools, 
 		// because dealing with fonts is a nightmare
 		
-		Font f = ((CustomFontPc)font).get();
+		Font f = font.get();
 		GlyphVector gv = f.createGlyphVector(frc, text);
 		Rectangle rect = gv.getVisualBounds().getBounds();
 		
@@ -99,18 +101,9 @@ public class SimpleFontPc extends SimpleFont {
 			return;
 		}
 		
-		font = f;
-		measureGraphics.setFont(((CustomFontPc)f).get());
+		font = (CustomFontPc)f;
+		measureGraphics.setFont(font.get());
 		frc = measureGraphics.getFontMetrics().getFontRenderContext();
-		prerenderText();
-	}
-	
-	public void setText(String text) {
-		if (this.text != null && text.equals(this.text)){
-			return;
-		}
-		
-		this.text = text;
 		prerenderText();
 	}
 }

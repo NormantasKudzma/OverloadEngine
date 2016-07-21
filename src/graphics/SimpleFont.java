@@ -11,7 +11,6 @@ public abstract class SimpleFont extends GameObject {
 	public static final Renderer RENDERER;
 	
 	protected String text;
-	protected CustomFont font;
 	
 	protected Vector2 textSize = new Vector2();
 	protected Vector2 textOffset = new Vector2();
@@ -34,9 +33,7 @@ public abstract class SimpleFont extends GameObject {
 		return cf;
 	}
 	
-	public CustomFont getFont(){
-		return font;
-	}
+	public abstract CustomFont getFont();
 	
 	public static CustomFont getDefaultFont(){
 		return DEFAULT_FONT;

@@ -14,7 +14,6 @@ public class CustomFontPc implements CustomFont{
 	public Font get(){
 		return f;
 	}
-
 	
 	@Override
 	public CustomFont deriveFont(float size) {
