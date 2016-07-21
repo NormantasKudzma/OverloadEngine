@@ -2,17 +2,15 @@ package ui;
 
 import engine.BaseGame;
 import graphics.Color;
+import graphics.CustomFont;
 import graphics.SimpleFont;
-
-import java.awt.Font;
-
 import utils.Vector2;
 
 public class Label extends Component {
 	private SimpleFont font;
 	
 	public Label(BaseGame game, String text){
-		this(game, new SimpleFont(text));
+		this(game, SimpleFont.create(text));
 	}
 	
 	public Label(BaseGame game, SimpleFont font){
@@ -28,7 +26,7 @@ public class Label extends Component {
 		return font.getText();
 	}
 	
-	public void setFont(Font f){
+	public void setFont(CustomFont f){
 		font.setFont(f);
 	}
 	

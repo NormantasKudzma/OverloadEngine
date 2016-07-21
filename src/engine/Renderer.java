@@ -1,6 +1,7 @@
 package engine;
 
 import graphics.Color;
+import graphics.FontBuilder;
 import graphics.Texture;
 import graphics.TextureLoader;
 import utils.Vector2;
@@ -13,6 +14,8 @@ public interface Renderer {
 	public void init();
 	
 	public int genSpriteId();
+	
+	public FontBuilder getFontBuilder();
 	
 	public TextureLoader getTextureLoader();
 	

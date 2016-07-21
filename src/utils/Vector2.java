@@ -4,6 +4,7 @@ import engine.OverloadEngine;
 
 import org.jbox2d.common.Vec2;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 public final class Vector2 {
 	public static final float VECTOR2_TO_PHYSICS = 20.0f;
@@ -202,7 +203,7 @@ public final class Vector2 {
 		return new Vector2(i.x, i.y);
 	}
 	
-	public static Vector2 fromJsonArray(JSONArray json){
+	public static Vector2 fromJsonArray(JSONArray json) throws JSONException{
 		return new Vector2((float)json.getDouble(0), (float)json.getDouble(1));
 	}
 	

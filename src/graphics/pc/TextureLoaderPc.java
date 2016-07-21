@@ -15,6 +15,7 @@ import graphics.TextureLoader;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -23,10 +24,14 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Hashtable;
+
+import javax.swing.ImageIcon;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -79,6 +84,21 @@ public class TextureLoaderPc extends TextureLoader {
 		return textureIDBuffer.get(0);
 	}
 
+	public Texture getTexture(String resourceName){
+		Texture tex = table.get(resourceName);
+
+		if (tex != null) {
+			return tex;
+		}
+
+		BufferedImage bufferedImage = loadImage(resourceName);
+		tex = getTexture(bufferedImage);
+
+		table.put(resourceName, tex);
+		
+		return tex;
+	}
+	
 	public Texture getTexture(BufferedImage bufferedImage){
 		int srcPixelFormat = -1;
 		int textureID = createTextureID();
@@ -162,5 +182,26 @@ public class TextureLoaderPc extends TextureLoader {
 		imageBuffer.flip();
 
 		return imageBuffer;
+	}
+
+	/**
+	 * Load a given resource as a buffered image
+	 * 
+	 * @param ref The location of the resource to load
+	 * @return The loaded buffered image
+	 * @throws IOException
+	 *             Indicates a failure to find a resource
+	 */
+	protected BufferedImage loadImage(String ref) {
+		URL url = TextureLoader.class.getClassLoader().getResource(ref);
+		System.out.println("Tryload " + url.toString());
+		Image img = new ImageIcon(url).getImage();
+		BufferedImage bufferedImage = new BufferedImage(img.getWidth(null),
+				img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		Graphics g = bufferedImage.getGraphics();
+		g.drawImage(img, 0, 0, null);
+		g.dispose();
+
+		return bufferedImage;
 	}
 }

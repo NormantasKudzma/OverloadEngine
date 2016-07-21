@@ -88,7 +88,7 @@ public abstract class OverloadEngine {
 			String params[] = null;
 			for (String line : values){
 				// Ignore emtpy lines and comments
-				if (line.startsWith("#") || line.isEmpty()){
+				if (line.startsWith("#") || line.length() <= 0){
 					continue;
 				}
 				

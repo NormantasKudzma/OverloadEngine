@@ -55,6 +55,6 @@ public class CheckBox extends SpriteComponent{
 	}
 	
 	public void setText(String text){
-		setText(new SimpleFont(text));
+		setText(SimpleFont.create(text));
 	}
 }

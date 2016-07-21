@@ -11,8 +11,10 @@ import utils.Vector2;
 import engine.OverloadEngine;
 import engine.Renderer;
 import graphics.Color;
+import graphics.FontBuilder;
 import graphics.Texture;
 import graphics.TextureLoader;
+import graphics.pc.FontBuilderPc;
 import graphics.pc.TextureLoaderPc;
 
 public final class RendererPc implements Renderer {	
@@ -27,9 +29,11 @@ public final class RendererPc implements Renderer {
 	private FloatBuffer vbo = BufferUtils.createFloatBuffer(bufferSize);
 	private ArrayList<Integer> releasedIds = new ArrayList<Integer>();
 	private TextureLoaderPc textureLoader;
+	private FontBuilder fontBuilder;
 	
 	public RendererPc(){
 		textureLoader = new TextureLoaderPc();
+		fontBuilder = new FontBuilderPc();
 	}
 	
 	public void init(){
@@ -158,5 +162,10 @@ public final class RendererPc implements Renderer {
 			.put(10 + offset, br.x).put(11 + offset, tl.y)
 			.put(18 + offset, br.x).put(19 + offset, br.y)
 			.put(26 + offset, tl.x).put(27 + offset, br.y);
+	}
+
+	@Override
+	public FontBuilder getFontBuilder() {
+		return fontBuilder;
 	}
 }

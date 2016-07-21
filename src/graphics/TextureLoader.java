@@ -31,14 +31,8 @@
  */
 package graphics;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-
-import javax.swing.ImageIcon;
 
 public abstract class TextureLoader {
 	/** The table of textures that have been loaded in this loader */
@@ -68,22 +62,7 @@ public abstract class TextureLoader {
 	 *             Indicates a failure to access the resource
 	 * @throws LWJGLException 
 	 */
-	public Texture getTexture(String resourceName) throws IOException {
-		Texture tex = table.get(resourceName);
-
-		if (tex != null) {
-			return tex;
-		}
-
-		BufferedImage bufferedImage = loadImage(resourceName);
-		tex = getTexture(bufferedImage);
-
-		table.put(resourceName, tex);
-		
-		return tex;
-	}
-
-	public abstract Texture getTexture(BufferedImage bufferedImage);
+	public abstract Texture getTexture(String resourceName);
 
 	/**
 	 * Get the closest greater power of 2 to the fold number
@@ -98,26 +77,5 @@ public abstract class TextureLoader {
 			ret *= 2;
 		}
 		return ret;
-	}
-
-	/**
-	 * Load a given resource as a buffered image
-	 * 
-	 * @param ref The location of the resource to load
-	 * @return The loaded buffered image
-	 * @throws IOException
-	 *             Indicates a failure to find a resource
-	 */
-	protected BufferedImage loadImage(String ref) throws IOException {
-		URL url = TextureLoader.class.getClassLoader().getResource(ref);
-		System.out.println("Tryload " + url.toString());
-		Image img = new ImageIcon(url).getImage();
-		BufferedImage bufferedImage = new BufferedImage(img.getWidth(null),
-				img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-		Graphics g = bufferedImage.getGraphics();
-		g.drawImage(img, 0, 0, null);
-		g.dispose();
-
-		return bufferedImage;
 	}
 }

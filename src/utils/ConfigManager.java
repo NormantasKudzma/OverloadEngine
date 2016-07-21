@@ -1,7 +1,5 @@
 package utils;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,9 +16,7 @@ import java.util.ArrayList;
 import java.util.regex.PatternSyntaxException;
 
 import org.json.JSONObject;
-import org.lwjgl.BufferUtils;
-
-import sun.misc.IOUtils;
+import org.usb4java.BufferUtils;
 
 public class ConfigManager {
 	private static String commentDelim = "#";
@@ -81,11 +77,14 @@ public class ConfigManager {
 			}
 			URL url = Thread.currentThread().getContextClassLoader().getResource(path);
 			System.out.println("Tryload " + url.toString());
-			byte buffer[] = IOUtils.readFully(url.openStream(), -1, true);
-
+			
+			File file = new File(url.getFile());
+			FileInputStream fileStream = new FileInputStream(file);
+			byte buffer[] = new byte[(int)file.length()];
+			fileStream.read(buffer, 0, buffer.length);
+			fileStream.close();
 			String contents = new String(buffer);
-			JSONObject obj = new JSONObject(contents);
-			return obj;
+			return new JSONObject(contents);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -116,16 +115,17 @@ public class ConfigManager {
 			FileInputStream fis = new FileInputStream(file);
 			FileChannel fc = fis.getChannel();
 
-			buffer = BufferUtils.createByteBuffer((int) fc.size() + 1);
+			buffer = BufferUtils.allocateByteBuffer((int)fc.size() + 1);
 
-			while (fc.read(buffer) != -1)
-				;
+			while (fc.read(buffer) != -1){
+				// do nothing
+			}
 
 			fis.close();
 			fc.close();
 		}
 		else {
-			buffer = BufferUtils.createByteBuffer(bufferSize);
+			buffer = BufferUtils.allocateByteBuffer(bufferSize);
 
 			InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
 			if (source == null){
@@ -163,7 +163,7 @@ public class ConfigManager {
 
 		try {
 			while ((line = br.readLine()) != null) {
-				if (line.isEmpty() || line.startsWith(commentDelim)) {
+				if (line.length() <= 0 || line.startsWith(commentDelim)) {
 					continue;
 				}
 	
@@ -189,13 +189,13 @@ public class ConfigManager {
 	}
 	
 	private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-		ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
+		ByteBuffer newBuffer = BufferUtils.allocateByteBuffer(newCapacity);
 		buffer.flip();
 		newBuffer.put(buffer);
 		return newBuffer;
 	}
 
-	public static Font loadFont(String path, int size) {
+	/*public static Font loadFont(String path, int size) {
 		try {
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			URL url = Thread.currentThread().getContextClassLoader().getResource(path);
@@ -206,5 +206,5 @@ public class ConfigManager {
 		catch (Exception e) {
 			return null;
 		}
-	}
+	}*/
 }

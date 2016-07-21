@@ -1,20 +1,22 @@
 package graphics;
 
-import java.io.IOException;
-
 import utils.ICloneable;
 import utils.Vector2;
 import engine.OverloadEngine;
 import engine.Renderer;
 
 public class Sprite implements Renderable, ICloneable {
-	private Renderer renderer;
+	protected static final Renderer renderer;
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
 	private Vector2 botRight;
 	private Color color;
 	private int id;
+	
+	static {
+		renderer = OverloadEngine.getInstance().renderer;
+	}
 	
 	// Internal vector for render calculations
 	private Vector2 size = new Vector2();
@@ -55,7 +57,6 @@ public class Sprite implements Renderable, ICloneable {
 	
 	public void destroy(){
 		renderer.releaseId(id);
-		renderer = null;
 		texture = null;
 		topLeft = null;
 		botRight = null;
@@ -95,19 +96,12 @@ public class Sprite implements Renderable, ICloneable {
 	}	
 	
 	private void init(){
-		renderer = OverloadEngine.getInstance().renderer;
 		id = renderer.genSpriteId();
 		renderer.setColorData(id, Color.WHITE);
 	}
 	
 	public void loadTexture(String path){
-		try {
-			texture = renderer.getTextureLoader().getTexture(path);
-		}
-		catch (IOException e){
-			System.err.println("Could not load texture from " + path);
-			e.printStackTrace();
-		}
+		texture = renderer.getTextureLoader().getTexture(path);
 	}
 	
 	public void render(){

@@ -7,9 +7,9 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
-import testing.PhysicsDebugDraw;
 import utils.ConfigManager;
 import utils.DebugFrameCounter;
+import utils.pc.PhysicsDebugDraw;
 import controls.ControllerManager;
 import controls.pc.KeyboardController;
 import controls.pc.MouseController;
