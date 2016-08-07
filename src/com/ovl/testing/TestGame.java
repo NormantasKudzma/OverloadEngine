@@ -1,11 +1,8 @@
 package com.ovl.testing;
 
 import com.ovl.engine.BaseGame;
-import com.ovl.engine.GameObject;
-import com.ovl.graphics.Color;
-import com.ovl.graphics.Sprite;
-import com.ovl.physics.PhysicsBody.EBodyType;
-import com.ovl.utils.Paths;
+import com.ovl.ui.BaseDialog;
+import com.ovl.ui.Button;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {	
@@ -13,13 +10,13 @@ public class TestGame extends BaseGame {
 	public void init() {
 		super.init();
 		
-		GameObject obj1 = new GameObject();
+		/*GameObject obj1 = new GameObject();
 		obj1.initEntity(EBodyType.NON_INTERACTIVE);
 		obj1.setSprite(new Sprite(Paths.UI + "square_green.png"));
 		obj1.setScale(0.4f, 0.4f);
 		//obj1.setColor(new Color(0.85f, 0.5f, 0.4f, 1.0f));
 		obj1.setPosition(1.0f, 1.0f);
-		addObject(obj1);
+		addObject(obj1);*/
 		
 		/*GameObject obj2 = new GameObject();
 		obj2.initEntity(EBodyType.NON_INTERACTIVE);
@@ -36,5 +33,14 @@ public class TestGame extends BaseGame {
 		obj3.setPosition(1.7f, 1.7f);
 		obj3.setScale(1.0f, 1.0f);
 		addObject(obj3);*/
+		
+		BaseDialog d = new BaseDialog(this, "D");
+		addDialog(d);
+		d.setVisible(true);
+		
+		Button play = new Button(null, "PLAY");
+		play.setScale(new Vector2(0.9f, 0.9f));
+		play.setPosition(new Vector2(0.0f, -0.7f));
+		d.addChild(play);
 	}
 }

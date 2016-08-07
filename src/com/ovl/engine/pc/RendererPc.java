@@ -182,16 +182,17 @@ public final class RendererPc extends Renderer {
 		
 		Vector3f v = new Vector3f(-size.x, -size.y, 0.0f);
 		renderMatrix.translate(v);
+
+		v.set(position.x, position.y, 0.0f);
+		renderMatrix.translate(v);
 		
 		v.set(scale.x, scale.y, 1.0f);
 		renderMatrix.scale(v);
 		
-		v.set(position.x, position.y, 0.0f);
-		renderMatrix.translate(v);
 		
 		// No rotation, kek
 		
-		Matrix4f.mul(renderMatrix, mvpMatrix, renderMatrix);
+		Matrix4f.mul(mvpMatrix, renderMatrix, renderMatrix);
 		
 		renderBuffer.clear();
 		renderMatrix.store(renderBuffer);
