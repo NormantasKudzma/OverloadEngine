@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -188,7 +189,7 @@ public class ConfigManager {
 	}
 	
 	private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-		ByteBuffer newBuffer = ByteBuffer.allocate(newCapacity);
+		ByteBuffer newBuffer = ByteBuffer.allocate(newCapacity).order(ByteOrder.nativeOrder());
 		buffer.flip();
 		newBuffer.put(buffer);
 		return newBuffer;

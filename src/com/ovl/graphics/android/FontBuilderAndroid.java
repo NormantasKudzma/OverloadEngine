@@ -14,4 +14,11 @@ public class FontBuilderAndroid implements FontBuilder {
 	public SimpleFont createFontObject() {
 		return new SimpleFontAndroid();
 	}
+
+	
+	@Override
+	public CustomFont buildFont(String path) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

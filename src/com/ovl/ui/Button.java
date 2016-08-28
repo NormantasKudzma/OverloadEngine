@@ -1,6 +1,7 @@
 package com.ovl.ui;
 
 import com.ovl.engine.BaseGame;
+import com.ovl.graphics.SimpleFont;
 import com.ovl.graphics.Sprite;
 import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
@@ -15,8 +16,7 @@ public class Button extends SpriteComponent{
 	
 	public Button(BaseGame game, String text){
 		super(game);
-		label = new Label(game, text);
-		label.setFont(label.getSimpleFont().getFont().deriveFont(DEFAULT_FONT_SIZE));
+		label = new Label(game, SimpleFont.create(text, SimpleFont.getDefaultFont().deriveFont(DEFAULT_FONT_SIZE)));
 		addChild(label);
 		setScale(Vector2.one);
 		setVisible(true);

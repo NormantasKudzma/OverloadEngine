@@ -25,9 +25,6 @@ public final class RendererPc extends Renderer {
 	private Matrix4f renderMatrix = new Matrix4f();
 	private FloatBuffer renderBuffer;
 	
-	private HashMap<String, Integer> attributeMap = new HashMap<String, Integer>();
-	private HashMap<String, Integer> uniformMap = new HashMap<String, Integer>();
-	
 	public RendererPc(){
 		vbo = ByteBuffer.allocateDirect(bufferSize * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		
@@ -116,7 +113,7 @@ public final class RendererPc extends Renderer {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
-	private void loadProgramInfo(){
+	protected void loadProgramInfo(){
 		//GL20.glUseProgram(programId);
 		System.out.println("------------\nProgram info\n------------");
 		

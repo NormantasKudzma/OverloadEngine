@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.PorterDuff.Mode;
 
 import com.ovl.graphics.Color;
 import com.ovl.graphics.CustomFont;
@@ -31,7 +32,6 @@ public class SimpleFontAndroid extends SimpleFont {
 		paint.setTextAlign(Paint.Align.LEFT);
 		
 		clearPaint = new Paint();
-		clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR)); 
 	}
 	
 	public CustomFont getFont(){
@@ -61,20 +61,20 @@ public class SimpleFontAndroid extends SimpleFont {
 		// because dealing with fonts is a nightmare
 		Rect rect = new Rect();
 		paint.getTextBounds(text, 0, text.length(), rect);
-		Vector2.pixelCoordsToNormal(textSize.set(rect.right, -rect.top));
+		Vector2.pixelCoordsToNormal(textSize.set(rect.width(), rect.height()));
 		Vector2.pixelCoordsToNormal(textOffset.set(rect.left, rect.bottom));
 		
-		int newWidth = FastMath.nextPowerOfTwo(rect.right + rect.left);
-		int newHeight = FastMath.nextPowerOfTwo(-rect.top);
-		int newX = (int)((newWidth - rect.right - rect.left) * 0.5f);
-		int newY = (int)((newHeight + rect.top) * 0.5f);
+		int newWidth = FastMath.nextPowerOfTwo(rect.width());
+		int newHeight = FastMath.nextPowerOfTwo(rect.height());
+		int newX = (int)((newWidth - rect.width()) * 0.5f);
+		int newY = (int)((newHeight + rect.height()) * 0.5f);
 		
 		if (newWidth > bmp.getWidth() || newHeight > bmp.getHeight()){
 			initBufferedImage(newWidth, newHeight);
 		}
 		else
 		{
-			canvas.drawRect(textBounds, clearPaint);
+			canvas.drawColor(android.graphics.Color.TRANSPARENT, Mode.CLEAR);
 		}
 		
 		textBounds.set(0, newHeight, newWidth, 0);

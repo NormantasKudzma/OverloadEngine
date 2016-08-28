@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.ovl.graphics.Color;
 import com.ovl.graphics.FontBuilder;
@@ -28,6 +29,9 @@ public abstract class Renderer {
 	protected int texCoordHandle;
 	protected int texHandle;
 	protected int mvpMatrixHandle;
+	
+	protected HashMap<String, Integer> attributeMap = new HashMap<String, Integer>();
+	protected HashMap<String, Integer> uniformMap = new HashMap<String, Integer>();
 	
 	protected int bufferSize = 4096;	
 	protected int nextSpriteId = 0;
@@ -68,6 +72,10 @@ public abstract class Renderer {
 	}
 	
 	protected abstract int loadShader(int type, String shaderCode);
+
+	protected void loadProgramInfo(){
+		
+	}
 	
 	public abstract void postRender();
 	

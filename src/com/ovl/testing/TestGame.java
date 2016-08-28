@@ -1,6 +1,7 @@
 package com.ovl.testing;
 
 import com.ovl.engine.BaseGame;
+import com.ovl.graphics.SimpleFont;
 import com.ovl.ui.BaseDialog;
 import com.ovl.ui.Button;
 import com.ovl.utils.Vector2;
@@ -34,13 +35,31 @@ public class TestGame extends BaseGame {
 		obj3.setScale(1.0f, 1.0f);
 		addObject(obj3);*/
 		
-		BaseDialog d = new BaseDialog(this, "D");
+		/*SimpleFont text = SimpleFont.create("Hello");
+		text.setPosition(1.0f, 1.0f);
+		addObject(text);*/
+		
+		Button play = new Button(null, "PLAY");
+		play.setScale(new Vector2(1.0f, 1.0f));
+		play.setPosition(new Vector2(1.0f, 1.0f));
+		addObject(play);
+		
+		/*BaseDialog d = new BaseDialog(this, "D");
 		addDialog(d);
 		d.setVisible(true);
 		
-		Button play = new Button(null, "PLAY");
-		play.setScale(new Vector2(0.9f, 0.9f));
-		play.setPosition(new Vector2(0.0f, -0.7f));
-		d.addChild(play);
+		{
+			Button play = new Button(null, "PLAY");
+			play.setScale(new Vector2(0.9f, 0.9f));
+			play.setPosition(new Vector2(0.0f, -0.7f));
+			d.addChild(play);
+		}
+		
+		{
+			Button play = new Button(null, "PLAY");
+			play.setScale(new Vector2(1.0f, 1.0f));
+			play.setPosition(new Vector2(0.0f, 0.0f));
+			d.addChild(play);
+		}*/
 	}
 }
