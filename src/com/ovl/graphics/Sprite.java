@@ -21,7 +21,7 @@ public class Sprite implements Renderable, ICloneable {
 	// Internal vector for render calculations
 	private Vector2 size = new Vector2();
 	
-	private Sprite(){
+	protected Sprite(){
 		
 	}
 	
@@ -95,7 +95,7 @@ public class Sprite implements Renderable, ICloneable {
 		return sprite;
 	}	
 	
-	private void init(){
+	protected void init(){
 		id = renderer.genSpriteId();
 		renderer.setColorData(id, Color.WHITE);
 	}

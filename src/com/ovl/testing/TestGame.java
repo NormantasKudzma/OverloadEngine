@@ -1,23 +1,33 @@
 package com.ovl.testing;
 
 import com.ovl.engine.BaseGame;
+import com.ovl.engine.OverloadEngine;
+import com.ovl.graphics.CustomFont;
 import com.ovl.graphics.SimpleFont;
-import com.ovl.ui.BaseDialog;
-import com.ovl.ui.Button;
-import com.ovl.utils.Vector2;
+import com.ovl.graphics.pc.CustomFontPc;
 
 public class TestGame extends BaseGame {	
 	@Override
 	public void init() {
 		super.init();
+
+		CustomFont font = OverloadEngine.getInstance().renderer.getFontBuilder().buildFont("sans", 0, 16);
 		
-		/*GameObject obj1 = new GameObject();
-		obj1.initEntity(EBodyType.NON_INTERACTIVE);
-		obj1.setSprite(new Sprite(Paths.UI + "square_green.png"));
-		obj1.setScale(0.4f, 0.4f);
-		//obj1.setColor(new Color(0.85f, 0.5f, 0.4f, 1.0f));
-		obj1.setPosition(1.0f, 1.0f);
-		addObject(obj1);*/
+		for (int i = 0; i < 10; ++i){
+			for (int j = 0; j < 10; ++j){
+				/*GameObject obj1 = new GameObject();
+				obj1.initEntity(EBodyType.NON_INTERACTIVE);
+				obj1.setSprite(new Sprite(Paths.UI + "square_green.png"));
+				obj1.setScale(0.4f, 0.25f);
+				//obj1.setColor(new Color(0.85f, 0.5f, 0.4f, 1.0f));
+				obj1.setPosition(0.1f + 0.2f * i, 0.1f + 0.2f * j);
+				addObject(obj1);*/
+				
+				SimpleFont text = SimpleFont.create(Character.getName(i * 10 + j + 40), font);
+				text.setPosition(0.1f + 0.2f * i, 0.1f + 0.2f * j + 0.02f * i);
+				addObject(text);
+			}
+		}
 		
 		/*GameObject obj2 = new GameObject();
 		obj2.initEntity(EBodyType.NON_INTERACTIVE);
@@ -39,21 +49,9 @@ public class TestGame extends BaseGame {
 		text.setPosition(1.0f, 1.0f);
 		addObject(text);*/
 		
-		Button play = new Button(null, "PLAY");
-		play.setScale(new Vector2(1.0f, 1.0f));
-		play.setPosition(new Vector2(1.0f, 1.0f));
-		addObject(play);
-		
 		/*BaseDialog d = new BaseDialog(this, "D");
 		addDialog(d);
 		d.setVisible(true);
-		
-		{
-			Button play = new Button(null, "PLAY");
-			play.setScale(new Vector2(0.9f, 0.9f));
-			play.setPosition(new Vector2(0.0f, -0.7f));
-			d.addChild(play);
-		}
 		
 		{
 			Button play = new Button(null, "PLAY");

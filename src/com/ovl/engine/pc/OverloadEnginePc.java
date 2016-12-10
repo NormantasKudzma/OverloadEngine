@@ -110,10 +110,16 @@ public class OverloadEnginePc extends OverloadEngine {
 	}
 	
 	protected void loop() {
+		long t0, t1;
+		final long maxFrames = 1000;
+		long tUpdate, tRender;
+		long numFrames = maxFrames;
+		long dtUpdate = 0, dtRender = 0;
+		
 		t0 = t1 = System.nanoTime();
 		while (!isCloseRequested && !Display.isCloseRequested()) {
 			t0 = System.nanoTime();
-			deltaTime = (t0 - t1) * 0.000000001f;
+			deltaTime = (float)((t0 - t1) * 0.000000001);
 			t1 = t0;
 
 			// Poll controllers for input
@@ -121,6 +127,8 @@ public class OverloadEnginePc extends OverloadEngine {
 
 			// Update game logic
 			game.update(deltaTime);
+			tUpdate = System.nanoTime();
+			dtUpdate += (tUpdate - t0);
 
 			// Render game and swap buffers
 			renderer.preRender();
@@ -134,9 +142,20 @@ public class OverloadEnginePc extends OverloadEngine {
 				frameCounter.render();
 			}
 			renderer.postRender();
-
+			
+			tRender = System.nanoTime();
+			dtRender += (tRender - tUpdate);
+			++numFrames;
+			
+			if (numFrames >= maxFrames){
+				System.out.printf("Update per frame %d (%2.4f %%)\n", dtUpdate / maxFrames, 1.0 * dtUpdate / (dtUpdate + dtRender));
+				System.out.printf("Render per frame %d (%2.4f %%)\n", dtRender / maxFrames, 1.0 * dtRender / (dtUpdate + dtRender));
+				System.out.println();
+				numFrames = dtUpdate = dtRender = 0;
+			}
+			
 			//
-			Display.update();
+			Display.update();		
 			Display.sync(config.targetFps);
 		}
 	}
