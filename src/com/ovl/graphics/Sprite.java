@@ -114,7 +114,7 @@ public class Sprite implements Renderable, ICloneable {
 		size.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
 		
 		texture.bind();
-		renderer.render(id, size, position, scale, rotation);
+		renderer.renderTextured(id, size, position, scale, rotation);
 	}
 	
 	public void setColor(Color c){

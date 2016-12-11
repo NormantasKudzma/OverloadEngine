@@ -16,22 +16,13 @@ public abstract class Renderer {
 	public static final int DATA_PER_VERTEX = 8;
 	public static final int VERTICES_PER_SPRITE = 4;
 	public static final int DATA_PER_SPRITE = VERTICES_PER_SPRITE * DATA_PER_VERTEX;
-
-	protected final String vertexShaderCode = Shader.vertShader;
-	protected final String fragmentShaderCode = Shader.fragShader;
-
-	protected int vertShaderId;
-	protected int fragShaderId;
-	protected int programId;
-
-	protected int positionHandle;
-	protected int colorHandle;
-	protected int texCoordHandle;
-	protected int texHandle;
-	protected int mvpMatrixHandle;
 	
-	protected HashMap<String, Integer> attributeMap = new HashMap<String, Integer>();
-	protected HashMap<String, Integer> uniformMap = new HashMap<String, Integer>();
+	public static final int SHADER_TEXTURE = 0;
+	public static final int SHADER_PRIMITIVE = 1;
+	public static final int SHADER_COUNT = 2;
+	
+	protected Shader shaders[];
+	protected Shader activeShader = null;
 	
 	protected int bufferSize = 4096;	
 	protected int nextSpriteId = 0;
@@ -71,7 +62,7 @@ public abstract class Renderer {
 		return textureLoader;
 	}
 	
-	protected abstract int loadShader(int type, String shaderCode);
+	protected abstract int compileShader(int type, String shaderCode);
 
 	protected void loadProgramInfo(){
 		
@@ -85,7 +76,9 @@ public abstract class Renderer {
 		releasedIds.add(id);
 	}
 	
-	public abstract void render(int id, Vector2 size, Vector2 position, Vector2 scale, float rotation);
+	public abstract void renderPrimitive(int id, Vector2 size, Vector2 position, Vector2 scale, float rotation);
+	
+	public abstract void renderTextured(int id, Vector2 size, Vector2 position, Vector2 scale, float rotation);
 	
 	public void setColorData(int id, Color c){
 		if (c == null || id < 0 || id >= nextSpriteId){

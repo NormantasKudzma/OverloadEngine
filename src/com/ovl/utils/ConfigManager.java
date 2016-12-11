@@ -13,6 +13,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.regex.PatternSyntaxException;
 
@@ -23,6 +25,29 @@ public class ConfigManager {
 	private static String kvDelim = "=";
 	public static ArrayList<String> gameConfiguration = null;
 
+	public static String loadFile(String path){
+		InputStreamReader reader = null;
+		try {
+			URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+			System.out.println("Tryload " + url.toString());
+			reader = new InputStreamReader(url.openStream());
+			char chars[] = new char[(int)(new File(url.getPath())).length()];
+			reader.read(chars);
+			reader.close();
+			return new String(chars);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		finally {
+			if (reader != null)
+			{
+				try { reader.close(); } catch (Exception e){}
+			}
+		}
+		return null;
+	}
+	
 	public static ArrayList<String> loadFileLines(String path){
 		BufferedReader br = null;
 		try {
