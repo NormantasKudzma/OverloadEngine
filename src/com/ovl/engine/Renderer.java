@@ -12,6 +12,18 @@ import com.ovl.graphics.TextureLoader;
 import com.ovl.utils.Vector2;
 
 public abstract class Renderer {
+	public enum PrimitiveRenderMode {
+		Lines,
+		LineStrip,
+		LineLoop,
+		Polygon,
+		Quads,
+		QuadStrip,
+		Triangles,
+		TriangleStrip,
+		TriangleFan
+	}
+	
 	public static final int BYTES_PER_FLOAT = 4;
 	public static final int DATA_PER_VERTEX = 8;
 	public static final int VERTICES_PER_SPRITE = 4;
@@ -76,7 +88,7 @@ public abstract class Renderer {
 		releasedIds.add(id);
 	}
 	
-	public abstract void renderPrimitive(int id, Vector2 size, Vector2 position, Vector2 scale, float rotation);
+	public abstract void renderPrimitive(PrimitiveRenderMode mode, Vector2 vertices[], Vector2 size, Vector2 position, Vector2 scale, float rotation);
 	
 	public abstract void renderTextured(int id, Vector2 size, Vector2 position, Vector2 scale, float rotation);
 	

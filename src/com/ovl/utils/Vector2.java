@@ -166,12 +166,12 @@ public final class Vector2 {
 		return this;
 	}
 	
-	public Vector2 rotateAroundPoint(Vector2 point, float angle){
+	public Vector2 rotateAroundPoint(Vector2 point, float radAngle){
 		float dx = x - point.x;
 		float dy = y - point.y;
 		
-		float sina = FastMath.sin(angle);
-		float cosa = FastMath.cos(angle);
+		float sina = FastMath.sin(radAngle);
+		float cosa = FastMath.cos(radAngle);
 		
 		x = cosa * dx - sina * dy + point.x;
 		y = sina * dx + cosa * dy + point.y;

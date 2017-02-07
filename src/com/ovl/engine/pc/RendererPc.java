@@ -147,7 +147,9 @@ public final class RendererPc extends Renderer {
 	
 	public void postRender(){
 		// Disable vertex array
-		cleanupShader(activeShader);
+		if (activeShader != null){
+			cleanupShader(activeShader);
+		}
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
@@ -241,7 +243,7 @@ public final class RendererPc extends Renderer {
 	}
 	
 	// cia reiktu dar papildomai mode (lines etc)
-	public void renderPrimitive(int id, Vector2 size, Vector2 position, Vector2 scale, float rotation){
+	public void renderPrimitive(PrimitiveRenderMode mode, Vector2 vertices[], Vector2 size, Vector2 position, Vector2 scale, float rotation){
 		if (activeShader != shaders[SHADER_PRIMITIVE]){
 			if (activeShader != null){
 				cleanupShader(activeShader);
@@ -253,6 +255,53 @@ public final class RendererPc extends Renderer {
 		prepareRenderMatrix(size, position, scale, rotation);
 		GL20.glUniformMatrix4(activeShader.getHandleId(Shader.HANDLE_MVPMATRIX), false, renderBuffer);
 		
-		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, id * VERTICES_PER_SPRITE, VERTICES_PER_SPRITE);
+		int openGlMode = -1;
+		switch (mode){
+			case LineLoop:{
+				openGlMode = GL11.GL_LINE_LOOP;
+				break;
+			}
+			case LineStrip:{
+				openGlMode = GL11.GL_LINE_STRIP;
+				break;
+			}
+			case Lines:{
+				openGlMode = GL11.GL_LINES;
+				break;
+			}
+			case Polygon:{
+				openGlMode = GL11.GL_POLYGON;
+				break;
+			}
+			case QuadStrip:{
+				openGlMode = GL11.GL_QUAD_STRIP;
+				break;
+			}
+			case Quads:{
+				openGlMode = GL11.GL_QUADS;
+				break;
+			}
+			case TriangleFan:{
+				openGlMode = GL11.GL_TRIANGLE_FAN;
+				break;
+			}
+			case TriangleStrip:{
+				openGlMode = GL11.GL_TRIANGLE_STRIP;
+				break;
+			}
+			case Triangles:{
+				openGlMode = GL11.GL_TRIANGLES;
+				break;
+			}
+		}
+		
+		// TODO: cia perdaryt kad per shaderi arba vbo butu
+		GL11.glBegin(openGlMode);
+			for (int i = 0; i < vertices.length; ++i){
+				GL11.glVertex2f(vertices[i].x, vertices[i].y);
+			}
+		GL11.glEnd();
+		
+		//GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, id * VERTICES_PER_SPRITE, VERTICES_PER_SPRITE);
 	}
 }
