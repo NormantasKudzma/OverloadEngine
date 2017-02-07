@@ -1,12 +1,10 @@
 package com.ovl.engine;
 
-import com.ovl.utils.Paths;
-
 public class EngineConfig {
 	public BaseGame game = null;
 	
 	public String title = "Game";
-	public String configPath = System.getProperty("user.dir") + "\\" + Paths.USER_CONFIG;
+	public String configPath = "";
 	public boolean isDebug = false;
 	public int targetFps = 60;
 	

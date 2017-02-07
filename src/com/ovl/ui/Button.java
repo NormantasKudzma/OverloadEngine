@@ -1,9 +1,9 @@
 package com.ovl.ui;
 
 import com.ovl.engine.BaseGame;
+import com.ovl.engine.OverloadEngine;
 import com.ovl.graphics.SimpleFont;
 import com.ovl.graphics.Sprite;
-import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
 
 public class Button extends SpriteComponent{
@@ -29,8 +29,8 @@ public class Button extends SpriteComponent{
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setSprite(new Sprite(Paths.UI + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
-		setSprite(new Sprite(Paths.UI + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
+		setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
+		setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
 
 		addChild(label);
 	}

@@ -47,13 +47,13 @@ public class Shader {
 	
 	public String getVSCode(){
 		StringBuilder resource = new StringBuilder();
-		resource.append(Paths.SHADERS).append(resourceName).append("_VS");
+		resource.append(OverloadEngine.getPaths().getShaders()).append(resourceName).append("_VS");
 		return ConfigManager.loadFile(resource.toString());
 	}
 	
 	public String getPSCode(){
 		StringBuilder resource = new StringBuilder();
-		resource.append(Paths.SHADERS).append(resourceName).append("_FS");
+		resource.append(OverloadEngine.getPaths().getShaders()).append(resourceName).append("_FS");
 		return ConfigManager.loadFile(resource.toString());
 	}
 

@@ -2,10 +2,9 @@ package com.ovl.testing;
 
 import com.ovl.engine.BaseGame;
 import com.ovl.engine.GameObject;
-import com.ovl.engine.Renderer;
+import com.ovl.engine.OverloadEngine;
 import com.ovl.graphics.Primitive;
-import com.ovl.physics.PhysicsBody.EBodyType;
-import com.ovl.utils.FastMath;
+import com.ovl.graphics.Sprite;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {
@@ -13,7 +12,11 @@ public class TestGame extends BaseGame {
 	
 	@Override
 	public void init() {
-		super.init();
+		GameObject obj = new GameObject();
+		obj.setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "square_yellow.png"));
+		addObject(obj);
+		
+		/*super.init();
 		
 		{
 			final int size = 80;
@@ -48,7 +51,7 @@ public class TestGame extends BaseGame {
 		GameObject hlObj = new GameObject();
 		hlObj.setSprite(highlight);
 		hlObj.initEntity(EBodyType.NON_INTERACTIVE);
-		addObject(hlObj);
+		addObject(hlObj);*/
 		
 		/*MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
 		c.setMouseMoveListener(new ControllerEventListener(){

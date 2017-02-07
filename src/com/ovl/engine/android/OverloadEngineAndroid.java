@@ -14,6 +14,7 @@ import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.DebugFrameCounter;
+import com.ovl.utils.android.PathsAndroid;
 
 public class OverloadEngineAndroid extends OverloadEngine {
 	private class SurfaceViewRenderer implements GLSurfaceView.Renderer {
@@ -60,6 +61,8 @@ public class OverloadEngineAndroid extends OverloadEngine {
 	@Override
 	protected void init() {
 		platform = EnginePlatform.PLATFORM_ANDROID;
+
+		PATHS = new PathsAndroid();
 		
 		ConfigManager.gameConfiguration = ConfigManager.loadFileLines(config.configPath);
 		Settings.parseConfig(ConfigManager.gameConfiguration);
