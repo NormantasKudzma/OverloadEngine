@@ -11,9 +11,9 @@ public class EngineTestMain {
 		config.isDebug = true;
 		
 		OverloadEnginePc engine = new OverloadEnginePc(config);
-		engine.frameWidth = 1280;
-		engine.frameHeight = 720;
-		engine.aspectRatio = 1280.0f / 720.0f;
+		engine.frameWidth = 960;
+		engine.frameHeight = 540;
+		engine.aspectRatio = engine.frameWidth / engine.frameHeight;
 		engine.isFullScreen = false;
 		engine.run();
 	}

@@ -28,10 +28,16 @@ public class ConfigManager {
 			URL url = Thread.currentThread().getContextClassLoader().getResource(path);
 			System.out.println("Tryload " + url.toString());
 			reader = new InputStreamReader(url.openStream());
-			char chars[] = new char[(int)(new File(url.getPath())).length()];
-			reader.read(chars);
+			StringBuffer stringBuffer = new StringBuffer();
+			int bufferSize = 4096;
+			char chars[] = new char[bufferSize];
+			int read = 0;
+			
+			while ((read = reader.read(chars, 0, bufferSize)) != -1){
+				stringBuffer.append(chars, 0, read);
+			}
 			reader.close();
-			return new String(chars);
+			return stringBuffer.toString();
 		}
 		catch (Exception e){
 			e.printStackTrace();

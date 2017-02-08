@@ -5,6 +5,7 @@ import com.ovl.engine.GameObject;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.graphics.Primitive;
 import com.ovl.graphics.Sprite;
+import com.ovl.physics.PhysicsBody.EBodyType;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {
@@ -13,6 +14,8 @@ public class TestGame extends BaseGame {
 	@Override
 	public void init() {
 		GameObject obj = new GameObject();
+		obj.initEntity(EBodyType.NON_INTERACTIVE);
+		obj.setPosition(1.0f, 1.0f);
 		obj.setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "square_yellow.png"));
 		addObject(obj);
 		

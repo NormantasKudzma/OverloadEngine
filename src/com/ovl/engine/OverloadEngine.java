@@ -148,6 +148,10 @@ public abstract class OverloadEngine {
 		return INSTANCE;
 	}
 	
+	public BaseGame getGame(){
+		return game;
+	}
+	
 	public EnginePlatform getPlatform(){
 		return platform;
 	}

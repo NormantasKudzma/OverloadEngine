@@ -9,6 +9,7 @@ import org.usb4java.DeviceList;
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 
+import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.Config;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.Pair;
@@ -29,7 +30,7 @@ public class ControllerManager {
 		if (result != LibUsb.SUCCESS) {
 			throw new LibUsbException("Unable to initialize libusb.", result);
 		}
-		loadAllowedUsbDeviceList(Paths.ALLOWED_DEVICES);
+		loadAllowedUsbDeviceList(OverloadEngine.getPaths().getAllowedDevices());
 		loadUsbDevices();
 	}
 
@@ -63,7 +64,7 @@ public class ControllerManager {
 	private void filterUsbDevices() {
 		if (allowedUsbProductVendorList == null) {
 			allowedUsbProductVendorList = new ArrayList<Pair<Integer, Integer>>();
-			loadAllowedUsbDeviceList(Paths.ALLOWED_DEVICES);
+			loadAllowedUsbDeviceList(OverloadEngine.getPaths().getAllowedDevices());
 		}
 
 		int index = 0;
@@ -116,7 +117,7 @@ public class ControllerManager {
 		}
 
 		allowedUsbProductVendorList = new ArrayList<Pair<Integer, Integer>>();
-		Config<String, String> cfg = ConfigManager.loadConfigAsPairs(Paths.ALLOWED_DEVICES);
+		Config<String, String> cfg = ConfigManager.loadConfigAsPairs(path);
 		for (Pair<String, String> pair : cfg.contents) {
 			if (pair.key.startsWith("0x")){
 				pair.key = pair.key.substring(2);

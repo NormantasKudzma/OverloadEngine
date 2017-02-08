@@ -2,9 +2,7 @@ package com.ovl.graphics.android;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
+import java.net.URL;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,8 +10,6 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import com.ovl.engine.OverloadEngine;
-import com.ovl.engine.android.OverloadEngineAndroid;
 import com.ovl.graphics.Texture;
 import com.ovl.graphics.TextureLoader;
 
@@ -61,11 +57,14 @@ public class TextureLoaderAndroid extends TextureLoader {
 		// bind this texture
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureID);
 
-		texture.setWidth(bmp.getWidth());
-		texture.setHeight(bmp.getHeight());
+		int texW = bmp.getWidth();
+		int texH = bmp.getHeight();
+		
+		texture.setWidth(texW);
+		texture.setHeight(texH);
 
-		texture.setTextureWidth(get2Fold(bmp.getWidth()));
-		texture.setTextureHeight(get2Fold(bmp.getHeight()));
+		texture.setTextureWidth(texW);
+		texture.setTextureHeight(texH);
 
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
@@ -76,27 +75,18 @@ public class TextureLoaderAndroid extends TextureLoader {
 		return texture;
 	}
 
-	@Deprecated
-	private ByteBuffer convertImageData(Bitmap bmp, Texture texture) {
-		ByteBuffer imageBuffer = ByteBuffer.allocateDirect(bmp.getRowBytes() * bmp.getHeight());
-		
-		imageBuffer.order(ByteOrder.nativeOrder());
-		bmp.copyPixelsToBuffer(imageBuffer);
-		imageBuffer.flip();
-		
-		return imageBuffer;
-	}
-
 	protected Bitmap loadImage(String ref){
+		InputStream stream = null;
 		try {
-			OverloadEngineAndroid engine = (OverloadEngineAndroid)OverloadEngine.getInstance();
-			InputStream stream = engine.getContext().getAssets().open(ref);		
+			URL url = Thread.currentThread().getContextClassLoader().getResource(ref);
+			stream = url.openStream();
 			Bitmap bmp = BitmapFactory.decodeStream(stream);
 			stream.close();
 			return bmp;
 		}
 		catch (IOException e){
 			Log.w("ovl", e.toString());
+			try {if (stream != null) stream.close();} catch (Exception ex){}
 			return null;
 		}
 	}

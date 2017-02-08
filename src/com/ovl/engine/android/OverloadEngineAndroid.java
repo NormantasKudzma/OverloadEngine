@@ -9,7 +9,6 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.SurfaceView;
 
-import com.ovl.engine.BaseGame;
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.ConfigManager;
@@ -36,7 +35,10 @@ public class OverloadEngineAndroid extends OverloadEngine {
 			frameWidth = w;
 			aspectRatio = 1.0f * w / h;
 			
-			run();
+			if (!isStarted)
+			{
+				run();
+			}
 		}
 
 		@Override
@@ -48,6 +50,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 	private CustomSurfaceView surfaceView;
 	private SurfaceViewRenderer surfaceViewRenderer;
 	private Context ctx;
+	private boolean isStarted = false;
 	
 	public OverloadEngineAndroid(EngineConfig config) {
 		super(config);
@@ -60,6 +63,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 
 	@Override
 	protected void init() {
+		isStarted = true;
 		platform = EnginePlatform.PLATFORM_ANDROID;
 
 		PATHS = new PathsAndroid();
@@ -113,10 +117,6 @@ public class OverloadEngineAndroid extends OverloadEngine {
 	
 	public Context getContext(){
 		return ctx;
-	}
-	
-	public BaseGame getGame(){
-		return game;
 	}
 	
 	public SurfaceView getSurfaceView(Context ctx){
