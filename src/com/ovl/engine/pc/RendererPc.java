@@ -17,6 +17,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
+import com.ovl.engine.Vbo;
 import com.ovl.graphics.pc.FontBuilderPc;
 import com.ovl.graphics.pc.TextureLoaderPc;
 import com.ovl.utils.Vector2;
@@ -27,11 +28,8 @@ public final class RendererPc extends Renderer {
 	private FloatBuffer renderBuffer;
 	
 	public RendererPc(){
-		vbo = ByteBuffer.allocateDirect(bufferSize * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		
-		IntBuffer buffer = BufferUtils.createIntBuffer(1);
-		GL15.glGenBuffers(buffer);
-		vboId = buffer.get(0);
+		textureVbo = new Vbo(4096, DATA_PER_SPRITE, VERTICES_PER_SPRITE, BYTES_PER_FLOAT);
+		initVbo(textureVbo);
 		
 		renderBuffer = ByteBuffer.allocateDirect(16 * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
@@ -135,7 +133,7 @@ public final class RendererPc extends Renderer {
 	protected void prepareShader(Shader shader){
 		Shader.Handle handle = null;
 		GL20.glUseProgram(shader.getProgramId());
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		//GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, shader.getVbo().getId());
 		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
 			handle = Shader.HANDLES[i];
 			if (shader.getHandleId(i) != -1 && handle.size != -1){
@@ -189,10 +187,12 @@ public final class RendererPc extends Renderer {
 	}
 	
 	public void preRender(){
-		if (isModified) {
-			vbo.rewind();
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo, GL15.GL_STATIC_DRAW);
+		for (Vbo vbo : vbos){
+			if (vbo.isModified()){
+				vbo.getVbo().rewind();
+				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo.getId());
+				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo.getVbo(), GL15.GL_STATIC_DRAW);
+			}
 		}
 		
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
@@ -226,7 +226,7 @@ public final class RendererPc extends Renderer {
 		renderBuffer.rewind();
 	}
 	
-	public void renderTextured(int id, Vector2 size, Vector2 position, Vector2 scale, float rotation){
+	public void renderTextured(VboId vboId, Vector2 size, Vector2 position, Vector2 scale, float rotation){
 		if (activeShader != shaders[SHADER_TEXTURE]){
 			if (activeShader != null){
 				cleanupShader(activeShader);
@@ -235,15 +235,20 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
+		if (boundVbo != vboId.getVbo()){
+			boundVbo = vboId.getVbo();
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
+		}
+		
 		prepareRenderMatrix(size, position, scale, rotation);
 		GL20.glUniformMatrix4(activeShader.getHandleId(Shader.HANDLE_MVPMATRIX), false, renderBuffer);
 		GL20.glUniform1i(activeShader.getHandleId(Shader.HANDLE_TEX), 0);
 		
-		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, id * VERTICES_PER_SPRITE, VERTICES_PER_SPRITE);
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getId() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 	
 	// cia reiktu dar papildomai mode (lines etc)
-	public void renderPrimitive(PrimitiveRenderMode mode, Vector2 vertices[], Vector2 size, Vector2 position, Vector2 scale, float rotation){
+	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Vector2 position, Vector2 scale, float rotation){
 		if (activeShader != shaders[SHADER_PRIMITIVE]){
 			if (activeShader != null){
 				cleanupShader(activeShader);
@@ -252,9 +257,15 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		prepareRenderMatrix(size, position, scale, rotation);
+		if (boundVbo != vboId.getVbo()){
+			boundVbo = vboId.getVbo();
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
+		}
+		
+		prepareRenderMatrix(Vector2.zero, position, scale, rotation);
 		GL20.glUniformMatrix4(activeShader.getHandleId(Shader.HANDLE_MVPMATRIX), false, renderBuffer);
 		
+		// plzfix
 		int openGlMode = -1;
 		switch (mode){
 			case LineLoop:{
@@ -296,12 +307,27 @@ public final class RendererPc extends Renderer {
 		}
 		
 		// TODO: cia perdaryt kad per shaderi arba vbo butu
-		GL11.glBegin(openGlMode);
+		/*GL11.glBegin(openGlMode);
 			for (int i = 0; i < vertices.length; ++i){
 				GL11.glVertex2f(vertices[i].x, vertices[i].y);
 			}
-		GL11.glEnd();
+		GL11.glEnd();*/
 		
-		//GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, id * VERTICES_PER_SPRITE, VERTICES_PER_SPRITE);
+		/*
+		 * Should implement first vertex offset here in case vbo is used for more than one primitive!!
+		 * */
+		GL11.glDrawArrays(openGlMode, 0, boundVbo.getVertexCount());
+	}
+
+	public void deleteVbo(VboId vboId){
+		GL15.glDeleteBuffers(vboId.getId());
+		vbos.remove(vboId.getVbo());
+	}
+	
+	protected void initVbo(Vbo vbo){
+		IntBuffer buffer = BufferUtils.createIntBuffer(1);
+		GL15.glGenBuffers(buffer);
+		vbo.setId(buffer.get(0));
+		vbos.add(vbo);
 	}
 }

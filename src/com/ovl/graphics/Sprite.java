@@ -12,7 +12,7 @@ public class Sprite implements Renderable, ICloneable {
 	private Vector2 topLeft;
 	private Vector2 botRight;
 	private Color color;
-	private int id;
+	private Renderer.VboId id;
 	
 	static {
 		renderer = OverloadEngine.getInstance().renderer;
@@ -57,6 +57,7 @@ public class Sprite implements Renderable, ICloneable {
 	
 	public void destroy(){
 		renderer.releaseId(id);
+		id = null;
 		texture = null;
 		topLeft = null;
 		botRight = null;
@@ -96,7 +97,7 @@ public class Sprite implements Renderable, ICloneable {
 	}	
 	
 	private void init(){
-		id = renderer.genSpriteId();
+		id = renderer.generateId(Renderer.VboType.Textured, 4);
 		renderer.setColorData(id, Color.WHITE);
 	}
 	

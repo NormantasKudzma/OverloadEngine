@@ -19,6 +19,8 @@ public class TestGame extends BaseGame {
 		obj.setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "square_yellow.png"));
 		addObject(obj);
 		
+		//primitive vbo test here
+		
 		/*super.init();
 		
 		{

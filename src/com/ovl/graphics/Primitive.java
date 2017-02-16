@@ -8,25 +8,31 @@ public class Primitive implements Renderable {
 	protected static final Renderer renderer;
 	
 	private Vector2 vertices[];
-	protected Renderer.PrimitiveRenderMode renderMode;
+	protected Renderer.PrimitiveType renderMode;
+	private Renderer.VboId id;
 
 	static {
 		renderer = OverloadEngine.getInstance().renderer;
 	}
 	
-	public Primitive(int numVerts, Renderer.PrimitiveRenderMode renderMode){
-		vertices = new Vector2[numVerts];
-		this.renderMode = renderMode;
+	public Primitive(int numVerts, Renderer.PrimitiveType renderMode){
+		this(new Vector2[numVerts], renderMode);
 	}
 	
-	public Primitive(Vector2 verts[], Renderer.PrimitiveRenderMode renderMode){
+	public Primitive(Vector2 verts[], Renderer.PrimitiveType renderMode){
 		vertices = verts;
 		this.renderMode = renderMode;
+		init();
 	}
 
+	private void init(){
+		id = renderer.generateId(Renderer.VboType.Primitive, vertices.length);
+	}
+	
 	@Override
 	public void destroy() {
-		
+		renderer.deleteVbo(id);
+		id = null;
 	}
 
 	@Override
@@ -46,7 +52,7 @@ public class Primitive implements Renderable {
 
 	@Override
 	public void render(Vector2 position, Vector2 scale, float rotation) {
-		renderer.renderPrimitive(renderMode, vertices, Vector2.zero, position, scale, rotation);
+		renderer.renderPrimitive(id, renderMode, vertices, position, scale, rotation);
 	}
 
 	@Override
