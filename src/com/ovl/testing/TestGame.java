@@ -1,11 +1,13 @@
 package com.ovl.testing;
 
+import com.ovl.controls.Controller;
+import com.ovl.controls.ControllerEventListener;
+import com.ovl.controls.ControllerManager;
+import com.ovl.controls.pc.MouseController;
 import com.ovl.engine.BaseGame;
 import com.ovl.engine.GameObject;
-import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.Renderer;
 import com.ovl.graphics.Primitive;
-import com.ovl.graphics.Sprite;
 import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.utils.Vector2;
 
@@ -22,13 +24,24 @@ public class TestGame extends BaseGame {
 		
 		//primitive vbo test here
 		
-		Vector2[] verts = new Vector2[]{new Vector2(0.5f, 0.5f), new Vector2(1.5f, 1.5f)};
-		Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
-		GameObject obj2 = new GameObject();
-		obj2.initEntity(BodyType.NON_INTERACTIVE);
-		obj2.setPosition(1.0f, 1.0f);
-		obj2.setSprite(p);
-		addObject(obj2);
+		{
+			Vector2[] verts = new Vector2[]{new Vector2(-0.8f, -0.8f), new Vector2(-0.8f, 0.8f)};
+			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
+			GameObject obj2 = new GameObject();
+			obj2.initEntity(BodyType.NON_INTERACTIVE);
+			obj2.setPosition(1.0f, 1.0f);
+			obj2.setSprite(p);
+			addObject(obj2);
+		}
+		{
+			Vector2[] verts = new Vector2[]{new Vector2(0.0f, 0f), new Vector2(0.5f, 0.5f)};
+			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
+			GameObject obj2 = new GameObject();
+			obj2.initEntity(BodyType.NON_INTERACTIVE);
+			obj2.setPosition(1.0f, 1.0f);
+			obj2.setSprite(p);
+			addObject(obj2);
+		}
 		
 		
 		/*super.init();
@@ -45,11 +58,11 @@ public class TestGame extends BaseGame {
 				verts[i * 2 + 41] = new Vector2(0.2f + i * 0.2f, 0.0f);
 			}
 			
-			Primitive grid = new Primitive(verts, Renderer.PrimitiveRenderMode.Lines);
+			Primitive grid = new Primitive(verts, Renderer.PrimitiveType.Lines);
 			
 			GameObject gridObj = new GameObject();
 			gridObj.setSprite(grid);
-			gridObj.initEntity(EBodyType.NON_INTERACTIVE);
+			gridObj.initEntity(BodyType.NON_INTERACTIVE);
 			addObject(gridObj);
 		}
 		
@@ -61,14 +74,14 @@ public class TestGame extends BaseGame {
 		verts[2] = new Vector2(1.0f + hw, 1.0f + hw);
 		verts[3] = new Vector2(1.0f, 1.0f);
 		
-		highlight = new Primitive(verts, Renderer.PrimitiveRenderMode.Quads);
+		highlight = new Primitive(verts, Renderer.PrimitiveType.Quads);
 		
 		GameObject hlObj = new GameObject();
 		hlObj.setSprite(highlight);
-		hlObj.initEntity(EBodyType.NON_INTERACTIVE);
-		addObject(hlObj);*/
+		hlObj.initEntity(BodyType.NON_INTERACTIVE);
+		addObject(hlObj);
 		
-		/*MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
+		MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
 		c.setMouseMoveListener(new ControllerEventListener(){
 			@Override
 			public void handleEvent(long eventArg, Vector2 pos, int... params) {

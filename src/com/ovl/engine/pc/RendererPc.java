@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.lwjgl.BufferUtils;
@@ -20,6 +21,7 @@ import com.ovl.engine.Shader;
 import com.ovl.engine.Vbo;
 import com.ovl.graphics.pc.FontBuilderPc;
 import com.ovl.graphics.pc.TextureLoaderPc;
+import com.ovl.utils.Pair;
 import com.ovl.utils.Vector2;
 
 public final class RendererPc extends Renderer {
@@ -51,15 +53,15 @@ public final class RendererPc extends Renderer {
 			GL20.glLinkProgram(shaders[i].getProgramId());
 			Util.checkGLError();
 			
-			HashMap<String, Integer> handles = loadProgramInfo(shaders[i].getProgramId());
+			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shaders[i].getProgramId());
 			
-			Shader.Handle handle = null;
-			for (int j = 0; j < Shader.HANDLE_COUNT; ++j){
-				handle = Shader.HANDLES[j];
-				if (handles.containsKey(handle.name)){
-					shaders[i].setHandleId(j, handles.get(handle.name));
+			for (Pair<String, Integer> pair : handles){
+				int handleIndex = Shader.getHandleIndexByName(pair.key);
+				if (handleIndex != -1){
+					shaders[i].createHandle(handleIndex, pair.value);
 				}
 			}
+			shaders[i].calculateOffsets(BYTES_PER_FLOAT);
 		}
 		
 		textureLoader = new TextureLoaderPc();
@@ -123,9 +125,10 @@ public final class RendererPc extends Renderer {
 	}
 	
 	protected void cleanupShader(Shader shader){
+		Shader.Handle handle = null;
 		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
-			if (shader.getHandleId(i) != -1){
-				GL20.glDisableVertexAttribArray(shader.getHandleId(i));
+			if ((handle = shader.getHandle(i)) != null){
+				GL20.glDisableVertexAttribArray(handle.id);
 			}
 		}
 	}
@@ -135,24 +138,23 @@ public final class RendererPc extends Renderer {
 		GL20.glUseProgram(shader.getProgramId());
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
 		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
-			handle = Shader.HANDLES[i];
-			if (shader.getHandleId(i) != -1 && handle.size != -1){
-				GL20.glVertexAttribPointer(activeShader.getHandleId(i), handle.size, GL11.GL_FLOAT, false, DATA_PER_SPRITE, handle.offset);
-				GL20.glEnableVertexAttribArray(activeShader.getHandleId(i));
+			if ((handle = shader.getHandle(i)) != null){
+				GL20.glVertexAttribPointer(handle.id, handle.size, GL11.GL_FLOAT, false, boundVbo.getStride(), handle.offset);
+				GL20.glEnableVertexAttribArray(handle.id);
 			}
 		}
 	}
 	
 	public void postRender(){
 		// Disable vertex array
-		if (activeShader != null){
+		/*if (activeShader != null){
 			cleanupShader(activeShader);
 		}
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);*/
 	}
 	
-	protected HashMap<String, Integer> loadProgramInfo(int programId){
-		HashMap<String, Integer> handles = new HashMap<String, Integer>();
+	protected ArrayList<Pair<String, Integer>> loadProgramInfo(int programId){
+		ArrayList<Pair<String, Integer>> handles = new ArrayList<Pair<String, Integer>>();
 		GL20.glUseProgram(programId);
 		System.out.println("------------\nProgram info\n------------");
 		
@@ -166,7 +168,7 @@ public final class RendererPc extends Renderer {
 		for (int i = 0; i < count; ++i){
 			String attrib = GL20.glGetActiveAttrib(programId, i, 256);
 			int loc = GL20.glGetAttribLocation(programId, attrib);
-			handles.put(attrib, loc);
+			handles.add(new Pair<String, Integer>(attrib, loc));
 			System.out.printf("%-20s%-20d%-20d\n", attrib, i, loc);
 		}
 		
@@ -178,7 +180,7 @@ public final class RendererPc extends Renderer {
 		for (int i = 0; i < count; ++i){
 			String uniform = GL20.glGetActiveUniform(programId, i, 256);
 			int loc = GL20.glGetUniformLocation(programId, uniform);
-			handles.put(uniform, loc);
+			handles.add(new Pair<String, Integer>(uniform, loc));
 			System.out.printf("%-20s%-20d%-20d\n", uniform, i, loc);
 		}
 		System.out.println("------------");
@@ -228,42 +230,24 @@ public final class RendererPc extends Renderer {
 	}
 	
 	public void renderTextured(VboId vboId, Vector2 size, Vector2 position, Vector2 scale, float rotation){
-		if (activeShader != shaders[SHADER_TEXTURE]){
-			if (activeShader != null){
-				cleanupShader(activeShader);
-			}			
-			activeShader = shaders[SHADER_TEXTURE];
-			prepareShader(activeShader);
-		}
-		
-		if (boundVbo != vboId.getVbo()){
-			boundVbo = vboId.getVbo();
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
-		}
+		boundVbo = vboId.getVbo();
+		activeShader = shaders[SHADER_TEXTURE];
+		prepareShader(activeShader);
 		
 		prepareRenderMatrix(size, position, scale, rotation);
-		GL20.glUniformMatrix4(activeShader.getHandleId(Shader.HANDLE_MVPMATRIX), false, renderBuffer);
-		GL20.glUniform1i(activeShader.getHandleId(Shader.HANDLE_TEX), 0);
+		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
+		GL20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);
 		
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 	
-	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Vector2 position, Vector2 scale, float rotation){
-		if (activeShader != shaders[SHADER_PRIMITIVE]){
-			if (activeShader != null){
-				cleanupShader(activeShader);
-			}			
-			activeShader = shaders[SHADER_PRIMITIVE];
-			prepareShader(activeShader);
-		}
-		
-		if (boundVbo != vboId.getVbo()){
-			boundVbo = vboId.getVbo();
-			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
-		}
+	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Vector2 position, Vector2 scale, float rotation){		
+		boundVbo = vboId.getVbo();
+		activeShader = shaders[SHADER_PRIMITIVE];
+		prepareShader(activeShader);
 		
 		prepareRenderMatrix(Vector2.zero, position, scale, rotation);
-		GL20.glUniformMatrix4(activeShader.getHandleId(Shader.HANDLE_MVPMATRIX), false, renderBuffer);
+		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
 		
 		// plzfix
 		int openGlMode = -1;
@@ -305,13 +289,6 @@ public final class RendererPc extends Renderer {
 				break;
 			}
 		}
-		
-		// TODO: cia perdaryt kad per shaderi arba vbo butu
-		/*GL11.glBegin(openGlMode);
-			for (int i = 0; i < vertices.length; ++i){
-				GL11.glVertex2f(vertices[i].x, vertices[i].y);
-			}
-		GL11.glEnd();*/
 		
 		GL11.glDrawArrays(openGlMode, vboId.getIndex() * boundVbo.getStride(), boundVbo.getVertexCount());
 	}

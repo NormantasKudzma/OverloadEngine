@@ -80,10 +80,6 @@ public abstract class Renderer {
 	}
 	
 	protected abstract int compileShader(int type, String shaderCode);
-
-	protected void loadProgramInfo(){
-		
-	}
 	
 	public abstract void postRender();
 	
@@ -155,7 +151,6 @@ public abstract class Renderer {
 		vbo.setModified(true);
 		
 		int offset = vboId.index * vbo.getStride();
-		int attributeCount = vbo.getAttributeCount();
 		for (int i = 0; i < vertices.length; ++i){
 			vbo.getVbo()
 				.put(offset + 0, vertices[i].x)
@@ -166,7 +161,7 @@ public abstract class Renderer {
 				.put(offset + 5, c.rgba[3]);
 			
 			// Move offset by attribute count to put i-th vertex data
-			offset += attributeCount;
+			offset += DATA_PER_PRIMITIVE;
 		}
 	}
 	
@@ -178,7 +173,7 @@ public abstract class Renderer {
 			}
 			case Primitive:{
 				int size = DATA_PER_PRIMITIVE * vertexCount;
-				Vbo vbo = new Vbo(size, DATA_PER_PRIMITIVE, vertexCount, BYTES_PER_FLOAT);
+				Vbo vbo = new Vbo(size, BYTES_PER_FLOAT * DATA_PER_PRIMITIVE, vertexCount, BYTES_PER_FLOAT);
 				initVbo(vbo);
 				return new VboId(vbo, vbo.generateId(), true);
 			}
