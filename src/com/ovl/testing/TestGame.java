@@ -1,13 +1,11 @@
 package com.ovl.testing;
 
-import com.ovl.controls.Controller;
-import com.ovl.controls.ControllerEventListener;
-import com.ovl.controls.ControllerManager;
-import com.ovl.controls.pc.MouseController;
 import com.ovl.engine.BaseGame;
 import com.ovl.engine.GameObject;
+import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.Renderer;
 import com.ovl.graphics.Primitive;
+import com.ovl.graphics.Sprite;
 import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.utils.Vector2;
 
@@ -16,7 +14,7 @@ public class TestGame extends BaseGame {
 	
 	@Override
 	public void init() {
-		GameObject obj = new GameObject();
+		/*GameObject obj = new GameObject();
 		obj.initEntity(BodyType.NON_INTERACTIVE);
 		obj.setPosition(1.0f, 1.0f);
 		obj.setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "square_yellow.png"));
@@ -41,10 +39,10 @@ public class TestGame extends BaseGame {
 			obj2.setPosition(1.0f, 1.0f);
 			obj2.setSprite(p);
 			addObject(obj2);
-		}
+		}*/
 		
 		
-		/*super.init();
+		super.init();
 		
 		{
 			final int size = 80;
@@ -81,7 +79,7 @@ public class TestGame extends BaseGame {
 		hlObj.initEntity(BodyType.NON_INTERACTIVE);
 		addObject(hlObj);
 		
-		MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
+		/*MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
 		c.setMouseMoveListener(new ControllerEventListener(){
 			@Override
 			public void handleEvent(long eventArg, Vector2 pos, int... params) {

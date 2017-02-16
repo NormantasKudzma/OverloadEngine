@@ -5,7 +5,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -286,6 +285,10 @@ public final class RendererPc extends Renderer {
 			}
 			case Triangles:{
 				openGlMode = GL11.GL_TRIANGLES;
+				break;
+			}
+			default:{
+				openGlMode = GL11.GL_LINE_LOOP;
 				break;
 			}
 		}
