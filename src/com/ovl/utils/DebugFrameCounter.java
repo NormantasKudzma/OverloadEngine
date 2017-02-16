@@ -1,6 +1,6 @@
 package com.ovl.utils;
 
-import com.ovl.physics.PhysicsBody.EBodyType;
+import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
 
 public class DebugFrameCounter extends Label{
@@ -16,7 +16,7 @@ public class DebugFrameCounter extends Label{
 	}
 	
 	@Override
-	public void initEntity(EBodyType type) {
+	public void initEntity(BodyType type) {
 		super.initEntity(type);
 		setPosition(fpsTextPosition);
 		setScale(Vector2.one);

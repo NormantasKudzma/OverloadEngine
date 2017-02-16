@@ -5,11 +5,12 @@ import com.ovl.engine.Renderer;
 import com.ovl.utils.Vector2;
 
 public class Primitive implements Renderable {
-	protected static final Renderer renderer;
+	private static final Renderer renderer;
 	
 	private Vector2 vertices[];
-	protected Renderer.PrimitiveType renderMode;
+	private Renderer.PrimitiveType renderMode;
 	private Renderer.VboId id;
+	private Color color = Color.WHITE;
 
 	static {
 		renderer = OverloadEngine.getInstance().renderer;
@@ -23,6 +24,7 @@ public class Primitive implements Renderable {
 		vertices = verts;
 		this.renderMode = renderMode;
 		init();
+		refreshVertexData();
 	}
 
 	private void init(){
@@ -57,21 +59,35 @@ public class Primitive implements Renderable {
 
 	@Override
 	public Color getColor() {
-		// TODO Auto-generated method stub
-		return null;
+		return color;
 	}
 
 	@Override
 	public void setColor(Color c) {
-		// TODO Auto-generated method stub
-		
+		if (c != null){
+			color = c;
+			refreshVertexData();
+		}
 	}
 	
 	public void setVertex(int index, Vector2 pos){
 		vertices[index] = pos.copy();
+		refreshVertexData();
 	}
 	
 	public void setVertex(int index, float x, float y){
 		vertices[index].set(x, y);
+		refreshVertexData();
+	}
+	
+	public void setVertices(Vector2[] verts){
+		for (int i = 0; i < verts.length && i < vertices.length; ++i){
+			vertices[i].set(verts[i]);
+		}
+		refreshVertexData();
+	}
+	
+	private void refreshVertexData(){
+		renderer.setPrimitiveData(id, vertices, color);
 	}
 }

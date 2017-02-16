@@ -25,7 +25,7 @@ public class PhysicsBody {
 	 * 	Internal type of PhysicsBody. Not to be confused with org.jbox2d.dynamics.BodyType,
 	 * 	which marks type for box2d body.
 	 */
-	public enum EBodyType {
+	public enum BodyType {
 		/** 
 		* 	This type marks a physics body, which will not interact with the world. 
 		* 	Created physics body will not have a box2d body attached to it.
@@ -39,7 +39,7 @@ public class PhysicsBody {
 		INTERACTIVE
 	}
 	
-	public enum EMaskType {
+	public enum MaskType {
 		EXCLUDE,
 		INCLUDE,
 		SET,
@@ -49,18 +49,18 @@ public class PhysicsBody {
 	private Body body;
 	private ArrayList<Fixture> fixtureList = new ArrayList<Fixture>(1);
 	private Transform transform = new Transform();
-	private EBodyType bodyType = EBodyType.INTERACTIVE;
+	private BodyType bodyType = BodyType.INTERACTIVE;
 
-	public PhysicsBody(EBodyType type, GameObject e){
+	public PhysicsBody(BodyType type, GameObject e){
 		bodyType = type;
-		if (type == EBodyType.INTERACTIVE){
+		if (type == BodyType.INTERACTIVE){
 			createBody(null, e);
 		}
 	}
 
-	public PhysicsBody(EBodyType type, BodyDef def) {
+	public PhysicsBody(BodyType type, BodyDef def) {
 		bodyType = type;
-		if (type == EBodyType.INTERACTIVE){
+		if (type == BodyType.INTERACTIVE){
 			createBody(def, null);
 		}
 	}
@@ -133,7 +133,7 @@ public class PhysicsBody {
 	}
 
 	private Fixture attachCollider(Shape shape, boolean isSensor) {
-		if (body == null || bodyType == EBodyType.NON_INTERACTIVE){
+		if (body == null || bodyType == BodyType.NON_INTERACTIVE){
 			System.err.println("Cannot attach fixture to a physics body.");
 			return null;
 		}
@@ -175,8 +175,8 @@ public class PhysicsBody {
 				
 				if (body.m_fixtureList != null){
 					Filter filter = body.m_fixtureList.getFilterData();
-					clone.setCollisionCategory(filter.categoryBits, EMaskType.SET);
-					clone.setCollisionFlags(filter.maskBits, EMaskType.SET);
+					clone.setCollisionCategory(filter.categoryBits, MaskType.SET);
+					clone.setCollisionFlags(filter.maskBits, MaskType.SET);
 				}
 			}
 			
@@ -200,7 +200,7 @@ public class PhysicsBody {
 			}*/
 			def.linearDamping = 0.1f;
 			def.fixedRotation = true;
-			def.type = BodyType.DYNAMIC;
+			def.type = org.jbox2d.dynamics.BodyType.DYNAMIC;
 			def.userData = gameObject;
 		}
 		body = PhysicsWorld.getInstance().getWorld().createBody(def);
@@ -252,7 +252,7 @@ public class PhysicsBody {
 		return transform.getScale();
 	}
 
-	public EBodyType getType(){
+	public BodyType getType(){
 		return bodyType;
 	}
 	
@@ -286,7 +286,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	public void setBodyType(EBodyType type, GameObject userData){
+	public void setBodyType(BodyType type, GameObject userData){
 		this.bodyType = type;
 		switch (type){
 			case INTERACTIVE:{
@@ -302,7 +302,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	public void setCollisionCategory(int flags, EMaskType type){
+	public void setCollisionCategory(int flags, MaskType type){
 		if (body != null){
 			Fixture f = body.m_fixtureList;
 			while (f != null){
@@ -333,7 +333,7 @@ public class PhysicsBody {
 		}
 	}
 	
-	public void setCollisionFlags(int flags, EMaskType type){
+	public void setCollisionFlags(int flags, MaskType type){
 		if (body != null){
 			Fixture f = body.m_fixtureList;
 			while (f != null){
@@ -370,14 +370,14 @@ public class PhysicsBody {
 
 	public void setPosition(float x, float y) {
 		transform.setPosition(x, y);
-		if (bodyType == EBodyType.INTERACTIVE){
+		if (bodyType == BodyType.INTERACTIVE){
 			body.setTransform(Vector2.toVec2(x, y), transform.getRotation());
 		}
 	}
 
 	public void setRotation(float angle) {
 		transform.setRotation(angle);
-		if (bodyType != EBodyType.NON_INTERACTIVE){
+		if (bodyType != BodyType.NON_INTERACTIVE){
 			body.setTransform(body.getPosition(), angle);
 		}
 	}

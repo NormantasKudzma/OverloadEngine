@@ -77,12 +77,16 @@ public class Vbo {
 		return stride;
 	}
 	
-	public int getDataSize(){
+	public int getTypeSize(){
 		return typeSize;
 	}
 	
 	public int getVertexCount(){
 		return vertexCount;
+	}
+	
+	public int getAttributeCount(){
+		return stride / vertexCount;
 	}
 	
 	public int getId(){

@@ -3,9 +3,10 @@ package com.ovl.testing;
 import com.ovl.engine.BaseGame;
 import com.ovl.engine.GameObject;
 import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.Renderer;
 import com.ovl.graphics.Primitive;
 import com.ovl.graphics.Sprite;
-import com.ovl.physics.PhysicsBody.EBodyType;
+import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {
@@ -14,12 +15,21 @@ public class TestGame extends BaseGame {
 	@Override
 	public void init() {
 		GameObject obj = new GameObject();
-		obj.initEntity(EBodyType.NON_INTERACTIVE);
+		obj.initEntity(BodyType.NON_INTERACTIVE);
 		obj.setPosition(1.0f, 1.0f);
 		obj.setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "square_yellow.png"));
 		addObject(obj);
 		
 		//primitive vbo test here
+		
+		Vector2[] verts = new Vector2[]{new Vector2(0.5f, 0.5f), new Vector2(1.5f, 1.5f)};
+		Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
+		GameObject obj2 = new GameObject();
+		obj2.initEntity(BodyType.NON_INTERACTIVE);
+		obj2.setPosition(1.0f, 1.0f);
+		obj2.setSprite(p);
+		addObject(obj2);
+		
 		
 		/*super.init();
 		

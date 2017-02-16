@@ -27,7 +27,7 @@ public abstract class SimpleFont extends GameObject {
 	public static SimpleFont create(String text, CustomFont f){
 		SimpleFont cf = RENDERER.getFontBuilder().createFontObject();		
 		cf.initBufferedImage(1024, 128);
-		cf.initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
+		cf.initEntity(PhysicsBody.BodyType.NON_INTERACTIVE);
 		cf.text = text;
 		cf.setFont(f);
 		return cf;

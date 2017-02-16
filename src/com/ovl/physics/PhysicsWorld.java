@@ -88,7 +88,7 @@ public class PhysicsWorld implements ContactListener {
 		return world;
 	}
 	
-	public PhysicsBody getBodyFromDef(PhysicsBody.EBodyType type, BodyDef def){
+	public PhysicsBody getBodyFromDef(PhysicsBody.BodyType type, BodyDef def){
 		PhysicsBody b = new PhysicsBody(type, def);
 		bodyList.add(b);
 		return b;
@@ -98,7 +98,7 @@ public class PhysicsWorld implements ContactListener {
 		return bodyList;
 	}
 	
-	public PhysicsBody getNewBody(PhysicsBody.EBodyType type, GameObject e){
+	public PhysicsBody getNewBody(PhysicsBody.BodyType type, GameObject e){
 		PhysicsBody b = new PhysicsBody(type, e);
 		bodyList.add(b);
 		return b;

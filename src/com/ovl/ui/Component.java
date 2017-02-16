@@ -16,7 +16,7 @@ public class Component extends GameObject {
 
 	public Component(BaseGame game){
 		super(game);
-		initEntity(PhysicsBody.EBodyType.NON_INTERACTIVE);
+		initEntity(PhysicsBody.BodyType.NON_INTERACTIVE);
 		initialize();
 	}
 	

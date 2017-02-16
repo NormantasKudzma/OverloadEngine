@@ -133,7 +133,7 @@ public final class RendererPc extends Renderer {
 	protected void prepareShader(Shader shader){
 		Shader.Handle handle = null;
 		GL20.glUseProgram(shader.getProgramId());
-		//GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, shader.getVbo().getId());
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
 		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
 			handle = Shader.HANDLES[i];
 			if (shader.getHandleId(i) != -1 && handle.size != -1){
@@ -189,6 +189,7 @@ public final class RendererPc extends Renderer {
 	public void preRender(){
 		for (Vbo vbo : vbos){
 			if (vbo.isModified()){
+				vbo.setModified(false);
 				vbo.getVbo().rewind();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo.getId());
 				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo.getVbo(), GL15.GL_STATIC_DRAW);
@@ -244,10 +245,9 @@ public final class RendererPc extends Renderer {
 		GL20.glUniformMatrix4(activeShader.getHandleId(Shader.HANDLE_MVPMATRIX), false, renderBuffer);
 		GL20.glUniform1i(activeShader.getHandleId(Shader.HANDLE_TEX), 0);
 		
-		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getId() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
+		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 	
-	// cia reiktu dar papildomai mode (lines etc)
 	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Vector2 position, Vector2 scale, float rotation){
 		if (activeShader != shaders[SHADER_PRIMITIVE]){
 			if (activeShader != null){
@@ -313,15 +313,13 @@ public final class RendererPc extends Renderer {
 			}
 		GL11.glEnd();*/
 		
-		/*
-		 * Should implement first vertex offset here in case vbo is used for more than one primitive!!
-		 * */
-		GL11.glDrawArrays(openGlMode, 0, boundVbo.getVertexCount());
+		GL11.glDrawArrays(openGlMode, vboId.getIndex() * boundVbo.getStride(), boundVbo.getVertexCount());
 	}
 
 	public void deleteVbo(VboId vboId){
-		GL15.glDeleteBuffers(vboId.getId());
-		vbos.remove(vboId.getVbo());
+		Vbo vbo = vboId.getVbo();
+		GL15.glDeleteBuffers(vbo.getId());
+		vbos.remove(vbo);
 	}
 	
 	protected void initVbo(Vbo vbo){

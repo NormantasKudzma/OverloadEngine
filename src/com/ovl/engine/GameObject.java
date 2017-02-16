@@ -126,7 +126,7 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 		return sprite;
 	}
 
-	public void initEntity(PhysicsBody.EBodyType type) {
+	public void initEntity(PhysicsBody.BodyType type) {
 		if (body == null){
 			body = PhysicsWorld.getInstance().getNewBody(type, this);
 		}
@@ -171,8 +171,8 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 
 	public void setCollisionFlags(int category, int mask){
 		if (body != null){
-			body.setCollisionCategory(category, PhysicsBody.EMaskType.SET);
-			body.setCollisionFlags(mask, PhysicsBody.EMaskType.SET);
+			body.setCollisionCategory(category, PhysicsBody.MaskType.SET);
+			body.setCollisionFlags(mask, PhysicsBody.MaskType.SET);
 		}
 	}
 	
