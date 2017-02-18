@@ -98,7 +98,7 @@ public class Sprite implements Renderable, ICloneable {
 	
 	private void init(){
 		id = renderer.generateId(Renderer.VboType.Textured, 4);
-		renderer.setColorData(id, Color.WHITE);
+		setColor(Color.WHITE);
 	}
 	
 	public void loadTexture(String path){
@@ -115,13 +115,12 @@ public class Sprite implements Renderable, ICloneable {
 		size.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
 		
 		texture.bind();
-		renderer.renderTextured(id, size, position, scale, rotation);
+		renderer.renderTextured(id, color, size, position, scale, rotation);
 	}
 	
 	public void setColor(Color c){
 		if (c != null){
 			color = c;
-			renderer.setColorData(id, c);
 		}
 	}
 	

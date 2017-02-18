@@ -22,7 +22,8 @@ public class Shader {
 		"a_TexCoord",
 		"a_Color",
 		"u_Texture",
-		"u_MVPMatrix"
+		"u_MVPMatrix",
+		"u_Color"
 	};
 	
 	public static final int HANDLE_SIZES[] = {
@@ -30,6 +31,7 @@ public class Shader {
 		2, 
 		4, 
 		0, 
+		0,
 		0
 	};
 	
@@ -38,7 +40,8 @@ public class Shader {
 	public static final int HANDLE_A_COLOR 		= 2;
 	public static final int HANDLE_U_TEX 			= 3;
 	public static final int HANDLE_U_MVPMATRIX 	= 4;
-	public static final int HANDLE_COUNT 			= 5;
+	public static final int HANDLE_U_COLOR		= 5;
+	public static final int HANDLE_COUNT 			= 6;
 	
 	private String resourceName;
 	private int programId = -1;

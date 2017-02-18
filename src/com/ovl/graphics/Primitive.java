@@ -10,7 +10,7 @@ public class Primitive implements Renderable {
 	private Vector2 vertices[];
 	private Renderer.PrimitiveType renderMode;
 	private Renderer.VboId id;
-	private Color color = Color.WHITE;
+	private Color color;
 
 	static {
 		renderer = OverloadEngine.getInstance().renderer;
@@ -29,6 +29,7 @@ public class Primitive implements Renderable {
 
 	private void init(){
 		id = renderer.generateId(Renderer.VboType.Primitive, vertices.length);
+		setColor(Color.WHITE);
 	}
 	
 	@Override
@@ -54,7 +55,7 @@ public class Primitive implements Renderable {
 
 	@Override
 	public void render(Vector2 position, Vector2 scale, float rotation) {
-		renderer.renderPrimitive(id, renderMode, vertices, position, scale, rotation);
+		renderer.renderPrimitive(id, renderMode, vertices, color, position, scale, rotation);
 	}
 
 	@Override
@@ -66,7 +67,6 @@ public class Primitive implements Renderable {
 	public void setColor(Color c) {
 		if (c != null){
 			color = c;
-			refreshVertexData();
 		}
 	}
 	

@@ -18,6 +18,7 @@ import org.lwjgl.util.vector.Vector3f;
 import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
 import com.ovl.engine.Vbo;
+import com.ovl.graphics.Color;
 import com.ovl.graphics.pc.FontBuilderPc;
 import com.ovl.graphics.pc.TextureLoaderPc;
 import com.ovl.utils.Pair;
@@ -228,24 +229,26 @@ public final class RendererPc extends Renderer {
 		renderBuffer.rewind();
 	}
 	
-	public void renderTextured(VboId vboId, Vector2 size, Vector2 position, Vector2 scale, float rotation){
+	public void renderTextured(VboId vboId, Color c, Vector2 size, Vector2 position, Vector2 scale, float rotation){
 		boundVbo = vboId.getVbo();
 		activeShader = shaders[SHADER_TEXTURE];
 		prepareShader(activeShader);
 		
 		prepareRenderMatrix(size, position, scale, rotation);
+		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
 		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
 		GL20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);
 		
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 	
-	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Vector2 position, Vector2 scale, float rotation){		
+	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Color c, Vector2 position, Vector2 scale, float rotation){		
 		boundVbo = vboId.getVbo();
 		activeShader = shaders[SHADER_PRIMITIVE];
 		prepareShader(activeShader);
 		
 		prepareRenderMatrix(Vector2.zero, position, scale, rotation);
+		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
 		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
 		
 		// plzfix
