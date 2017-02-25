@@ -1,6 +1,7 @@
 package com.ovl.engine;
 
 import com.ovl.utils.ConfigManager;
+import com.ovl.utils.Paths;
 
 public class Shader {
 	public static class Handle {
@@ -56,13 +57,13 @@ public class Shader {
 	
 	public String getVSCode(){
 		StringBuilder resource = new StringBuilder();
-		resource.append(OverloadEngine.getPaths().getShaders()).append(resourceName).append("_VS");
+		resource.append(Paths.getShaders()).append(resourceName).append("_VS");
 		return ConfigManager.loadFile(resource.toString());
 	}
 	
 	public String getPSCode(){
 		StringBuilder resource = new StringBuilder();
-		resource.append(OverloadEngine.getPaths().getShaders()).append(resourceName).append("_FS");
+		resource.append(Paths.getShaders()).append(resourceName).append("_FS");
 		return ConfigManager.loadFile(resource.toString());
 	}
 

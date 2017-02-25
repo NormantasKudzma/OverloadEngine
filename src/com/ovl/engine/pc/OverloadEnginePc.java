@@ -14,7 +14,6 @@ import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.DebugFrameCounter;
-import com.ovl.utils.pc.PathsPc;
 import com.ovl.utils.pc.PhysicsDebugDraw;
 
 public class OverloadEnginePc extends OverloadEngine {
@@ -57,6 +56,7 @@ public class OverloadEnginePc extends OverloadEngine {
 		System.setProperty("org.lwjgl.librarypath", nativesFolder.getAbsolutePath());
 		ConfigManager.gameConfiguration = ConfigManager.loadFileLines(config.configPath);
 		Settings.parseConfig(ConfigManager.gameConfiguration);
+		platformAssetsRoot = "";
 		
 		aspectRatio = (float) (1.0f * frameWidth) / frameHeight;
 		
@@ -90,8 +90,6 @@ public class OverloadEnginePc extends OverloadEngine {
 			isCloseRequested = true;
 			return;
 		}
-		
-		PATHS = new PathsPc();
 		
 		if (renderer == null) {
 			renderer = new RendererPc();

@@ -30,7 +30,7 @@ public class ControllerManager {
 		if (result != LibUsb.SUCCESS) {
 			throw new LibUsbException("Unable to initialize libusb.", result);
 		}
-		loadAllowedUsbDeviceList(OverloadEngine.getPaths().getAllowedDevices());
+		loadAllowedUsbDeviceList(Paths.getAllowedDevices());
 		loadUsbDevices();
 	}
 
@@ -64,7 +64,7 @@ public class ControllerManager {
 	private void filterUsbDevices() {
 		if (allowedUsbProductVendorList == null) {
 			allowedUsbProductVendorList = new ArrayList<Pair<Integer, Integer>>();
-			loadAllowedUsbDeviceList(OverloadEngine.getPaths().getAllowedDevices());
+			loadAllowedUsbDeviceList(Paths.getAllowedDevices());
 		}
 
 		int index = 0;

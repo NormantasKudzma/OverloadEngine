@@ -1,12 +1,13 @@
 package com.ovl.testing;
 
+import java.util.Random;
+
 import com.ovl.engine.BaseGame;
-import com.ovl.engine.GameObject;
-import com.ovl.engine.OverloadEngine;
-import com.ovl.engine.Renderer;
+import com.ovl.graphics.Color;
 import com.ovl.graphics.Primitive;
-import com.ovl.graphics.Sprite;
 import com.ovl.physics.PhysicsBody.BodyType;
+import com.ovl.ui.Label;
+import com.ovl.utils.OverloadRandom;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {
@@ -42,7 +43,7 @@ public class TestGame extends BaseGame {
 		}*/
 		
 		
-		super.init();
+		/*super.init();
 		
 		{
 			final int size = 80;
@@ -77,7 +78,7 @@ public class TestGame extends BaseGame {
 		GameObject hlObj = new GameObject();
 		hlObj.setSprite(highlight);
 		hlObj.initEntity(BodyType.NON_INTERACTIVE);
-		addObject(hlObj);
+		addObject(hlObj);*/
 		
 		/*MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
 		c.setMouseMoveListener(new ControllerEventListener(){
@@ -89,6 +90,58 @@ public class TestGame extends BaseGame {
 			}
 		});
 		c.startController();*/
+		
+		float w = 0.05f;
+		for (float i = w * 0.5f; i <= 2.0f; i += w){
+			createLetter("a", new Vector2(i, 2.05f + OverloadRandom.nextRandom(200) * 0.001f));
+		}
+	}
+	
+	void createLetter(String text, Vector2 pos){
+		{
+			Label l = new Label(this, text){
+				float changeDelta = OverloadRandom.nextRandom(100) * 0.001f + 0.35f;
+				float nextChange = changeDelta;
+				float vSpeed = OverloadRandom.nextRandom(30) * 0.0001f + 0.0025f;
+				float vSpeedChange = OverloadRandom.nextRandom(10000) * 0.0001f * 0.00001f;
+				
+				@Override
+				public void update(float deltaTime) {
+					super.update(deltaTime);
+					getPosition().y -= vSpeed;
+					vSpeed += vSpeedChange;
+					
+					nextChange -= deltaTime;
+					if (nextChange <= 0.0f){
+						nextChange = changeDelta;
+						setText("" + (char)(OverloadRandom.nextRandom(93) + 33));
+					}
+				}
+			};
+			l.setLifetime(8.0f);
+			l.setColor(new Color(0.05f, 0.85f, 0.08f, 1.0f));
+			l.setPosition(pos.copy());
+			addObject(l);
+		}
+		/*{
+			Label l = new Label(this, text){
+				@Override
+				public void update(float deltaTime) {
+					super.update(deltaTime);
+					getPosition().y -= 0.0025f;
+					setLifetime(2.0f);
+				}
+			};
+			l.setScale(1.2f, 1.2f);
+			l.setColor(new Color(0.05f, 1.0f, 0.08f, 0.25f));
+			l.setPosition(pos.copy().add(0.0f, 0.01f));
+			addObject(l);
+		}*/
+	}
+	
+	@Override
+	public void update(float deltaTime) {
+		super.update(deltaTime);
 	}
 	
 	public final Vector2 clampToGrid(Vector2 pos){

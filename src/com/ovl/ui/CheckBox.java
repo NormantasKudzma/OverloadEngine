@@ -1,9 +1,9 @@
 package com.ovl.ui;
 
 import com.ovl.engine.BaseGame;
-import com.ovl.engine.OverloadEngine;
 import com.ovl.graphics.SimpleFont;
 import com.ovl.graphics.Sprite;
+import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
 
 public class CheckBox extends SpriteComponent{
@@ -25,10 +25,10 @@ public class CheckBox extends SpriteComponent{
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "checkbox_normal.png"), EUIState.NORMAL, false);
-		setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
-		setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "checkbox_checked.png"), EUIState.CLICKED, false);
-		setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "checkbox_checked_hover.png"), EUIState.CLICKED, true);
+		setSprite(new Sprite(Paths.getUI() + "checkbox_normal.png"), EUIState.NORMAL, false);
+		setSprite(new Sprite(Paths.getUI() + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
+		setSprite(new Sprite(Paths.getUI() + "checkbox_checked.png"), EUIState.CLICKED, false);
+		setSprite(new Sprite(Paths.getUI() + "checkbox_checked_hover.png"), EUIState.CLICKED, true);
 		clickListener = new CheckBoxClickListener();
 	}
 	

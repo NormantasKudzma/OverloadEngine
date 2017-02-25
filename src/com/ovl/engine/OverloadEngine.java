@@ -3,7 +3,6 @@ package com.ovl.engine;
 import java.util.ArrayList;
 
 import com.ovl.utils.DebugFrameCounter;
-import com.ovl.utils.Paths;
 
 public abstract class OverloadEngine {
 	public enum EnginePlatform {
@@ -110,7 +109,6 @@ public abstract class OverloadEngine {
 	}
 
 	protected static OverloadEngine INSTANCE = null;
-	protected static Paths PATHS = null;
 	
 	public Renderer renderer;
 	public int frameWidth, frameHeight;
@@ -118,6 +116,8 @@ public abstract class OverloadEngine {
 	public boolean isFullScreen = true;
 
 	protected EnginePlatform platform;
+	protected String platformAssetsRoot;
+	
 	protected float deltaTime;
 	protected long t0, t1; // Frame start/end time
 	protected DebugFrameCounter frameCounter;
@@ -139,10 +139,6 @@ public abstract class OverloadEngine {
 	}
 	
 	protected abstract void destroy();
-
-	public static Paths getPaths(){
-		return PATHS;
-	}
 	
 	public static OverloadEngine getInstance(){
 		return INSTANCE;
@@ -154,6 +150,10 @@ public abstract class OverloadEngine {
 	
 	public EnginePlatform getPlatform(){
 		return platform;
+	}
+	
+	public String getPlatformAssetsRoot(){
+		return platformAssetsRoot;
 	}
 	
 	protected abstract void init();
