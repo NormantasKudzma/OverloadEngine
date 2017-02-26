@@ -72,7 +72,7 @@ public final class RendererPc extends Renderer {
 		//GLES11.glDisable(GLES11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 		
@@ -136,10 +136,9 @@ public final class RendererPc extends Renderer {
 		GL20.glUseProgram(shader.getProgramId());
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
 		
-		int byteStride = boundVbo.getVertexCount() * boundVbo.getTypeSize();
 		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
 			if ((handle = shader.getHandle(i)) != null && handle.size > 0){
-				GL20.glVertexAttribPointer(handle.id, handle.size, GL11.GL_FLOAT, false, byteStride, handle.offset);
+				GL20.glVertexAttribPointer(handle.id, handle.size, GL11.GL_FLOAT, false, boundVbo.getStride(), handle.offset);
 				GL20.glEnableVertexAttribArray(handle.id);
 			}
 		}
@@ -271,6 +270,9 @@ public final class RendererPc extends Renderer {
 			case Polygon:{
 				openGlMode = GL11.GL_POLYGON;
 				break;
+			}
+			case Points:{
+				openGlMode = GL11.GL_POINT;
 			}
 			case QuadStrip:{
 				openGlMode = GL11.GL_QUAD_STRIP;

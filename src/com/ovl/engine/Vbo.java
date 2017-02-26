@@ -12,24 +12,23 @@ public class Vbo {
 	protected boolean isModified = false;
 	protected FloatBuffer vbo = null;
 	protected ArrayList<Integer> releasedIds = new ArrayList<Integer>();
-	protected int stride = 0;		// bytes per renderable (vertex count * bytes per element)
+	protected int stride = 0;		// bytes per vertex
 	protected int typeSize = 0;	// bytes per attribute
 	protected int vertexCount = 0;	// number of vertices per renderable
+	protected int objectSize = 0;	// number of typeSizes (ie floats) per object
 	protected Shader shader;
 	
-	public Vbo(Shader shader, int initialSize, int stride, int vertexCount, int dataSize){
-		bufferSize = initialSize;
+	public Vbo(Shader shader, int initialSize, int vertexCount, int dataSize){
 		this.vertexCount = vertexCount;
 		this.shader = shader;
-		
-		if (stride > 0){
-			this.stride = stride;
+		stride = dataSize * shader.getTotalHandlesSize();
+		objectSize = vertexCount * shader.getTotalHandlesSize();
+		typeSize = dataSize;
+
+		if (initialSize <= 0){
+			initialSize = objectSize;
 		}
-		
-		if (dataSize > 0){
-			this.typeSize = dataSize;
-		}
-		
+		bufferSize = initialSize;
 		vbo = ByteBuffer.allocateDirect(bufferSize * typeSize).order(ByteOrder.nativeOrder()).asFloatBuffer();
 	}
 	
@@ -41,13 +40,13 @@ public class Vbo {
 		return isModified;
 	}
 	
-	public int generateId(){	
+	public int generateId(){
 		// If there are any released ids, then return them instead of a new id
 		if (releasedIds.size() > 0){
 			return releasedIds.remove(releasedIds.size() - 1);
 		}
 		
-		if (nextId >= bufferSize / stride){
+		if (nextId >= bufferSize / objectSize){
 			bufferSize *= 2;
 			vbo.rewind();
 			FloatBuffer newBuffer = ByteBuffer.allocateDirect(bufferSize * typeSize).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -79,16 +78,16 @@ public class Vbo {
 		return stride;
 	}
 	
+	public int getObjectSize(){
+		return objectSize;
+	}
+	
 	public int getTypeSize(){
 		return typeSize;
 	}
 	
 	public int getVertexCount(){
 		return vertexCount;
-	}
-	
-	public int getAttributeCount(){
-		return stride / vertexCount;
 	}
 	
 	public Shader getShader(){

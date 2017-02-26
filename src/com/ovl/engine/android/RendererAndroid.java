@@ -229,6 +229,9 @@ public final class RendererAndroid extends Renderer {
 				openGlMode = GLES20.GL_LINES;
 				break;
 			}
+			case Points:{
+				openGlMode = GLES20.GL_POINT;
+			}
 			case TriangleFan:{
 				openGlMode = GLES20.GL_TRIANGLE_FAN;
 				break;

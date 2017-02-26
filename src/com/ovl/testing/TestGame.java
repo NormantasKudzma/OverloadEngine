@@ -17,7 +17,7 @@ public class TestGame extends BaseGame {
 	
 	@Override
 	public void init() {
-		{
+		/*{
 			GameObject obj = new GameObject();
 			obj.initEntity(BodyType.NON_INTERACTIVE);
 			obj.setPosition(1.5f, 1.5f);
@@ -31,30 +31,54 @@ public class TestGame extends BaseGame {
 			obj.setPosition(0.5f, 0.5f);
 			obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
 			addObject(obj);	
-		}
+		}*/
 		
 		
 		//primitive vbo test here
 		
 		{
 			Vector2[] verts = new Vector2[]{
-							new Vector2(0.8f, 0.8f),
-							new Vector2(-0.8f, -0.8f),
-
-							//new Vector2(1f, 1f),
-							//new Vector2(-1f, -1f),
-							//new Vector2(-0.5f, 0.5f),
-							//new Vector2(0.5f, -0.5f),
+							new Vector2(-1f, 0.5f),
+							new Vector2(0f, 0.5f),
 							};
 			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
 			GameObject obj2 = new GameObject();
 			obj2.initEntity(BodyType.NON_INTERACTIVE);
 			obj2.setSprite(p);
 			obj2.setPosition(1.0f, 1.0f);
-			obj2.setColor(new Color(0.25f, 0.9f, 0.36f));
+			obj2.setColor(new Color(0.25f, 0.9f, 0.2f));
 			addObject(obj2);
 		}
 		{
+			Vector2[] verts = new Vector2[]{
+							new Vector2(-1f, 0.4f),
+							new Vector2(0f, 0.4f),
+							};
+			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
+			GameObject obj2 = new GameObject();
+			obj2.initEntity(BodyType.NON_INTERACTIVE);
+			obj2.setSprite(p);
+			obj2.setPosition(1.0f, 1.0f);
+			obj2.setColor(new Color(0.25f, 0.9f, 0.2f));
+			addObject(obj2);
+		}
+		
+		{
+			Vector2[] verts = new Vector2[]{
+							new Vector2(-0.8f, -0.8f),
+							new Vector2(0f, 0.8f),
+							new Vector2(0.8f, -0.8f),
+							//new Vector2(0.0f, 0.0f)
+							};
+			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Triangles);
+			GameObject obj2 = new GameObject();
+			obj2.initEntity(BodyType.NON_INTERACTIVE);
+			obj2.setSprite(p);
+			obj2.setPosition(1.0f, 1.0f);
+			obj2.setColor(new Color(0.9f, 0.9f, 0.9f, 0.25f));
+			addObject(obj2);
+		}
+		/*{
 			Vector2[] verts = new Vector2[]{
 							//new Vector2(0.85f, 0.8f),
 							//new Vector2(-0.75f, -0.8f),
@@ -84,7 +108,7 @@ public class TestGame extends BaseGame {
 			obj2.setPosition(1.0f, 1.0f);
 			obj2.setColor(new Color(0.2f, 0.0f, 0.8f));
 			addObject(obj2);
-		}
+		}*/
 		/*{
 			Vector2[] verts = new Vector2[]{new Vector2(0.5f, -0.5f), new Vector2(0.5f, 0.5f)};
 			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);

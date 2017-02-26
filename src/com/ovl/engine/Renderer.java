@@ -14,6 +14,7 @@ public abstract class Renderer {
 		LineStrip,
 		LineLoop,
 		Polygon,
+		Points,
 		Quads,
 		QuadStrip,
 		Triangles,
@@ -101,7 +102,7 @@ public abstract class Renderer {
 		
 		vbo.setModified(true);
 		
-		int offset = vboId.index * vbo.getStride();
+		int offset = vboId.index * vbo.getObjectSize();
 		vbo.getVbo().put(2 + offset, tl.x).put(3 + offset, br.y)
 			.put(6 + offset, tl.x).put(7 + offset, tl.y)
 			.put(10 + offset, br.x).put(11 + offset, br.y)
@@ -117,7 +118,7 @@ public abstract class Renderer {
 		
 		vbo.setModified(true);
 		
-		int offset = vboId.index * vbo.getStride();
+		int offset = vboId.index * vbo.getObjectSize();
 		vbo.getVbo().put(offset + 5, pos.y)
 			.put(offset + 8, pos.x)
 			.put(offset + 12, pos.x)
@@ -136,7 +137,7 @@ public abstract class Renderer {
 		
 		vbo.setModified(true);
 		
-		int offset = vboId.index * vbo.getStride();
+		int offset = vboId.index * vbo.getObjectSize();
 		for (int i = 0; i < vertices.length; ++i){
 			vbo.getVbo()
 				.put(offset + 0, vertices[i].x)
@@ -170,14 +171,7 @@ public abstract class Renderer {
 		Shader shader = shaders.get(shaderName);
 		
 		if (shader != null){
-			int handlesSize = shader.getTotalHandlesSize();
-			int stride = vertsPerObject * handlesSize;
-			
-			if (initialSize <= 0){
-				initialSize = stride;
-			}
-			
-			Vbo vbo = new Vbo(shader, initialSize, stride, vertsPerObject, BYTES_PER_FLOAT);
+			Vbo vbo = new Vbo(shader, initialSize, vertsPerObject, BYTES_PER_FLOAT);
 			initVbo(vbo);
 			return vbo;
 		}
