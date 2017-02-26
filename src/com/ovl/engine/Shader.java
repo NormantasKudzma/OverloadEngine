@@ -49,6 +49,7 @@ public class Shader {
 	private int vsId = -1;
 	private int fsId = -1;
 	private Handle handles[];
+	private int totalHandlesSize = 0;
 	
 	public Shader(String name){
 		resourceName = name;
@@ -91,6 +92,10 @@ public class Shader {
 		this.fsId = fsId;
 	}
 	
+	public int getTotalHandlesSize(){
+		return totalHandlesSize;
+	}
+	
 	public static int getHandleIndexByName(String name){
 		for (int i = 0; i < HANDLE_COUNT; ++i){
 			if (HANDLE_NAMES[i].equals(name)){
@@ -102,10 +107,12 @@ public class Shader {
 	
 	public void calculateOffsets(int typeSize){
 		int handleOffset = 0;
+		totalHandlesSize = 0;
 		for (Handle handle : handles){
 			if (handle != null){
 				handle.offset = handleOffset;
 				handleOffset += handle.size * typeSize;
+				totalHandlesSize += handle.size;
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import com.ovl.utils.Vector2;
 
 public class Primitive implements Renderable {
 	private static final Renderer renderer;
+	private static final String shaderName;
 	
 	private Vector2 vertices[];
 	private Renderer.PrimitiveType renderMode;
@@ -13,7 +14,9 @@ public class Primitive implements Renderable {
 	private Color color;
 
 	static {
+		shaderName = "Primitive";
 		renderer = OverloadEngine.getInstance().renderer;
+		renderer.createShader(shaderName);
 	}
 	
 	public Primitive(int numVerts, Renderer.PrimitiveType renderMode){
@@ -28,7 +31,11 @@ public class Primitive implements Renderable {
 	}
 
 	private void init(){
-		id = renderer.generateId(Renderer.VboType.Primitive, vertices.length);
+		if ((id = renderer.generateId(shaderName, vertices.length)) == null){
+			renderer.createVbo(shaderName, vertices.length);
+			id = renderer.generateId(shaderName, vertices.length);
+		}
+		
 		setColor(Color.WHITE);
 	}
 	

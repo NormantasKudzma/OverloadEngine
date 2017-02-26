@@ -30,42 +30,40 @@ public final class RendererPc extends Renderer {
 	private FloatBuffer renderBuffer;
 	
 	public RendererPc(){
-		textureVbo = new Vbo(4096, DATA_PER_SPRITE, VERTICES_PER_SPRITE, BYTES_PER_FLOAT);
-		initVbo(textureVbo);
-		
-		renderBuffer = ByteBuffer.allocateDirect(16 * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
-
-		shaders = new Shader[SHADER_COUNT];
-		shaders[SHADER_TEXTURE] = new Shader("Texture");
-		shaders[SHADER_PRIMITIVE] = new Shader("Primitive");
-		
-		for (int i = 0; i < SHADER_COUNT; ++i){
-			if (shaders[i] == null){
-				continue;
-			}
+		renderBuffer = ByteBuffer.allocateDirect(16 * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();		
+		textureLoader = new TextureLoaderPc();
+		fontBuilder = new FontBuilderPc();
+	}
+	
+	public Shader createShader(String name){
+		try {
+			Shader shader = new Shader(name);
+			shader.setVSId(compileShader(GL20.GL_VERTEX_SHADER, shader.getVSCode()));
+			shader.setFSId(compileShader(GL20.GL_FRAGMENT_SHADER, shader.getPSCode()));
+			shader.setProgramId(GL20.glCreateProgram());
 			
-			shaders[i].setVSId(compileShader(GL20.GL_VERTEX_SHADER, shaders[i].getVSCode()));
-			shaders[i].setFSId(compileShader(GL20.GL_FRAGMENT_SHADER, shaders[i].getPSCode()));
-			shaders[i].setProgramId(GL20.glCreateProgram());
-			
-			GL20.glAttachShader(shaders[i].getProgramId(), shaders[i].getVSId());
-			GL20.glAttachShader(shaders[i].getProgramId(), shaders[i].getFSId());
-			GL20.glLinkProgram(shaders[i].getProgramId());
+			GL20.glAttachShader(shader.getProgramId(), shader.getVSId());
+			GL20.glAttachShader(shader.getProgramId(), shader.getFSId());
+			GL20.glLinkProgram(shader.getProgramId());
 			Util.checkGLError();
 			
-			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shaders[i].getProgramId());
+			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shader.getProgramId());
 			
 			for (Pair<String, Integer> pair : handles){
 				int handleIndex = Shader.getHandleIndexByName(pair.key);
 				if (handleIndex != -1){
-					shaders[i].createHandle(handleIndex, pair.value);
+					shader.createHandle(handleIndex, pair.value);
 				}
 			}
-			shaders[i].calculateOffsets(BYTES_PER_FLOAT);
+			shader.calculateOffsets(BYTES_PER_FLOAT);
+			shaders.put(name, shader);
+			
+			return shader;
 		}
-		
-		textureLoader = new TextureLoaderPc();
-		fontBuilder = new FontBuilderPc();
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public void init(){
@@ -137,9 +135,11 @@ public final class RendererPc extends Renderer {
 		Shader.Handle handle = null;
 		GL20.glUseProgram(shader.getProgramId());
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
+		
+		int byteStride = boundVbo.getVertexCount() * boundVbo.getTypeSize();
 		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
-			if ((handle = shader.getHandle(i)) != null){
-				GL20.glVertexAttribPointer(handle.id, handle.size, GL11.GL_FLOAT, false, boundVbo.getStride(), handle.offset);
+			if ((handle = shader.getHandle(i)) != null && handle.size > 0){
+				GL20.glVertexAttribPointer(handle.id, handle.size, GL11.GL_FLOAT, false, byteStride, handle.offset);
 				GL20.glEnableVertexAttribArray(handle.id);
 			}
 		}
@@ -201,10 +201,6 @@ public final class RendererPc extends Renderer {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		
-		if (activeShader != null){
-			prepareShader(activeShader);
-		}
 	}
 	
 	protected void prepareRenderMatrix(Vector2 size, Vector2 position, Vector2 scale, float rotation){
@@ -230,9 +226,12 @@ public final class RendererPc extends Renderer {
 	}
 	
 	public void renderTextured(VboId vboId, Color c, Vector2 size, Vector2 position, Vector2 scale, float rotation){
-		boundVbo = vboId.getVbo();
-		activeShader = shaders[SHADER_TEXTURE];
-		prepareShader(activeShader);
+		if (boundVbo != vboId.getVbo())
+		{
+			boundVbo = vboId.getVbo();
+			activeShader = boundVbo.getShader();
+			prepareShader(activeShader);
+		}
 		
 		prepareRenderMatrix(size, position, scale, rotation);
 		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
@@ -243,9 +242,12 @@ public final class RendererPc extends Renderer {
 	}
 	
 	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Color c, Vector2 position, Vector2 scale, float rotation){		
-		boundVbo = vboId.getVbo();
-		activeShader = shaders[SHADER_PRIMITIVE];
-		prepareShader(activeShader);
+		if (boundVbo != vboId.getVbo())
+		{
+			boundVbo = vboId.getVbo();
+			activeShader = boundVbo.getShader();
+			prepareShader(activeShader);
+		}
 		
 		prepareRenderMatrix(Vector2.zero, position, scale, rotation);
 		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
@@ -295,8 +297,8 @@ public final class RendererPc extends Renderer {
 				break;
 			}
 		}
-		
-		GL11.glDrawArrays(openGlMode, vboId.getIndex() * boundVbo.getStride(), boundVbo.getVertexCount());
+
+		GL11.glDrawArrays(openGlMode, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 
 	public void deleteVbo(VboId vboId){

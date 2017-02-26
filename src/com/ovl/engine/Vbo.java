@@ -15,10 +15,12 @@ public class Vbo {
 	protected int stride = 0;		// bytes per renderable (vertex count * bytes per element)
 	protected int typeSize = 0;	// bytes per attribute
 	protected int vertexCount = 0;	// number of vertices per renderable
+	protected Shader shader;
 	
-	public Vbo(int initialSize, int stride, int vertexCount, int dataSize){
+	public Vbo(Shader shader, int initialSize, int stride, int vertexCount, int dataSize){
 		bufferSize = initialSize;
 		this.vertexCount = vertexCount;
+		this.shader = shader;
 		
 		if (stride > 0){
 			this.stride = stride;
@@ -39,7 +41,12 @@ public class Vbo {
 		return isModified;
 	}
 	
-	public int generateId(){
+	public int generateId(){	
+		// If there are any released ids, then return them instead of a new id
+		if (releasedIds.size() > 0){
+			return releasedIds.remove(releasedIds.size() - 1);
+		}
+		
 		if (nextId >= bufferSize / stride){
 			bufferSize *= 2;
 			vbo.rewind();
@@ -47,11 +54,6 @@ public class Vbo {
 			newBuffer.put(vbo);
 			vbo = newBuffer;
 			isModified = true;
-		}
-		
-		// If there are any released ids, then return them instead of a new id
-		if (releasedIds.size() > 0){
-			return releasedIds.remove(releasedIds.size() - 1);
 		}
 
 		return nextId++;
@@ -87,6 +89,10 @@ public class Vbo {
 	
 	public int getAttributeCount(){
 		return stride / vertexCount;
+	}
+	
+	public Shader getShader(){
+		return shader;
 	}
 	
 	public int getId(){

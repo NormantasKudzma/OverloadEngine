@@ -1,13 +1,15 @@
 package com.ovl.testing;
 
-import java.util.Random;
-
 import com.ovl.engine.BaseGame;
+import com.ovl.engine.GameObject;
+import com.ovl.engine.Renderer;
 import com.ovl.graphics.Color;
 import com.ovl.graphics.Primitive;
+import com.ovl.graphics.Sprite;
 import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
 import com.ovl.utils.OverloadRandom;
+import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {
@@ -15,30 +17,81 @@ public class TestGame extends BaseGame {
 	
 	@Override
 	public void init() {
-		/*GameObject obj = new GameObject();
-		obj.initEntity(BodyType.NON_INTERACTIVE);
-		obj.setPosition(1.0f, 1.0f);
-		obj.setSprite(new Sprite(OverloadEngine.getPaths().getUI() + "square_yellow.png"));
-		addObject(obj);
+		{
+			GameObject obj = new GameObject();
+			obj.initEntity(BodyType.NON_INTERACTIVE);
+			obj.setPosition(1.5f, 1.5f);
+			obj.setSprite(new Sprite(Paths.getUI() + "square_yellow.png"));
+			obj.setColor(new Color(0.0f, 0.0f, 1.0f));
+			addObject(obj);	
+		}
+		{
+			GameObject obj = new GameObject();
+			obj.initEntity(BodyType.NON_INTERACTIVE);
+			obj.setPosition(0.5f, 0.5f);
+			obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
+			addObject(obj);	
+		}
+		
 		
 		//primitive vbo test here
 		
 		{
-			Vector2[] verts = new Vector2[]{new Vector2(-0.8f, -0.8f), new Vector2(-0.8f, 0.8f)};
+			Vector2[] verts = new Vector2[]{
+							new Vector2(0.8f, 0.8f),
+							new Vector2(-0.8f, -0.8f),
+
+							//new Vector2(1f, 1f),
+							//new Vector2(-1f, -1f),
+							//new Vector2(-0.5f, 0.5f),
+							//new Vector2(0.5f, -0.5f),
+							};
 			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
 			GameObject obj2 = new GameObject();
 			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setPosition(1.0f, 1.0f);
 			obj2.setSprite(p);
+			obj2.setPosition(1.0f, 1.0f);
+			obj2.setColor(new Color(0.25f, 0.9f, 0.36f));
 			addObject(obj2);
 		}
 		{
-			Vector2[] verts = new Vector2[]{new Vector2(0.0f, 0f), new Vector2(0.5f, 0.5f)};
+			Vector2[] verts = new Vector2[]{
+							//new Vector2(0.85f, 0.8f),
+							//new Vector2(-0.75f, -0.8f),
+							new Vector2(-0.45f, 0.5f),
+							new Vector2(0.55f, -0.5f),
+							};
 			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
 			GameObject obj2 = new GameObject();
 			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setPosition(1.0f, 1.0f);
 			obj2.setSprite(p);
+			obj2.setPosition(1.0f, 1.0f);
+			obj2.setColor(new Color(0.8f, 0.1f, 0.5f));
+			addObject(obj2);
+		}
+
+		{
+			Vector2[] verts = new Vector2[]{
+							//new Vector2(0.85f, 0.8f),
+							//new Vector2(-0.75f, -0.8f),
+							new Vector2(-0.45f, 0f),
+							new Vector2(0.55f, 0f),
+							};
+			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
+			GameObject obj2 = new GameObject();
+			obj2.initEntity(BodyType.NON_INTERACTIVE);
+			obj2.setSprite(p);
+			obj2.setPosition(1.0f, 1.0f);
+			obj2.setColor(new Color(0.2f, 0.0f, 0.8f));
+			addObject(obj2);
+		}
+		/*{
+			Vector2[] verts = new Vector2[]{new Vector2(0.5f, -0.5f), new Vector2(0.5f, 0.5f)};
+			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
+			GameObject obj2 = new GameObject();
+			obj2.initEntity(BodyType.NON_INTERACTIVE);
+			obj2.setSprite(p);
+			obj2.setPosition(1.0f, 1.0f);
 			addObject(obj2);
 		}*/
 		
@@ -91,10 +144,10 @@ public class TestGame extends BaseGame {
 		});
 		c.startController();*/
 		
-		float w = 0.05f;
+		/*float w = 0.05f;
 		for (float i = w * 0.5f; i <= 2.0f; i += w){
 			createLetter("a", new Vector2(i, 2.05f + OverloadRandom.nextRandom(200) * 0.001f));
-		}
+		}*/
 	}
 	
 	void createLetter(String text, Vector2 pos){

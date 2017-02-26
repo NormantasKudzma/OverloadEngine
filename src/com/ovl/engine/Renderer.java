@@ -1,6 +1,7 @@
 package com.ovl.engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.ovl.graphics.Color;
 import com.ovl.graphics.FontBuilder;
@@ -63,7 +64,7 @@ public abstract class Renderer {
 	protected Vbo textureVbo;
 	protected Vbo boundVbo;
 	
-	protected Shader shaders[];
+	protected HashMap<String, Shader> shaders = new HashMap<String, Shader>();
 	protected Shader activeShader = null;
 	
 	protected FontBuilder fontBuilder;
@@ -78,6 +79,8 @@ public abstract class Renderer {
 	public TextureLoader getTextureLoader(){
 		return textureLoader;
 	}
+	
+	public abstract Shader createShader(String name);
 	
 	protected abstract int compileShader(int type, String shaderCode);
 	
@@ -144,22 +147,42 @@ public abstract class Renderer {
 		}
 	}
 	
-	public VboId generateId(VboType vboType, int vertexCount){
-		switch (vboType)
-		{
-			case Textured:{
-				return new VboId(textureVbo, textureVbo.generateId(), false);	
+	public VboId generateId(String shaderName, int vertsPerObject){
+		Shader shader = shaders.get(shaderName);
+		if (shader == null){
+			return null;
+		}
+		
+		for (Vbo vbo : vbos){
+			if (vbo.getShader() == shader && vertsPerObject == vbo.getVertexCount()){
+				return new VboId(vbo, vbo.generateId(), false);
 			}
-			case Primitive:{
-				int size = DATA_PER_PRIMITIVE * vertexCount;
-				Vbo vbo = new Vbo(size, BYTES_PER_FLOAT * DATA_PER_PRIMITIVE, vertexCount, BYTES_PER_FLOAT);
-				initVbo(vbo);
-				return new VboId(vbo, vbo.generateId(), true);
+		}
+		
+		return null;
+	}
+	
+	public Vbo createVbo(String shaderName, int vertsPerObject){
+		return createVbo(shaderName, -1, vertsPerObject);
+	}
+	
+	public Vbo createVbo(String shaderName, int initialSize, int vertsPerObject){
+		Shader shader = shaders.get(shaderName);
+		
+		if (shader != null){
+			int handlesSize = shader.getTotalHandlesSize();
+			int stride = vertsPerObject * handlesSize;
+			
+			if (initialSize <= 0){
+				initialSize = stride;
 			}
-			default:{
-				return null;
-			}
-		}	
+			
+			Vbo vbo = new Vbo(shader, initialSize, stride, vertsPerObject, BYTES_PER_FLOAT);
+			initVbo(vbo);
+			return vbo;
+		}
+		
+		return null;
 	}
 
 	public void releaseId(VboId vboId){

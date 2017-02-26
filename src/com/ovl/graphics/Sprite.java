@@ -7,6 +7,8 @@ import com.ovl.utils.Vector2;
 
 public class Sprite implements Renderable, ICloneable {
 	protected static final Renderer renderer;
+	protected static final String shaderName;
+	
 	private Texture texture;						// Sprite's texture
 	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
 	private Vector2 topLeft;
@@ -15,7 +17,9 @@ public class Sprite implements Renderable, ICloneable {
 	private Renderer.VboId id;
 	
 	static {
+		shaderName = "Texture";
 		renderer = OverloadEngine.getInstance().renderer;
+		renderer.createShader(shaderName);
 	}
 	
 	// Internal vector for render calculations
@@ -97,7 +101,11 @@ public class Sprite implements Renderable, ICloneable {
 	}	
 	
 	private void init(){
-		id = renderer.generateId(Renderer.VboType.Textured, 4);
+		if ((id = renderer.generateId(shaderName, 4)) == null){
+			renderer.createVbo(shaderName, 1024, 4);
+			id = renderer.generateId(shaderName, 4);
+		}
+		
 		setColor(Color.WHITE);
 	}
 	
