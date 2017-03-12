@@ -57,12 +57,7 @@ public class Primitive implements Renderable {
 	
 	@Override
 	public void render() {
-		render(Vector2.one, Vector2.one, 0.0f);
-	}
-
-	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation) {
-		renderer.renderPrimitive(id, renderMode, vertices, color, position, scale, rotation);
+		renderer.renderPrimitive(id, renderMode, color);
 	}
 
 	@Override
@@ -96,5 +91,10 @@ public class Primitive implements Renderable {
 	
 	private void refreshVertexData(){
 		renderer.setPrimitiveData(id, vertices, color);
+	}
+	
+	// TODO: implement
+	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
+		//
 	}
 }

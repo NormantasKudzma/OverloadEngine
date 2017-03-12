@@ -4,7 +4,7 @@ import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
 
 public class DebugFrameCounter extends Label{
-	private static final Vector2 fpsTextPosition = new Vector2(0.2f, 0.15f);
+	private static final Vector2 fpsTextPosition = new Vector2(0.4f, 0.25f);
 	
 	private boolean isFirstFrame = true;
 	private float debugTime = 0;
@@ -18,8 +18,6 @@ public class DebugFrameCounter extends Label{
 	@Override
 	public void initEntity(BodyType type) {
 		super.initEntity(type);
-		setPosition(fpsTextPosition);
-		setScale(Vector2.one);
 	}
 	
 	@Override

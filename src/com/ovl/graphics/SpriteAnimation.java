@@ -65,12 +65,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 	
 	@Override
 	public void render() {
-		render(Vector2.one, Vector2.one, 0.0f);
-	}
-	
-	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation) {
-		spriteArray[currentState][currentFrame].render(position, scale, rotation);
+		spriteArray[currentState][currentFrame].render();
 		size = spriteArray[currentState][currentFrame].getSize();
 	}
 	
@@ -113,6 +108,14 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 			currentFrame = (currentFrame + 1) % spriteArray[currentState].length;
 			if (currentFrame == 0){
 				onAnimationEnd();
+			}
+		}
+	}
+	
+	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
+		for (Sprite[] i : spriteArray){
+			for (Sprite j : i){
+				j.updateVertices(pos, scale, rotation);
 			}
 		}
 	}

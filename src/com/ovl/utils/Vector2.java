@@ -1,5 +1,7 @@
 package com.ovl.utils;
 
+import java.util.Locale;
+
 import org.jbox2d.common.Vec2;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -265,6 +267,6 @@ public final class Vector2 {
 	
 	@Override
 	public String toString() {
-		return String.format("Vector2[x:%f, y:%f] ", x, y);
+		return String.format(Locale.ENGLISH, "Vector2[x:%f, y:%f]", x, y);
 	}
 }

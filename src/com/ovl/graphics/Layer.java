@@ -77,11 +77,6 @@ public class Layer implements Renderable, Updatable {
 	}
 
 	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation) {
-		//
-	}
-
-	@Override
 	public void setColor(Color c) {
 		//
 	}
@@ -97,5 +92,9 @@ public class Layer implements Renderable, Updatable {
 				gameObjectList.remove(e);
 			}
 		}
+	}
+	
+	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
+		//
 	}
 }

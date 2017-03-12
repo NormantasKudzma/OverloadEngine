@@ -156,17 +156,13 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 		lifetime = time;
 		isLifetimeFinite = true;
 	}
-
-	public void render() {
-		render(body.getPosition(), body.getScale(), body.getRotation());
-	}
 	
-	public void render(Vector2 position, Vector2 scale, float rotation) {
+	public void render() {
 		if (!isVisible || sprite == null) {
 			return;
 		}
 		
-		sprite.render(position, scale, rotation);
+		sprite.render();
 	}
 
 	public void setCollisionFlags(int category, int mask){
@@ -194,10 +190,12 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 
 	public void setPosition(float x, float y) {
 		body.setPosition(x, y);
+		updateVertices(body.getPosition(), body.getScale(), body.getRotation());
 	}
 
 	public void setRotation(float angle) {
 		body.setRotation(angle);
+		updateVertices(body.getPosition(), body.getScale(), body.getRotation());
 	}
 
 	public void setScale(Vector2 scale) {
@@ -206,6 +204,7 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 
 	public void setScale(float x, float y){
 		body.setScale(x, y);
+		updateVertices(body.getPosition(), body.getScale(), body.getRotation());
 	}
 	
 	public void setSprite(Renderable spr) {
@@ -216,6 +215,7 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 		else {
 			spriteUpdatable = null;
 		}
+		updateVertices(body.getPosition(), body.getScale(), body.getRotation());
 	}
 	
 	public void setVerticalVelocity(float v){
@@ -236,6 +236,12 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 			if (lifetime <= 0.0f) {
 				markForDestruction();
 			}
+		}
+	}
+	
+	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
+		if (sprite != null){
+			sprite.updateVertices(pos, scale, rotation);
 		}
 	}
 }

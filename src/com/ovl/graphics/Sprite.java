@@ -10,9 +10,12 @@ public class Sprite implements Renderable, ICloneable {
 	protected static final String shaderName;
 	
 	private Texture texture;						// Sprite's texture
-	private Vector2 internalScale = new Vector2();	// Vertex positioning in normalized coordinates (real object size)
-	private Vector2 topLeft;
-	private Vector2 botRight;
+	private Vector2 textureSize = new Vector2();
+	private Vector2 texTopLeft;		// Texture coordinates
+	private Vector2 texBotRight;
+	private Vector2 vertTopLeft;	// Vertices, scaled, rotated, positioned
+	private Vector2 vertBotRight;
+	
 	private Color color;
 	private Renderer.VboId id;
 	
@@ -23,7 +26,7 @@ public class Sprite implements Renderable, ICloneable {
 	}
 	
 	// Internal vector for render calculations
-	private Vector2 size = new Vector2();
+	//private Vector2 size = new Vector2();
 	
 	private Sprite(){
 		
@@ -40,22 +43,21 @@ public class Sprite implements Renderable, ICloneable {
 	public Sprite(String path, Vector2 tl, Vector2 br){
 		init();
 		loadTexture(path);
-		setClippingBounds(tl, br);
+		setTextureCoordinates(tl, br);
 	}
 	
 	public Sprite(Texture tex, Vector2 tl, Vector2 br){
 		init();
 		texture = tex;
-		setClippingBounds(tl, br);
+		setTextureCoordinates(tl, br);
 	}
 	
 	public Sprite clone(){
 		Sprite clone = new Sprite();
 		clone.init();
 		clone.texture = texture;
-		clone.setClippingBounds(topLeft.copy(), botRight.copy());
-		clone.setInternalScale(internalScale.copy());
-		clone.size = size.copy();
+		clone.setTextureCoordinates(texTopLeft.copy(), texBotRight.copy());
+		clone.textureSize = textureSize.copy();
 		return clone;
 	}
 	
@@ -63,22 +65,21 @@ public class Sprite implements Renderable, ICloneable {
 		renderer.releaseId(id);
 		id = null;
 		texture = null;
-		topLeft = null;
-		botRight = null;
-		internalScale = null;
-		size = null;
+		texTopLeft = null;
+		texBotRight = null;
+		textureSize = null;
 	}
 	
 	public Color getColor(){
 		return color;
 	}
 	
-	public Vector2 getInternalScale(){
-		return internalScale;
+	public Vector2 getTextureSize(){
+		return textureSize.copy();
 	}
 	
 	public Vector2 getSize(){
-		return internalScale.copy();
+		return textureSize.copy();
 	}
 	
 	public Texture getTexture(){
@@ -96,7 +97,7 @@ public class Sprite implements Renderable, ICloneable {
 		botRight.mul(sheetSizeCoef);
 		
 		Sprite sprite = new Sprite(sheet.getTexture(), topLeft, botRight);
-		sprite.setInternalScale(w, h);
+		sprite.setTextureSize(w, h);
 		return sprite;
 	}	
 	
@@ -112,18 +113,11 @@ public class Sprite implements Renderable, ICloneable {
 	public void loadTexture(String path){
 		texture = renderer.getTextureLoader().getTexture(path);
 	}
-	
-	public void render(){
-		render(Vector2.one, Vector2.one, 0.0f);
-	}
-	
+
 	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation) {
-		float scaleY = rotation != 0.0f ? scale.y / OverloadEngine.getInstance().aspectRatio : scale.y;
-		size.set(internalScale).mul(scale.x, scaleY).mul(0.5f);
-		
+	public void render() {		
 		texture.bind();
-		renderer.renderTextured(id, color, size, position, scale, rotation);
+		renderer.renderTextured(id, color);
 	}
 	
 	public void setColor(Color c){
@@ -132,33 +126,37 @@ public class Sprite implements Renderable, ICloneable {
 		}
 	}
 	
-	private void setClippingBounds(Vector2 topLeftCorner, Vector2 bottomRightCorner){
-		if (topLeftCorner == null){
-			topLeft = new Vector2();
+	private void setTextureCoordinates(Vector2 tl, Vector2 br){
+		if (tl == null){
+			texTopLeft = new Vector2();
 		}
 		else {
-			topLeft = topLeftCorner;
+			texTopLeft = tl.copy();
 		}
 
-		if (bottomRightCorner == null) {
-			botRight = new Vector2(texture.getWidth(), texture.getHeight());
+		if (br == null) {
+			texBotRight = new Vector2(texture.getWidth(), texture.getHeight());
 		}
 		else {
-			botRight = bottomRightCorner;
+			texBotRight = br.copy();
 		}
 		
-		renderer.setTextureData(id, topLeft, botRight);
-		setInternalScale(texture.getImageWidth(), texture.getImageHeight());
+		renderer.setTextureData(id, texTopLeft, texBotRight);
+		setTextureSize(texture.getImageWidth(), texture.getImageHeight());
 	}
 	
-	public void setInternalScale(int w, int h){
-		internalScale.set(w, h);
-		Vector2.pixelCoordsToNormal(internalScale);
-		setInternalScale(internalScale);
+	public void setTextureSize(int w, int h){
+		textureSize.set(w, h);
+		Vector2.pixelCoordsToNormal(textureSize);
 	}
 	
-	public void setInternalScale(Vector2 v){
-		internalScale = v;
-		renderer.setVertexData(id, internalScale);
+	// TODO: implement rotation
+	public void updateVertices(Vector2 pos, Vector2 scale, float rotation)
+	{
+		Vector2 halfSize = textureSize.copy().mul(0.5f);
+		vertTopLeft = pos.copy().add(-halfSize.x, halfSize.y).mul(scale);
+		vertBotRight = pos.copy().add(halfSize.x, -halfSize.y).mul(scale);
+		
+		renderer.setVertexData(id, vertTopLeft, vertBotRight);
 	}
 }

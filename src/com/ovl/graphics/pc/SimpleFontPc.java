@@ -91,7 +91,7 @@ public class SimpleFontPc extends SimpleFont {
 		measureGraphics.drawString(text, newX, -rect.y + newY);
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
 		TextureLoaderPc textureLoader = ((TextureLoaderPc)RENDERER.getTextureLoader());
-		sprite = new Sprite(textureLoader.getTexture(textSubImage));
+		setSprite(new Sprite(textureLoader.getTexture(textSubImage)));
 		sprite.setColor(oldColor);
 	}
 	

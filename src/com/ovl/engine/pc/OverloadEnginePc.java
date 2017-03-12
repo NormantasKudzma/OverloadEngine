@@ -12,6 +12,7 @@ import com.ovl.controls.pc.KeyboardController;
 import com.ovl.controls.pc.MouseController;
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
+import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.DebugFrameCounter;
 import com.ovl.utils.pc.PhysicsDebugDraw;
@@ -107,6 +108,7 @@ public class OverloadEnginePc extends OverloadEngine {
 
 		if (config.isDebug) {
 			frameCounter = new DebugFrameCounter();
+			frameCounter.getSimpleFont().setPosition(0.2f, 0.15f);
 		}
 	}
 	

@@ -33,6 +33,12 @@ public final class RendererPc extends Renderer {
 		renderBuffer = ByteBuffer.allocateDirect(16 * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();		
 		textureLoader = new TextureLoaderPc();
 		fontBuilder = new FontBuilderPc();
+		
+		renderMatrix.setIdentity();
+		renderBuffer.clear();
+		renderMatrix.store(renderBuffer);
+		renderBuffer.rewind();
+		prepareRenderMatrix(new Vector2(-1.0f, -1.0f), new Vector2(1.0f, 1.0f), 0.0f);
 	}
 	
 	public Shader createShader(String name){
@@ -202,11 +208,10 @@ public final class RendererPc extends Renderer {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 	}
 	
-	protected void prepareRenderMatrix(Vector2 size, Vector2 position, Vector2 scale, float rotation){
+	protected void prepareRenderMatrix(Vector2 position, Vector2 scale, float rotation){
 		renderMatrix.setIdentity();
 		
-		Vector3f v = new Vector3f(-size.x, -size.y, 0.0f);
-		renderMatrix.translate(v);
+		Vector3f v = new Vector3f();
 
 		v.set(position.x, position.y, 0.0f);
 		renderMatrix.translate(v);
@@ -224,7 +229,7 @@ public final class RendererPc extends Renderer {
 		renderBuffer.rewind();
 	}
 	
-	public void renderTextured(VboId vboId, Color c, Vector2 size, Vector2 position, Vector2 scale, float rotation){
+	public void renderTextured(VboId vboId, Color c){
 		if (boundVbo != vboId.getVbo())
 		{
 			boundVbo = vboId.getVbo();
@@ -232,7 +237,7 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		prepareRenderMatrix(size, position, scale, rotation);
+		//prepareRenderMatrix(size, position, scale, rotation);
 		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
 		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
 		GL20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);
@@ -240,7 +245,7 @@ public final class RendererPc extends Renderer {
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 	
-	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Color c, Vector2 position, Vector2 scale, float rotation){		
+	public void renderPrimitive(VboId vboId, PrimitiveType mode, Color c){		
 		if (boundVbo != vboId.getVbo())
 		{
 			boundVbo = vboId.getVbo();
@@ -248,7 +253,7 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		prepareRenderMatrix(Vector2.zero, position, scale, rotation);
+		//prepareRenderMatrix(Vector2.zero, position, scale, rotation);
 		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
 		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
 		

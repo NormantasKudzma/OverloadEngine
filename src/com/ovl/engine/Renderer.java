@@ -89,9 +89,9 @@ public abstract class Renderer {
 	
 	public abstract void preRender();
 	
-	public abstract void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2 vertices[], Color c, Vector2 position, Vector2 scale, float rotation);
+	public abstract void renderPrimitive(VboId vboId, PrimitiveType mode, Color c);
 	
-	public abstract void renderTextured(VboId vboId, Color c, Vector2 size, Vector2 position, Vector2 scale, float rotation);
+	public abstract void renderTextured(VboId vboId, Color c);
 	
 	public void setTextureData(VboId vboId, Vector2 tl, Vector2 br){
 		Vbo vbo = vboId.vbo;
@@ -109,20 +109,21 @@ public abstract class Renderer {
 			.put(14 + offset, br.x).put(15 + offset, tl.y);
 	}
 	
-	public void setVertexData(VboId vboId, Vector2 pos){
+	// TODO: implement rotation
+	public void setVertexData(VboId vboId, Vector2 tl, Vector2 br){
 		Vbo vbo = vboId.vbo;
 		
-		if (pos == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
+		if (tl == null || br == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
 			return;
 		}
 		
 		vbo.setModified(true);
 		
 		int offset = vboId.index * vbo.getObjectSize();
-		vbo.getVbo().put(offset + 5, pos.y)
-			.put(offset + 8, pos.x)
-			.put(offset + 12, pos.x)
-			.put(offset + 13, pos.y);
+		vbo.getVbo().put(offset + 0, tl.x).put(offset + 1, br.y)
+					.put(offset + 4, tl.x).put(offset + 5, tl.y)
+					.put(offset + 8, br.x).put(offset + 9, br.y)
+					.put(offset + 12, br.x).put(offset + 13, tl.y);
 	}
 	
 	// TODO: refactor, so all kind of vbos use same methods

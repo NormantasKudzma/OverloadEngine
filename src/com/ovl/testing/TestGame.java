@@ -20,23 +20,23 @@ public class TestGame extends BaseGame {
 		/*{
 			GameObject obj = new GameObject();
 			obj.initEntity(BodyType.NON_INTERACTIVE);
-			obj.setPosition(1.5f, 1.5f);
+			obj.setPosition(0.0f, 0.0f);
 			obj.setSprite(new Sprite(Paths.getUI() + "square_yellow.png"));
-			obj.setColor(new Color(0.0f, 0.0f, 1.0f));
+			//obj.setColor(new Color(0.0f, 0.0f, 1.0f));
 			addObject(obj);	
-		}
+		}*/
 		{
 			GameObject obj = new GameObject();
 			obj.initEntity(BodyType.NON_INTERACTIVE);
-			obj.setPosition(0.5f, 0.5f);
+			obj.setPosition(0.5f, 0.75f);
 			obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
 			addObject(obj);	
-		}*/
+		}
 		
 		
 		//primitive vbo test here
 		
-		{
+		/*{
 			Vector2[] verts = new Vector2[]{
 							new Vector2(-1f, 0.5f),
 							new Vector2(0f, 0.5f),
@@ -77,7 +77,7 @@ public class TestGame extends BaseGame {
 			obj2.setPosition(1.0f, 1.0f);
 			obj2.setColor(new Color(0.9f, 0.9f, 0.9f, 0.25f));
 			addObject(obj2);
-		}
+		}*/
 		/*{
 			Vector2[] verts = new Vector2[]{
 							//new Vector2(0.85f, 0.8f),

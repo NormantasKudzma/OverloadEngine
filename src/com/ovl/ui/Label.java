@@ -4,7 +4,6 @@ import com.ovl.engine.BaseGame;
 import com.ovl.graphics.Color;
 import com.ovl.graphics.CustomFont;
 import com.ovl.graphics.SimpleFont;
-import com.ovl.utils.Vector2;
 
 public class Label extends Component {
 	private SimpleFont font;
@@ -40,13 +39,8 @@ public class Label extends Component {
 	
 	@Override
 	public void render() {
-		render(getPosition(), getScale(), getRotation());
-	}
-	
-	@Override
-	public void render(Vector2 position, Vector2 scale, float rotation) {
 		if (isVisible){
-			font.render(position, scale, rotation);
+			font.render();
 		}
 	}
 }
