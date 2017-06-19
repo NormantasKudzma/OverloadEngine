@@ -21,55 +21,37 @@ public final class RendererAndroid extends Renderer {
 	private float renderMatrix[] = new float[16];
 	
 	public RendererAndroid() {
-		textureVbo = new Vbo(4096, DATA_PER_SPRITE, VERTICES_PER_SPRITE, BYTES_PER_FLOAT);
-		initVbo(textureVbo);
-
-		shaders = new Shader[SHADER_COUNT];
-		shaders[SHADER_TEXTURE] = new Shader("Texture");
-		shaders[SHADER_PRIMITIVE] = new Shader("Primitive");
-		
-		for (int i = 0; i < SHADER_COUNT; ++i){
-			if (shaders[i] == null){
-				continue;
-			}
-			
-			shaders[i].setVSId(compileShader(GLES20.GL_VERTEX_SHADER, shaders[i].getVSCode()));
-			shaders[i].setFSId(compileShader(GLES20.GL_FRAGMENT_SHADER, shaders[i].getPSCode()));
-			shaders[i].setProgramId(GLES20.glCreateProgram());
-			
-			GLES20.glAttachShader(shaders[i].getProgramId(), shaders[i].getVSId());
-			GLES20.glAttachShader(shaders[i].getProgramId(), shaders[i].getFSId());
-			GLES20.glLinkProgram(shaders[i].getProgramId());
-			//Util.checkGLError();
-			
-			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shaders[i].getProgramId());
-			
-			for (Pair<String, Integer> pair : handles){
-				int handleIndex = Shader.getHandleIndexByName(pair.key);
-				if (handleIndex != -1){
-					shaders[i].createHandle(handleIndex, pair.value);
-				}
-			}
-			shaders[i].calculateOffsets(BYTES_PER_FLOAT);
-		}
-
 		textureLoader = new TextureLoaderAndroid();
 		fontBuilder = new FontBuilderAndroid();
+		
+		primitiveModes[PrimitiveType.Lines.getIndex()] = GLES20.GL_LINES;
+		primitiveModes[PrimitiveType.LineLoop.getIndex()] = GLES20.GL_LINE_LOOP;
+		primitiveModes[PrimitiveType.LineStrip.getIndex()] = GLES20.GL_LINE_STRIP;
+		primitiveModes[PrimitiveType.Polygon.getIndex()] = GLES20.GL_TRIANGLE_FAN; // WORKAROUND
+		primitiveModes[PrimitiveType.Points.getIndex()] = GLES20.GL_POINTS;
+		primitiveModes[PrimitiveType.QuadStrip.getIndex()] = GLES20.GL_TRIANGLE_FAN; // WORKAROUND
+		primitiveModes[PrimitiveType.Quads.getIndex()] = GLES20.GL_TRIANGLE_FAN; // WORKAROUND
+		primitiveModes[PrimitiveType.TriangleFan.getIndex()] = GLES20.GL_TRIANGLE_FAN;
+		primitiveModes[PrimitiveType.TriangleStrip.getIndex()] = GLES20.GL_TRIANGLE_STRIP;
+		primitiveModes[PrimitiveType.Triangles.getIndex()] = GLES20.GL_TRIANGLES;
 	}
 
 	@Override
 	public void init() {
-		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		//GLES11.glDisable(GLES11.GL_LIGHTING);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		GLES20.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-	
-		Matrix.setLookAtM(mvpMatrix, 0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
-		Matrix.translateM(mvpMatrix, 0, -1.0f, -1.0f, 0.0f);
+
+		/*Matrix.setLookAtM(mvpMatrix, 0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
+		Matrix.translateM(mvpMatrix, 0, -1.0f, -1.0f, 0.0f);*/
+		
+		Matrix.setIdentityM(mvpMatrix, 0);
+		
+		Matrix.setIdentityM(renderMatrix, 0);
+		prepareRenderMatrix(new Vector2(-1.0f, -1.0f), new Vector2(1.0f, 1.0f), 0.0f);
 	}
 
 	protected ArrayList<Pair<String, Integer>> loadProgramInfo(int programId){
@@ -119,13 +101,39 @@ public final class RendererAndroid extends Renderer {
 		return handles;
 	}
 	
-	protected int loadShader(int type, String shaderCode) {
-		int shader = GLES20.glCreateShader(type);
-
-		GLES20.glShaderSource(shader, shaderCode);
-		GLES20.glCompileShader(shader);
-
-		return shader;
+	public Shader createShader(String name){
+		try {
+			Shader shader = new Shader(name);
+			shader.setVSId(compileShader(GLES20.GL_VERTEX_SHADER, shader.getVSCode()));
+			shader.setFSId(compileShader(GLES20.GL_FRAGMENT_SHADER, shader.getPSCode()));
+			shader.setProgramId(GLES20.glCreateProgram());
+			
+			GLES20.glAttachShader(shader.getProgramId(), shader.getVSId());
+			GLES20.glAttachShader(shader.getProgramId(), shader.getFSId());
+			GLES20.glLinkProgram(shader.getProgramId());
+			
+			int glerr = GLES20.glGetError();
+			if (glerr != GLES20.GL_NO_ERROR){
+				Log.w("Create shader gl error " + glerr);
+			}
+			
+			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shader.getProgramId());
+			
+			for (Pair<String, Integer> pair : handles){
+				int handleIndex = Shader.getHandleIndexByName(pair.key);
+				if (handleIndex != -1){
+					shader.createHandle(handleIndex, pair.value);
+				}
+			}
+			shader.calculateOffsets(BYTES_PER_FLOAT);
+			shaders.put(name, shader);
+			
+			return shader;
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	@Override
@@ -150,11 +158,7 @@ public final class RendererAndroid extends Renderer {
 		
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 		
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		
-		if (activeShader != null){
-			prepareShader(activeShader);
-		}		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);	
 	}
 	
 	protected void prepareShader(Shader shader){
@@ -178,10 +182,10 @@ public final class RendererAndroid extends Renderer {
 		}
 	}
 
-	protected void prepareRenderMatrix(Vector2 size, Vector2 position, Vector2 scale, float rotation){
+	protected void prepareRenderMatrix(Vector2 position, Vector2 scale, float rotation){
 		Matrix.setIdentityM(renderMatrix, 0);
 
-		Matrix.translateM(renderMatrix, 0, -size.x, -size.y, 0.0f);
+		//Matrix.translateM(renderMatrix, 0, -size.x, -size.y, 0.0f);
 		Matrix.translateM(renderMatrix, 0, position.x, position.y, 0.0f);
 		Matrix.scaleM(renderMatrix, 0, scale.x, scale.y, 1.0f);
 		
@@ -190,12 +194,15 @@ public final class RendererAndroid extends Renderer {
 	}
 	
 	@Override
-	public void renderTextured(VboId vboId, Color c, Vector2 size, Vector2 position, Vector2 scale, float rotation) {		
-		boundVbo = vboId.getVbo();
-		activeShader = shaders[SHADER_TEXTURE];
-		prepareShader(activeShader);
+	public void renderTextured(VboId vboId, Color c) {
+		if (boundVbo != vboId.getVbo())
+		{
+			boundVbo = vboId.getVbo();
+			activeShader = boundVbo.getShader();
+			prepareShader(activeShader);
+		}
 		
-		prepareRenderMatrix(size, position, scale, rotation);
+		//prepareRenderMatrix(size, position, scale, rotation);
 		
 		GLES20.glUniform4fv(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, 1, c.rgba, 0);
 		GLES20.glUniformMatrix4fv(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, 1, false, renderMatrix, 0);		
@@ -205,52 +212,19 @@ public final class RendererAndroid extends Renderer {
 	}
 	
 	@Override
-	public void renderPrimitive(VboId vboId, PrimitiveType mode, Vector2[] vertices, Color c, Vector2 position, Vector2 scale, float rotation) {
-		boundVbo = vboId.getVbo();
-		activeShader = shaders[SHADER_PRIMITIVE];
-		prepareShader(activeShader);
+	public void renderPrimitive(VboId vboId, PrimitiveType mode, Color c) {
+		if (boundVbo != vboId.getVbo())
+		{
+			boundVbo = vboId.getVbo();
+			activeShader = boundVbo.getShader();
+			prepareShader(activeShader);
+		}
 
-		prepareRenderMatrix(Vector2.zero, position, scale, rotation);
+		//prepareRenderMatrix(Vector2.zero, position, scale, rotation);
 		GLES20.glUniform4fv(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, 1, c.rgba, 0);
 		GLES20.glUniformMatrix4fv(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, 1, false, renderMatrix, 0);		
 		
-		// plzfix
-		int openGlMode = -1;
-		switch (mode){
-			case LineLoop:{
-				openGlMode = GLES20.GL_LINE_LOOP;
-				break;
-			}
-			case LineStrip:{
-				openGlMode = GLES20.GL_LINE_STRIP;
-				break;
-			}
-			case Lines:{
-				openGlMode = GLES20.GL_LINES;
-				break;
-			}
-			case Points:{
-				openGlMode = GLES20.GL_POINT;
-			}
-			case TriangleFan:{
-				openGlMode = GLES20.GL_TRIANGLE_FAN;
-				break;
-			}
-			case TriangleStrip:{
-				openGlMode = GLES20.GL_TRIANGLE_STRIP;
-				break;
-			}
-			case Triangles:{
-				openGlMode = GLES20.GL_TRIANGLES;
-				break;
-			}
-			default:{
-				openGlMode = GLES20.GL_LINE_LOOP;
-				break;
-			}
-		}
-		
-		GLES20.glDrawArrays(openGlMode, vboId.getIndex() * boundVbo.getStride(), boundVbo.getVertexCount());
+		GLES20.glDrawArrays(primitiveModes[mode.getIndex()], vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 
 	@Override

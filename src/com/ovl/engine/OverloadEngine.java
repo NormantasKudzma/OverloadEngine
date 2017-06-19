@@ -119,7 +119,6 @@ public abstract class OverloadEngine {
 	protected String platformAssetsRoot;
 	
 	protected float deltaTime;
-	protected long t0, t1; // Frame start/end time
 	protected DebugFrameCounter frameCounter;
 	protected EngineConfig config;
 	protected BaseGame game;

@@ -12,7 +12,6 @@ import com.ovl.controls.pc.KeyboardController;
 import com.ovl.controls.pc.MouseController;
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
-import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.DebugFrameCounter;
 import com.ovl.utils.pc.PhysicsDebugDraw;
@@ -113,6 +112,7 @@ public class OverloadEnginePc extends OverloadEngine {
 	}
 	
 	protected void loop() {
+		long t0, t1; // Frame start/end time
 		t0 = t1 = System.nanoTime();
 		while (!isCloseRequested && !Display.isCloseRequested()) {
 			t0 = System.nanoTime();

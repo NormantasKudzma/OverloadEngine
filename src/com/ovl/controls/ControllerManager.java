@@ -9,7 +9,6 @@ import org.usb4java.DeviceList;
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 
-import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.Config;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.Pair;

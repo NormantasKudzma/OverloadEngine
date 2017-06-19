@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
 		if (info.reqGlEsVersion >= 0x20000){		
 			EngineConfig cfg = new EngineConfig();
 			cfg.game = new TestGame();
-			cfg.isDebug = false;
+			cfg.isDebug = true;
 			OverloadEngineAndroid engine = new OverloadEngineAndroid(cfg);
 			setContentView(engine.getSurfaceView(this));
 		}

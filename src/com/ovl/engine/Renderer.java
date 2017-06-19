@@ -10,16 +10,26 @@ import com.ovl.utils.Vector2;
 
 public abstract class Renderer {
 	public enum PrimitiveType {
-		Lines,
-		LineStrip,
-		LineLoop,
-		Polygon,
-		Points,
-		Quads,
-		QuadStrip,
-		Triangles,
-		TriangleStrip,
-		TriangleFan
+		Lines(0),
+		LineStrip(1),
+		LineLoop(2),
+		Polygon(3),
+		Points(4),
+		Quads(5),
+		QuadStrip(6),
+		Triangles(7),
+		TriangleStrip(8),
+		TriangleFan(9);
+		
+		private PrimitiveType(int i){
+			index = i;
+		}
+		
+		public final int getIndex(){
+			return index;
+		}
+		
+		private int index;
 	}
 	
 	public enum VboType {
@@ -60,6 +70,8 @@ public abstract class Renderer {
 	public static final int SHADER_TEXTURE = 0;
 	public static final int SHADER_PRIMITIVE = 1;
 	public static final int SHADER_COUNT = 2;
+	
+	protected final int primitiveModes[] = new int[PrimitiveType.values().length];
 	
 	protected ArrayList<Vbo> vbos = new ArrayList<Vbo>();
 	protected Vbo textureVbo;

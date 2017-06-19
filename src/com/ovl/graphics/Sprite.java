@@ -115,7 +115,7 @@ public class Sprite implements Renderable, ICloneable {
 	}
 
 	@Override
-	public void render() {		
+	public void render() {
 		texture.bind();
 		renderer.renderTextured(id, color);
 	}

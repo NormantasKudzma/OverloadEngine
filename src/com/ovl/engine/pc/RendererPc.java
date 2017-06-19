@@ -13,8 +13,8 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.Util;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
+import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
 import com.ovl.engine.Vbo;
@@ -22,23 +22,27 @@ import com.ovl.graphics.Color;
 import com.ovl.graphics.pc.FontBuilderPc;
 import com.ovl.graphics.pc.TextureLoaderPc;
 import com.ovl.utils.Pair;
-import com.ovl.utils.Vector2;
 
 public final class RendererPc extends Renderer {
-	private Matrix4f mvpMatrix = new Matrix4f();
-	private Matrix4f renderMatrix = new Matrix4f();
-	private FloatBuffer renderBuffer;
+	private FloatBuffer mvpMatrix;
 	
 	public RendererPc(){
-		renderBuffer = ByteBuffer.allocateDirect(16 * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();		
+		mvpMatrix = ByteBuffer.allocateDirect(16 * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();		
 		textureLoader = new TextureLoaderPc();
 		fontBuilder = new FontBuilderPc();
 		
-		renderMatrix.setIdentity();
-		renderBuffer.clear();
-		renderMatrix.store(renderBuffer);
-		renderBuffer.rewind();
-		prepareRenderMatrix(new Vector2(-1.0f, -1.0f), new Vector2(1.0f, 1.0f), 0.0f);
+		prepareMvpMatrix();
+		
+		primitiveModes[PrimitiveType.Lines.getIndex()] = GL11.GL_LINES;
+		primitiveModes[PrimitiveType.LineLoop.getIndex()] = GL11.GL_LINE_LOOP;
+		primitiveModes[PrimitiveType.LineStrip.getIndex()] = GL11.GL_LINE_STRIP;
+		primitiveModes[PrimitiveType.Polygon.getIndex()] = GL11.GL_POLYGON;
+		primitiveModes[PrimitiveType.Points.getIndex()] = GL11.GL_POINT;
+		primitiveModes[PrimitiveType.QuadStrip.getIndex()] = GL11.GL_QUAD_STRIP;
+		primitiveModes[PrimitiveType.Quads.getIndex()] = GL11.GL_QUADS;
+		primitiveModes[PrimitiveType.TriangleFan.getIndex()] = GL11.GL_TRIANGLE_FAN;
+		primitiveModes[PrimitiveType.TriangleStrip.getIndex()] = GL11.GL_TRIANGLE_STRIP;
+		primitiveModes[PrimitiveType.Triangles.getIndex()] = GL11.GL_TRIANGLES;
 	}
 	
 	public Shader createShader(String name){
@@ -75,15 +79,11 @@ public final class RendererPc extends Renderer {
 	public void init(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		//GLES11.glDisable(GLES11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-		
-		lookAt(mvpMatrix, new Vector3f(0.0f, 0.0f, 1.0f), new Vector3f(0.0f, 0.0f, -5.0f), new Vector3f(0.0f, 1.0f, 0.0f));
-		mvpMatrix.translate(new Vector3f(-1.0f, -1.0f, 0.0f));
 	}
 
 	protected int compileShader(int type, String shaderCode) {
@@ -99,33 +99,6 @@ public final class RendererPc extends Renderer {
 		}
 		
 		return shader;
-	}
-	
-	private void lookAt(Matrix4f mat, Vector3f eye, Vector3f center, Vector3f up) {
-		Vector3f f = new Vector3f();
-		Vector3f.sub(center, eye, f);
-		f = (Vector3f)f.normalise();
-		Vector3f u = (Vector3f)up.normalise();
-		Vector3f s = new Vector3f();
-		Vector3f.cross(f, u, s);
-		s = (Vector3f)s.normalise();
-		Vector3f.cross(s, f, u);
-		
-		mat.setIdentity();
-		
-		mat.m00 = s.x;
-		mat.m10 = s.y;
-		mat.m20 = s.z;
-		
-		mat.m01 = u.x;
-		mat.m11 = u.y;
-		mat.m21 = u.z;
-		
-		mat.m02 = -f.x;
-		mat.m12 = -f.y;
-		mat.m22 = -f.z;
-		
-		mat.translate(new Vector3f(-eye.x,-eye.y,-eye.z));
 	}
 	
 	protected void cleanupShader(Shader shader){
@@ -208,25 +181,13 @@ public final class RendererPc extends Renderer {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 	}
 	
-	protected void prepareRenderMatrix(Vector2 position, Vector2 scale, float rotation){
-		renderMatrix.setIdentity();
-		
-		Vector3f v = new Vector3f();
-
-		v.set(position.x, position.y, 0.0f);
-		renderMatrix.translate(v);
-		
-		v.set(scale.x, scale.y, 1.0f);
-		renderMatrix.scale(v);
-		
-		
-		// No rotation, kek
-		
-		Matrix4f.mul(mvpMatrix, renderMatrix, renderMatrix);
-		
-		renderBuffer.clear();
-		renderMatrix.store(renderBuffer);
-		renderBuffer.rewind();
+	protected void prepareMvpMatrix(){
+		Matrix4f mvp = new Matrix4f();
+		mvp.m00 = 2.0f / OverloadEngine.getInstance().aspectRatio;
+				
+		mvpMatrix.clear();
+		mvp.store(mvpMatrix);
+		mvpMatrix.rewind();
 	}
 	
 	public void renderTextured(VboId vboId, Color c){
@@ -237,15 +198,14 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		//prepareRenderMatrix(size, position, scale, rotation);
 		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
-		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
+		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, mvpMatrix);
 		GL20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);
 		
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 	
-	public void renderPrimitive(VboId vboId, PrimitiveType mode, Color c){		
+	public void renderPrimitive(VboId vboId, PrimitiveType mode, Color c){
 		if (boundVbo != vboId.getVbo())
 		{
 			boundVbo = vboId.getVbo();
@@ -253,59 +213,10 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		//prepareRenderMatrix(Vector2.zero, position, scale, rotation);
 		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
-		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, renderBuffer);
+		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, mvpMatrix);
 		
-		// plzfix
-		int openGlMode = -1;
-		switch (mode){
-			case LineLoop:{
-				openGlMode = GL11.GL_LINE_LOOP;
-				break;
-			}
-			case LineStrip:{
-				openGlMode = GL11.GL_LINE_STRIP;
-				break;
-			}
-			case Lines:{
-				openGlMode = GL11.GL_LINES;
-				break;
-			}
-			case Polygon:{
-				openGlMode = GL11.GL_POLYGON;
-				break;
-			}
-			case Points:{
-				openGlMode = GL11.GL_POINT;
-			}
-			case QuadStrip:{
-				openGlMode = GL11.GL_QUAD_STRIP;
-				break;
-			}
-			case Quads:{
-				openGlMode = GL11.GL_QUADS;
-				break;
-			}
-			case TriangleFan:{
-				openGlMode = GL11.GL_TRIANGLE_FAN;
-				break;
-			}
-			case TriangleStrip:{
-				openGlMode = GL11.GL_TRIANGLE_STRIP;
-				break;
-			}
-			case Triangles:{
-				openGlMode = GL11.GL_TRIANGLES;
-				break;
-			}
-			default:{
-				openGlMode = GL11.GL_LINE_LOOP;
-				break;
-			}
-		}
-
-		GL11.glDrawArrays(openGlMode, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
+		GL11.glDrawArrays(primitiveModes[mode.getIndex()], vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 
 	public void deleteVbo(VboId vboId){

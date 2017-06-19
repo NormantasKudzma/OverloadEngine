@@ -6,13 +6,13 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 import android.view.SurfaceView;
 
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.DebugFrameCounter;
+import com.ovl.utils.android.Log;
 
 public class OverloadEngineAndroid extends OverloadEngine {
 	private class SurfaceViewRenderer implements GLSurfaceView.Renderer {
@@ -42,7 +42,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 
 		@Override
 		public void onSurfaceCreated(GL10 deprecated, EGLConfig cfg) {
-			Log.w("ovl", "Surface created.");
+			Log.w("Surface created");
 		}
 	}
 	
@@ -81,6 +81,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 
 		if (config.isDebug) {
 			frameCounter = new DebugFrameCounter();
+			frameCounter.getSimpleFont().setPosition(0.2f, 0.15f);
 		}
 	}
 
@@ -88,6 +89,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 	protected void loop() {
 		new Thread(){
 			public void run() {
+				long t0, t1; // Frame start/end time
 				t0 = t1 = System.nanoTime();
 				while (!isCloseRequested) {
 					t0 = System.nanoTime();
@@ -103,7 +105,8 @@ public class OverloadEngineAndroid extends OverloadEngine {
 					surfaceView.requestRender();
 					
 					try {
-						Thread.sleep(50);
+						// plz FIXME ...
+						Thread.sleep((long)(Math.max(0.001f, 0.016667f - deltaTime) * 100));
 					}
 					catch (Exception e){
 						

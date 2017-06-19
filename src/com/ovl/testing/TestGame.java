@@ -1,5 +1,9 @@
 package com.ovl.testing;
 
+import com.ovl.controls.Controller;
+import com.ovl.controls.ControllerEventListener;
+import com.ovl.controls.ControllerManager;
+import com.ovl.controls.pc.KeyboardController;
 import com.ovl.engine.BaseGame;
 import com.ovl.engine.GameObject;
 import com.ovl.engine.Renderer;
@@ -25,21 +29,42 @@ public class TestGame extends BaseGame {
 			//obj.setColor(new Color(0.0f, 0.0f, 1.0f));
 			addObject(obj);	
 		}*/
-		{
-			GameObject obj = new GameObject();
-			obj.initEntity(BodyType.NON_INTERACTIVE);
-			obj.setPosition(0.5f, 0.75f);
-			obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
-			addObject(obj);	
-		}
+
+		GameObject obj = new GameObject(){
+			/*float fProgress = 0.0f;
+			
+			@Override
+			public void update(float deltaTime) {
+				super.update(deltaTime);
+				
+				fProgress += deltaTime * 300.0f;
+				if (fProgress >= 359.0f){
+					fProgress -= 359.0f;
+				}
+				
+				setPosition(FastMath.cosDeg(fProgress), FastMath.sinDeg(fProgress));
+			}*/
+		};
+		obj.initEntity(BodyType.NON_INTERACTIVE);
+		obj.setPosition(0.0f, 0.0f);
+		obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
+		addObject(obj);	
+		
+		GameObject clone1 = obj.clone();
+		clone1.setPosition(1.0f, 0.0f);
+		addObject(clone1);
+		
+		final GameObject clone2 = obj.clone();
+		clone2.setPosition(1.67f, 0.0f);
+		addObject(clone2);
 		
 		
 		//primitive vbo test here
 		
-		/*{
+		{
 			Vector2[] verts = new Vector2[]{
-							new Vector2(-1f, 0.5f),
-							new Vector2(0f, 0.5f),
+							new Vector2(0.7f, -1.0f),
+							new Vector2(1.0f, 1.0f),
 							};
 			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
 			GameObject obj2 = new GameObject();
@@ -77,7 +102,7 @@ public class TestGame extends BaseGame {
 			obj2.setPosition(1.0f, 1.0f);
 			obj2.setColor(new Color(0.9f, 0.9f, 0.9f, 0.25f));
 			addObject(obj2);
-		}*/
+		}
 		/*{
 			Vector2[] verts = new Vector2[]{
 							//new Vector2(0.85f, 0.8f),
@@ -172,6 +197,25 @@ public class TestGame extends BaseGame {
 		for (float i = w * 0.5f; i <= 2.0f; i += w){
 			createLetter("a", new Vector2(i, 2.05f + OverloadRandom.nextRandom(200) * 0.001f));
 		}*/
+		
+		KeyboardController k = (KeyboardController)ControllerManager.getInstance().getController(Controller.Type.TYPE_KEYBOARD);
+		k.addKeybind(203, new ControllerEventListener(){
+			long last = 0;
+			final long delay = 150;
+			
+			@Override
+			public void handleEvent(long eventArg, Vector2 pos, int... params) {
+				long time = System.currentTimeMillis();
+				if (time > last + delay){
+					last = time;
+					
+					Vector2 p = clone2.getPosition();
+					clone2.setPosition(p.x - 0.1f, p.y);
+					System.out.println("Pos is " + p.x);
+				}
+			}
+		});
+		k.startController();
 	}
 	
 	void createLetter(String text, Vector2 pos){

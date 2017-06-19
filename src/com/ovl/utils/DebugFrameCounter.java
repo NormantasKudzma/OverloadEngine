@@ -4,8 +4,6 @@ import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
 
 public class DebugFrameCounter extends Label{
-	private static final Vector2 fpsTextPosition = new Vector2(0.4f, 0.25f);
-	
 	private boolean isFirstFrame = true;
 	private float debugTime = 0;
 	private float fpsTextUpdate = 0.0f;

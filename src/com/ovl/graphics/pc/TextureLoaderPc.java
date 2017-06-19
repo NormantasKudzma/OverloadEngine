@@ -158,12 +158,12 @@ public class TextureLoaderPc extends TextureLoader {
 			raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
 					texWidth, texHeight, 4, null);
 			texImage = new BufferedImage(glAlphaColorModel, raster, false,
-					new Hashtable());
+					new Hashtable<String, Object>());
 		} else {
 			raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
 					texWidth, texHeight, 3, null);
 			texImage = new BufferedImage(glColorModel, raster, false,
-					new Hashtable());
+					new Hashtable<String, Object>());
 		}
 
 		// copy the source image into the produced image
