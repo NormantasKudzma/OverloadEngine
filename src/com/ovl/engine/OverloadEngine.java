@@ -2,6 +2,7 @@ package com.ovl.engine;
 
 import java.util.ArrayList;
 
+import com.ovl.game.BaseGame;
 import com.ovl.utils.DebugFrameCounter;
 
 public abstract class OverloadEngine {

@@ -10,7 +10,7 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 
-import com.ovl.engine.GameObject;
+import com.ovl.game.GameObject;
 import com.ovl.utils.Vector2;
 
 public class PhysicsWorld implements ContactListener {

@@ -1,6 +1,6 @@
 package com.ovl.ui.animations;
 
-import com.ovl.engine.Updatable;
+import com.ovl.game.Updatable;
 import com.ovl.ui.Component;
 import com.ovl.utils.Vector2;
 

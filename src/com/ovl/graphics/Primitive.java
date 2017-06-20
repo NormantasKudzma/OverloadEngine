@@ -1,22 +1,28 @@
 package com.ovl.graphics;
 
+import java.util.ArrayList;
+
 import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.ParamSetter;
+import com.ovl.engine.ParamSetterFactory;
 import com.ovl.engine.Renderer;
+import com.ovl.engine.Shader;
+import com.ovl.engine.ShaderParams;
 import com.ovl.utils.Vector2;
 
 public class Primitive implements Renderable {
 	private static final Renderer renderer;
-	private static final String shaderName;
+	private static final String defaultShaderName;
 	
 	private Vector2 vertices[];
 	private Renderer.PrimitiveType renderMode;
-	private Renderer.VboId id;
-	private Color color;
+	private ShaderParams id;
+	private Color color = new Color();
 
 	static {
-		shaderName = "Primitive";
+		defaultShaderName = "Primitive";
 		renderer = OverloadEngine.getInstance().renderer;
-		renderer.createShader(shaderName);
+		renderer.createShader(defaultShaderName);
 	}
 	
 	public Primitive(int numVerts, Renderer.PrimitiveType renderMode){
@@ -31,12 +37,26 @@ public class Primitive implements Renderable {
 	}
 
 	private void init(){
+		ArrayList<ParamSetter> shaderParams = new ArrayList<ParamSetter>();
+		shaderParams.add(ParamSetterFactory.build(id, Shader.U_COLOR, color));
+		shaderParams.add(ParamSetterFactory.buildDefault(id, Shader.U_MVPMATRIX));
+		
+		useShader(defaultShaderName, shaderParams);	
+	}
+	
+	public void useShader(String shaderName, ArrayList<ParamSetter> params){
+		if (id != null){
+			renderer.releaseId(id);
+		}
+
 		if ((id = renderer.generateId(shaderName, vertices.length)) == null){
 			renderer.createVbo(shaderName, vertices.length);
 			id = renderer.generateId(shaderName, vertices.length);
 		}
 		
-		setColor(Color.WHITE);
+		for (ParamSetter p : params){
+			id.addParam(p);
+		}
 	}
 	
 	@Override
@@ -67,9 +87,7 @@ public class Primitive implements Renderable {
 
 	@Override
 	public void setColor(Color c) {
-		if (c != null){
-			color = c;
-		}
+		color.set(c);
 	}
 	
 	public void setVertex(int index, Vector2 pos){

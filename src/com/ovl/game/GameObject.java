@@ -1,4 +1,4 @@
-package com.ovl.engine;
+package com.ovl.game;
 
 import org.jbox2d.dynamics.Fixture;
 
@@ -10,7 +10,7 @@ import com.ovl.physics.PhysicsWorld;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
-public class GameObject implements Collidable, Renderable, Updatable, Cloneable {
+public class GameObject implements Collidable, Updatable, ICloneable {
 	protected boolean isDestructible = true;
 	protected boolean isLifetimeFinite = false;
 	protected boolean isToBeDestroyed = false;
@@ -51,7 +51,7 @@ public class GameObject implements Collidable, Renderable, Updatable, Cloneable 
 				clone.isVisible = isVisible;
 				clone.lifetime = lifetime;
 				
-				if (sprite instanceof ICloneable){
+				if (sprite instanceof ICloneable && sprite instanceof Renderable){
 					clone.sprite = (Renderable)((ICloneable)sprite).clone();
 				}
 				else {

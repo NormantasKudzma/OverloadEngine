@@ -1,13 +1,19 @@
 package com.ovl.graphics;
 
+import java.util.ArrayList;
+
 import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.ParamSetter;
+import com.ovl.engine.ParamSetterFactory;
 import com.ovl.engine.Renderer;
+import com.ovl.engine.Shader;
+import com.ovl.engine.ShaderParams;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
 public class Sprite implements Renderable, ICloneable {
 	protected static final Renderer renderer;
-	protected static final String shaderName;
+	protected static final String defaultShaderName;
 	
 	private Texture texture;						// Sprite's texture
 	private Vector2 textureSize = new Vector2();
@@ -16,13 +22,14 @@ public class Sprite implements Renderable, ICloneable {
 	private Vector2 vertTopLeft;	// Vertices, scaled, rotated, positioned
 	private Vector2 vertBotRight;
 	
-	private Color color;
-	private Renderer.VboId id;
+	private Color color = new Color();
+	private ShaderParams id;
 	
 	static {
-		shaderName = "Texture";
+		defaultShaderName = "Texture";
 		renderer = OverloadEngine.getInstance().renderer;
-		renderer.createShader(shaderName);
+		renderer.createShader(defaultShaderName);
+		renderer.createVbo(defaultShaderName, 1024, 4);
 	}
 	
 	// Internal vector for render calculations
@@ -102,12 +109,24 @@ public class Sprite implements Renderable, ICloneable {
 	}	
 	
 	private void init(){
-		if ((id = renderer.generateId(shaderName, 4)) == null){
-			renderer.createVbo(shaderName, 1024, 4);
-			id = renderer.generateId(shaderName, 4);
+		ArrayList<ParamSetter> shaderParams = new ArrayList<ParamSetter>();
+		shaderParams.add(ParamSetterFactory.build(id, Shader.U_COLOR, color));
+		shaderParams.add(ParamSetterFactory.buildDefault(id, Shader.U_TEXTURE));
+		shaderParams.add(ParamSetterFactory.buildDefault(id, Shader.U_MVPMATRIX));
+		
+		useShader(defaultShaderName, shaderParams);	
+	}
+	
+	public void useShader(String shaderName, ArrayList<ParamSetter> params){
+		if (id != null){
+			renderer.releaseId(id);
 		}
 		
-		setColor(Color.WHITE);
+		id = renderer.generateId(shaderName, 4);
+		
+		for (ParamSetter p : params){
+			id.addParam(p);
+		}
 	}
 	
 	public void loadTexture(String path){
@@ -121,9 +140,7 @@ public class Sprite implements Renderable, ICloneable {
 	}
 	
 	public void setColor(Color c){
-		if (c != null){
-			color = c;
-		}
+		color.set(c);
 	}
 	
 	private void setTextureCoordinates(Vector2 tl, Vector2 br){

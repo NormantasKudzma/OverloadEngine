@@ -37,30 +37,6 @@ public abstract class Renderer {
 		Primitive
 	}
 	
-	public class VboId {
-		protected Vbo vbo;
-		protected int index;			// renderable index within vbo
-		protected boolean isDeletable; // can be deleted with deleteVbo call? if false - it is owned by renderer
-		
-		protected VboId(Vbo vbo, int index, boolean isDeletable){
-			this.vbo = vbo;
-			this.index = index;
-			this.isDeletable = isDeletable;
-		}
-		
-		public int getIndex(){
-			return index;
-		}
-		
-		public Vbo getVbo(){
-			return vbo;
-		}
-		
-		public boolean isDeletable(){
-			return isDeletable;
-		}
-	}
-	
 	public static final int BYTES_PER_FLOAT = 4;
 	public static final int DATA_PER_VERTEX = 4;	//xy, uv - not necessarilly in that order
 	public static final int VERTICES_PER_SPRITE = 4;
@@ -77,6 +53,8 @@ public abstract class Renderer {
 	protected Vbo textureVbo;
 	protected Vbo boundVbo;
 	
+	protected HashMap<Class<?>, ParamSetterBuilder<?>> paramSetterBuilders = new HashMap<Class<?>, ParamSetterBuilder<?>>();
+	protected HashMap<String, Object> paramSetterDefaults = new HashMap<String, Object>();
 	protected HashMap<String, Shader> shaders = new HashMap<String, Shader>();
 	protected Shader activeShader = null;
 	
@@ -101,11 +79,11 @@ public abstract class Renderer {
 	
 	public abstract void preRender();
 	
-	public abstract void renderPrimitive(VboId vboId, PrimitiveType mode, Color c);
+	public abstract void renderPrimitive(ShaderParams vboId, PrimitiveType mode, Color c);
 	
-	public abstract void renderTextured(VboId vboId, Color c);
+	public abstract void renderTextured(ShaderParams vboId, Color c);
 	
-	public void setTextureData(VboId vboId, Vector2 tl, Vector2 br){
+	public void setTextureData(ShaderParams vboId, Vector2 tl, Vector2 br){
 		Vbo vbo = vboId.vbo;
 		
 		if (tl == null || br == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
@@ -122,7 +100,7 @@ public abstract class Renderer {
 	}
 	
 	// TODO: implement rotation
-	public void setVertexData(VboId vboId, Vector2 tl, Vector2 br){
+	public void setVertexData(ShaderParams vboId, Vector2 tl, Vector2 br){
 		Vbo vbo = vboId.vbo;
 		
 		if (tl == null || br == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
@@ -140,7 +118,7 @@ public abstract class Renderer {
 	
 	// TODO: refactor, so all kind of vbos use same methods
 	// will probably need some kind of vertex configuration
-	public void setPrimitiveData(VboId vboId, Vector2[] vertices, Color c){
+	public void setPrimitiveData(ShaderParams vboId, Vector2[] vertices, Color c){
 		Vbo vbo = vboId.vbo;
 		
 		if (vertices == null || vertices.length != vbo.getVertexCount() 
@@ -161,7 +139,7 @@ public abstract class Renderer {
 		}
 	}
 	
-	public VboId generateId(String shaderName, int vertsPerObject){
+	public ShaderParams generateId(String shaderName, int vertsPerObject){
 		Shader shader = shaders.get(shaderName);
 		if (shader == null){
 			return null;
@@ -169,7 +147,7 @@ public abstract class Renderer {
 		
 		for (Vbo vbo : vbos){
 			if (vbo.getShader() == shader && vertsPerObject == vbo.getVertexCount()){
-				return new VboId(vbo, vbo.generateId(), false);
+				return new ShaderParams(vbo, vbo.generateId(), false);
 			}
 		}
 		
@@ -192,11 +170,19 @@ public abstract class Renderer {
 		return null;
 	}
 
-	public void releaseId(VboId vboId){
+	public void releaseId(ShaderParams vboId){
 		vboId.getVbo().releaseId(vboId.index);
+	}
+	
+	public HashMap<Class<?>, ParamSetterBuilder<?>> getParamSetterBuilders(){
+		return paramSetterBuilders;
+	}
+	
+	public HashMap<String, Object> getParamSetterDefaults(){
+		return paramSetterDefaults;
 	}
 	
 	protected abstract void initVbo(Vbo vbo);
 	
-	public abstract void deleteVbo(VboId vboId);
+	public abstract void deleteVbo(ShaderParams vboId);
 }

@@ -1,6 +1,6 @@
 package com.ovl.ui;
 
-import com.ovl.engine.BaseGame;
+import com.ovl.game.BaseGame;
 
 public abstract class AnimatedLabel extends Label{
 	private float animationDuration = 0.0f;

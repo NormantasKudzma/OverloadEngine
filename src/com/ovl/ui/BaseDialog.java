@@ -1,6 +1,6 @@
 package com.ovl.ui;
 
-import com.ovl.engine.BaseGame;
+import com.ovl.game.BaseGame;
 import com.ovl.graphics.Sprite;
 import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;

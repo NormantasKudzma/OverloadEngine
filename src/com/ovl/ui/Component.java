@@ -2,8 +2,8 @@ package com.ovl.ui;
 
 import java.util.ArrayList;
 
-import com.ovl.engine.BaseGame;
-import com.ovl.engine.GameObject;
+import com.ovl.game.BaseGame;
+import com.ovl.game.GameObject;
 import com.ovl.physics.PhysicsBody;
 import com.ovl.ui.animations.TransformAnimation;
 import com.ovl.utils.Vector2;

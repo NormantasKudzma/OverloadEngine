@@ -2,11 +2,10 @@ package com.ovl.graphics;
 
 import java.util.ArrayList;
 
-import com.ovl.engine.GameObject;
-import com.ovl.engine.Updatable;
-import com.ovl.utils.Vector2;
+import com.ovl.game.GameObject;
+import com.ovl.game.Updatable;
 
-public class Layer implements Renderable, Updatable {
+public class Layer implements Updatable {
 	public static final String DEFAULT_NAME = "default";
 	public static final int DEFAULT_INDEX = 0;
 	
@@ -29,7 +28,6 @@ public class Layer implements Renderable, Updatable {
 		destroyMarkedObjects();
 	}
 	
-	@Override
 	public void destroy() {
 		for (GameObject i : gameObjectList) {
 			i.destroy();
@@ -48,10 +46,6 @@ public class Layer implements Renderable, Updatable {
 		}
 		destroyList.clear();
 	}
-
-	public Color getColor(){
-		return null;
-	}
 	
 	public ArrayList<GameObject> getDestroyList(){
 		return destroyList;
@@ -65,20 +59,10 @@ public class Layer implements Renderable, Updatable {
 		return layerName;
 	}
 	
-	public Vector2 getSize(){
-		return null;
-	}
-	
-	@Override
 	public void render() {
 		for (int i = 0; i < gameObjectList.size(); ++i){
 			gameObjectList.get(i).render();
 		}
-	}
-
-	@Override
-	public void setColor(Color c) {
-		//
 	}
 
 	@Override
@@ -92,9 +76,5 @@ public class Layer implements Renderable, Updatable {
 				gameObjectList.remove(e);
 			}
 		}
-	}
-	
-	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
-		//
 	}
 }

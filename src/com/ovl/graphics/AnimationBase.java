@@ -1,6 +1,6 @@
 package com.ovl.graphics;
 
-import com.ovl.engine.Updatable;
+import com.ovl.game.Updatable;
 
 public abstract class AnimationBase implements Updatable{
 	protected float duration;

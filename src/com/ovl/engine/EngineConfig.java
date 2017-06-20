@@ -1,5 +1,7 @@
 package com.ovl.engine;
 
+import com.ovl.game.BaseGame;
+
 public class EngineConfig {
 	public BaseGame game = null;
 	

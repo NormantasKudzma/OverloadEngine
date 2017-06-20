@@ -1,6 +1,9 @@
 package com.ovl.graphics;
 
-import com.ovl.engine.Updatable;
+import java.util.ArrayList;
+
+import com.ovl.engine.ParamSetter;
+import com.ovl.game.Updatable;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
@@ -36,6 +39,10 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		clone.timePassed = timePassed;
 		clone.isPaused = isPaused;
 		return clone;
+	}
+	
+	public void useShader(String shaderName, ArrayList<ParamSetter> params){
+		//TODO:implement me!
 	}
 	
 	public void destroy(){

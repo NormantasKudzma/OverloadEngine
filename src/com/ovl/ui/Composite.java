@@ -2,7 +2,7 @@ package com.ovl.ui;
 
 import java.util.ArrayList;
 
-import com.ovl.engine.BaseGame;
+import com.ovl.game.BaseGame;
 import com.ovl.utils.Vector2;
 
 public class Composite extends Component {

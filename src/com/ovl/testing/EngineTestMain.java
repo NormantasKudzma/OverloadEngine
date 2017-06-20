@@ -8,7 +8,7 @@ public class EngineTestMain {
 	public static void main(String args[]){
 		EngineConfig config = new EngineConfig();
 		config.game = new TestGame();
-		config.isDebug = true;
+		config.isDebug = false;
 		
 		OverloadEnginePc engine = new OverloadEnginePc(config);
 		engine.frameWidth = 960;

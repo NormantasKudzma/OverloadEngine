@@ -6,7 +6,7 @@ import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-import com.ovl.engine.Updatable;
+import com.ovl.game.Updatable;
 
 public abstract class AudioManager<T> implements Updatable {
 	public enum EAudioType {

@@ -1,6 +1,6 @@
 package com.ovl.ui;
 
-import com.ovl.engine.BaseGame;
+import com.ovl.game.BaseGame;
 import com.ovl.graphics.Color;
 import com.ovl.graphics.CustomFont;
 import com.ovl.graphics.SimpleFont;

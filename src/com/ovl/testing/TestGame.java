@@ -4,14 +4,15 @@ import com.ovl.controls.Controller;
 import com.ovl.controls.ControllerEventListener;
 import com.ovl.controls.ControllerManager;
 import com.ovl.controls.pc.KeyboardController;
-import com.ovl.engine.BaseGame;
-import com.ovl.engine.GameObject;
 import com.ovl.engine.Renderer;
+import com.ovl.game.BaseGame;
+import com.ovl.game.GameObject;
 import com.ovl.graphics.Color;
 import com.ovl.graphics.Primitive;
 import com.ovl.graphics.Sprite;
 import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
+import com.ovl.utils.FastMath;
 import com.ovl.utils.OverloadRandom;
 import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
@@ -30,7 +31,7 @@ public class TestGame extends BaseGame {
 			addObject(obj);	
 		}*/
 
-		GameObject obj = new GameObject(){
+		final GameObject obj = new GameObject(){
 			/*float fProgress = 0.0f;
 			
 			@Override
@@ -74,7 +75,7 @@ public class TestGame extends BaseGame {
 			obj2.setColor(new Color(0.25f, 0.9f, 0.2f));
 			addObject(obj2);
 		}
-		{
+		/*{
 			Vector2[] verts = new Vector2[]{
 							new Vector2(-1f, 0.4f),
 							new Vector2(0f, 0.4f),
@@ -102,7 +103,7 @@ public class TestGame extends BaseGame {
 			obj2.setPosition(1.0f, 1.0f);
 			obj2.setColor(new Color(0.9f, 0.9f, 0.9f, 0.25f));
 			addObject(obj2);
-		}
+		}*/
 		/*{
 			Vector2[] verts = new Vector2[]{
 							//new Vector2(0.85f, 0.8f),
@@ -212,6 +213,9 @@ public class TestGame extends BaseGame {
 					Vector2 p = clone2.getPosition();
 					clone2.setPosition(p.x - 0.1f, p.y);
 					System.out.println("Pos is " + p.x);
+					
+					float[] rgba = obj.getColor().rgba;
+					rgba[0] = rgba[0] - 0.025f;
 				}
 			}
 		});

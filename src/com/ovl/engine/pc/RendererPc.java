@@ -15,8 +15,10 @@ import org.lwjgl.opengl.Util;
 import org.lwjgl.util.vector.Matrix4f;
 
 import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.ParamSetter;
 import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
+import com.ovl.engine.ShaderParams;
 import com.ovl.engine.Vbo;
 import com.ovl.graphics.Color;
 import com.ovl.graphics.pc.FontBuilderPc;
@@ -43,6 +45,14 @@ public final class RendererPc extends Renderer {
 		primitiveModes[PrimitiveType.TriangleFan.getIndex()] = GL11.GL_TRIANGLE_FAN;
 		primitiveModes[PrimitiveType.TriangleStrip.getIndex()] = GL11.GL_TRIANGLE_STRIP;
 		primitiveModes[PrimitiveType.Triangles.getIndex()] = GL11.GL_TRIANGLES;
+		
+		paramSetterBuilders.put(Color.class, new ColorParamSetter.Builder());
+		paramSetterBuilders.put(mvpMatrix.getClass(), new MatrixParamSetter.Builder());
+		paramSetterBuilders.put(Integer.class, new TextureParamSetter.Builder());
+		
+		paramSetterDefaults.put(Shader.U_COLOR, Color.WHITE);
+		paramSetterDefaults.put(Shader.U_MVPMATRIX, mvpMatrix);
+		paramSetterDefaults.put(Shader.U_TEXTURE, new Integer(0));		
 	}
 	
 	public Shader createShader(String name){
@@ -60,10 +70,7 @@ public final class RendererPc extends Renderer {
 			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shader.getProgramId());
 			
 			for (Pair<String, Integer> pair : handles){
-				int handleIndex = Shader.getHandleIndexByName(pair.key);
-				if (handleIndex != -1){
-					shader.createHandle(handleIndex, pair.value);
-				}
+				shader.createHandle(pair.key, pair.value);
 			}
 			shader.calculateOffsets(BYTES_PER_FLOAT);
 			shaders.put(name, shader);
@@ -102,21 +109,17 @@ public final class RendererPc extends Renderer {
 	}
 	
 	protected void cleanupShader(Shader shader){
-		Shader.Handle handle = null;
-		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
-			if ((handle = shader.getHandle(i)) != null){
-				GL20.glDisableVertexAttribArray(handle.id);
-			}
+		for (Shader.Handle handle : shader.getHandles()){
+			GL20.glDisableVertexAttribArray(handle.id);
 		}
 	}
 	
 	protected void prepareShader(Shader shader){
-		Shader.Handle handle = null;
 		GL20.glUseProgram(shader.getProgramId());
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
 		
-		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
-			if ((handle = shader.getHandle(i)) != null && handle.size > 0){
+		for (Shader.Handle handle : shader.getHandles()){
+			if (handle.size > 0){
 				GL20.glVertexAttribPointer(handle.id, handle.size, GL11.GL_FLOAT, false, boundVbo.getStride(), handle.offset);
 				GL20.glEnableVertexAttribArray(handle.id);
 			}
@@ -190,7 +193,7 @@ public final class RendererPc extends Renderer {
 		mvpMatrix.rewind();
 	}
 	
-	public void renderTextured(VboId vboId, Color c){
+	public void renderTextured(ShaderParams vboId, Color c){
 		if (boundVbo != vboId.getVbo())
 		{
 			boundVbo = vboId.getVbo();
@@ -198,14 +201,18 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
+		/*GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
 		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, mvpMatrix);
-		GL20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);
+		GL20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);*/
+		
+		for (ParamSetter paramSetter : vboId.getParams()){
+			paramSetter.setParam();
+		}
 		
 		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 	
-	public void renderPrimitive(VboId vboId, PrimitiveType mode, Color c){
+	public void renderPrimitive(ShaderParams vboId, PrimitiveType mode, Color c){
 		if (boundVbo != vboId.getVbo())
 		{
 			boundVbo = vboId.getVbo();
@@ -213,13 +220,17 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
-		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, mvpMatrix);
+		/*GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
+		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, mvpMatrix);*/
+		
+		for (ParamSetter paramSetter : vboId.getParams()){
+			paramSetter.setParam();
+		}
 		
 		GL11.glDrawArrays(primitiveModes[mode.getIndex()], vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
 
-	public void deleteVbo(VboId vboId){
+	public void deleteVbo(ShaderParams vboId){
 		Vbo vbo = vboId.getVbo();
 		GL15.glDeleteBuffers(vbo.getId());
 		vbos.remove(vbo);

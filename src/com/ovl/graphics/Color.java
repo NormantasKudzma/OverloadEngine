@@ -5,6 +5,10 @@ public class Color {
 	
 	public float[] rgba = new float[4];
 	
+	public Color(){
+		this(1.0f, 1.0f, 1.0f);
+	}
+	
 	public Color(float r, float g, float b){
 		this(r, g, b, 1.0f);
 	}
@@ -18,5 +22,12 @@ public class Color {
 	
 	public float[] getRgba(){
 		return rgba;
+	}
+
+	public void set(Color c){
+		float[] otherRgba = c.rgba;
+		for (int i = 0; i < rgba.length; ++i){
+			rgba[i] = otherRgba[i];
+		}
 	}
 }

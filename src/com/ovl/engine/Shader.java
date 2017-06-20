@@ -1,5 +1,10 @@
 package com.ovl.engine;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.Paths;
 
@@ -17,43 +22,37 @@ public class Shader {
 			this.offset = offset;
 		}
 	}
+
+	public static final String A_POSITION = "a_Position";
+	public static final String A_TEXCOORD = "a_TexCoord";
+	public static final String A_COLOR = "a_Color";
+	public static final String U_TEXTURE = "u_Texture";
+	public static final String U_MVPMATRIX = "u_MVPMatrix";
+	public static final String U_COLOR = "u_Color";
 	
-	public static final String HANDLE_NAMES[] = {
-		"a_Position",
-		"a_TexCoord",
-		"a_Color",
-		"u_Texture",
-		"u_MVPMatrix",
-		"u_Color"
-	};
+	static {
+		HashMap<String, Integer> sizes = new HashMap<String, Integer>();
+		sizes.put(A_POSITION, 2);
+		sizes.put(A_TEXCOORD, 2);
+		sizes.put(A_COLOR, 4);
+		sizes.put(U_TEXTURE, 0);
+		sizes.put(U_MVPMATRIX, 0);
+		sizes.put(U_COLOR, 0);
+		handleSizes = Collections.unmodifiableMap(sizes);
+	}
 	
-	public static final int HANDLE_SIZES[] = {
-		2, 
-		2, 
-		4, 
-		0, 
-		0,
-		0
-	};
-	
-	public static final int HANDLE_A_POSITION 	= 0;
-	public static final int HANDLE_A_TEXCOORD 	= 1;
-	public static final int HANDLE_A_COLOR 		= 2;
-	public static final int HANDLE_U_TEX 			= 3;
-	public static final int HANDLE_U_MVPMATRIX 	= 4;
-	public static final int HANDLE_U_COLOR		= 5;
-	public static final int HANDLE_COUNT 			= 6;
+	public static final Map<String, Integer> handleSizes;
 	
 	private String resourceName;
 	private int programId = -1;
 	private int vsId = -1;
 	private int fsId = -1;
-	private Handle handles[];
+	private ArrayList<Handle> handles;
 	private int totalHandlesSize = 0;
 	
 	public Shader(String name){
 		resourceName = name;
-		handles = new Handle[HANDLE_COUNT];
+		handles = new ArrayList<Handle>();
 	}
 	
 	public String getVSCode(){
@@ -96,32 +95,30 @@ public class Shader {
 		return totalHandlesSize;
 	}
 	
-	public static int getHandleIndexByName(String name){
-		for (int i = 0; i < HANDLE_COUNT; ++i){
-			if (HANDLE_NAMES[i].equals(name)){
-				return i;
-			}
-		}
-		return -1;
-	}
-	
 	public void calculateOffsets(int typeSize){
 		int handleOffset = 0;
 		totalHandlesSize = 0;
 		for (Handle handle : handles){
-			if (handle != null){
-				handle.offset = handleOffset;
-				handleOffset += handle.size * typeSize;
-				totalHandlesSize += handle.size;
-			}
+			handle.offset = handleOffset;
+			handleOffset += handle.size * typeSize;
+			totalHandlesSize += handle.size;
 		}
 	}
 	
-	public void createHandle(int handle, int id){
-		handles[handle] = new Handle(HANDLE_NAMES[handle], id, HANDLE_SIZES[handle], 0);
+	public void createHandle(String handle, int id){
+		handles.add(new Handle(handle, id, handleSizes.get(handle), 0));
 	}
 	
-	public Handle getHandle(int handle){
-		return handles[handle];
+	public ArrayList<Handle> getHandles(){
+		return handles;
+	}
+	
+	public Handle getHandle(String name){
+		for (Handle handle : handles){
+			if (handle.name.equals(name)){
+				return handle;
+			}
+		}
+		return null;
 	}
 }

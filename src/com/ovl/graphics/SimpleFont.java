@@ -1,8 +1,8 @@
 package com.ovl.graphics;
 
-import com.ovl.engine.GameObject;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.Renderer;
+import com.ovl.game.GameObject;
 import com.ovl.physics.PhysicsBody;
 import com.ovl.utils.Vector2;
 

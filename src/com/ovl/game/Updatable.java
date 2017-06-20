@@ -1,4 +1,4 @@
-package com.ovl.engine;
+package com.ovl.game;
 
 public interface Updatable {
 	public void update(float deltaTime);

@@ -12,7 +12,7 @@ import org.jbox2d.dynamics.Filter;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
-import com.ovl.engine.GameObject;
+import com.ovl.game.GameObject;
 import com.ovl.utils.Vector2;
 
 /**
