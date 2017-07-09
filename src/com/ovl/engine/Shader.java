@@ -39,6 +39,10 @@ public class Shader {
 	public static final String U_TEXTURE = "u_Texture";
 	public static final String U_MVPMATRIX = "u_MVPMatrix";
 	public static final String U_COLOR = "u_Color";
+	public static final String U_FLOAT1 = "u_Float1";
+	public static final String U_FLOAT2 = "u_Float2";
+	public static final String U_FLOAT3 = "u_Float3";
+	public static final String U_FLOAT4 = "u_Float4";
 	
 	private String resourceName;
 	private int programId = -1;

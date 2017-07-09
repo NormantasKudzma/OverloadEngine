@@ -2,6 +2,8 @@ package com.ovl.testing;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang3.mutable.MutableFloat;
+
 import com.ovl.controls.Controller;
 import com.ovl.controls.ControllerEventListener;
 import com.ovl.controls.ControllerManager;
@@ -55,9 +57,12 @@ public class TestGame extends BaseGame {
 		blurredObj.setSprite(blurredSprite);
 		addObject(blurredObj);
 
+		final MutableFloat blurStrength = new MutableFloat(0.001f);
+		
 		HashMap<String, ParamSetter> shaderParams = new HashMap<String, ParamSetter>();
 		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(sh, Shader.U_COLOR, blurredSprite.getColor()));
 		shaderParams.put(Shader.U_TEXTURE, ParamSetterFactory.build(sh, Shader.U_TEXTURE, blurredSprite.getTexture()));
+		shaderParams.put("u_BlurStr", ParamSetterFactory.build(sh, "u_BlurStr", blurStrength));
 		shaderParams.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(sh, Shader.U_MVPMATRIX));
 		blurredSprite.useShader(vbo, shaderParams);
 		
@@ -212,6 +217,7 @@ public class TestGame extends BaseGame {
 		}*/
 		
 		KeyboardController k = (KeyboardController)ControllerManager.getInstance().getController(Controller.Type.TYPE_KEYBOARD);
+		// LEFT
 		k.addKeybind(203, new ControllerEventListener(){
 			long last = 0;
 			final long delay = 150;
@@ -220,7 +226,22 @@ public class TestGame extends BaseGame {
 			public void handleEvent(long eventArg, Vector2 pos, int... params) {
 				long time = System.currentTimeMillis();
 				if (time > last + delay){
-					last = time;
+					blurStrength.add(-0.001f);
+					System.out.println("now " + blurStrength);
+				}
+			}
+		});
+		// RIGHT
+		k.addKeybind(205, new ControllerEventListener(){
+			long last = 0;
+			final long delay = 150;
+			
+			@Override
+			public void handleEvent(long eventArg, Vector2 pos, int... params) {
+				long time = System.currentTimeMillis();
+				if (time > last + delay){
+					blurStrength.add(0.001f);
+					System.out.println("now " + blurStrength);
 				}
 			}
 		});
