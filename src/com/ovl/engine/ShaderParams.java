@@ -1,22 +1,24 @@
 package com.ovl.engine;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ShaderParams {
 	protected Vbo vbo;
 	protected int index;			// renderable index within vbo
-	protected boolean isDeletable; // can be deleted with deleteVbo call? if false - it is owned by renderer
-	protected ArrayList<ParamSetter> params;
+	protected HashMap<String, ParamSetter> params;
 	
-	protected ShaderParams(Vbo vbo, int index, boolean isDeletable){
+	protected ShaderParams(Vbo vbo, int index){
 		this.vbo = vbo;
 		this.index = index;
-		this.isDeletable = isDeletable;
-		params = new ArrayList<ParamSetter>();
+		params = new HashMap<String, ParamSetter>();
 	}
 	
-	public void addParam(ParamSetter paramSetter){
-		params.add(paramSetter);
+	public void addParam(String param, ParamSetter paramSetter){
+		if (param == null || paramSetter == null){
+			return;
+		}
+		
+		params.put(param, paramSetter);
 	}
 	
 	public int getIndex(){
@@ -27,11 +29,7 @@ public class ShaderParams {
 		return vbo;
 	}
 	
-	public boolean isDeletable(){
-		return isDeletable;
-	}
-	
-	public ArrayList<ParamSetter> getParams(){
+	public HashMap<String, ParamSetter> getParams(){
 		return params;
 	}
 }

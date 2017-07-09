@@ -3,11 +3,10 @@ package com.ovl.engine.pc;
 import org.lwjgl.opengl.GL20;
 
 import com.ovl.engine.ParamSetter;
-import com.ovl.engine.ParamSetterBuilder;
 import com.ovl.graphics.Color;
 
 public class ColorParamSetter extends ParamSetter {
-	public static class Builder implements ParamSetterBuilder<Color>{
+	public static class Builder implements ParamSetter.Builder<Color>{
 		@Override
 		public ParamSetter build(int paramId, Color param) {
 			return new ColorParamSetter(paramId, param);

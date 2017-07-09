@@ -103,7 +103,7 @@ public class TextureLoaderPc extends TextureLoader {
 	public Texture getTexture(BufferedImage bufferedImage){
 		int srcPixelFormat = -1;
 		int textureID = createTextureID();
-		Texture texture = new TexturePc(GL_TEXTURE_2D, textureID);
+		Texture texture = new TexturePc(textureID);
 
 		// bind this texture
 		glBindTexture(GL_TEXTURE_2D, textureID);

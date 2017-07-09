@@ -1,6 +1,7 @@
 package com.ovl.graphics;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.ParamSetter;
@@ -8,21 +9,24 @@ import com.ovl.engine.ParamSetterFactory;
 import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
 import com.ovl.engine.ShaderParams;
+import com.ovl.engine.Vbo;
 import com.ovl.utils.Vector2;
 
 public class Primitive implements Renderable {
 	private static final Renderer renderer;
 	private static final String defaultShaderName;
+	private static final Shader defaultShader;
 	
 	private Vector2 vertices[];
 	private Renderer.PrimitiveType renderMode;
 	private ShaderParams id;
 	private Color color = new Color();
+	private Vbo vbo;
 
 	static {
 		defaultShaderName = "Primitive";
 		renderer = OverloadEngine.getInstance().renderer;
-		renderer.createShader(defaultShaderName);
+		defaultShader = renderer.createShader(defaultShaderName);
 	}
 	
 	public Primitive(int numVerts, Renderer.PrimitiveType renderMode){
@@ -37,25 +41,23 @@ public class Primitive implements Renderable {
 	}
 
 	private void init(){
-		ArrayList<ParamSetter> shaderParams = new ArrayList<ParamSetter>();
-		shaderParams.add(ParamSetterFactory.build(id, Shader.U_COLOR, color));
-		shaderParams.add(ParamSetterFactory.buildDefault(id, Shader.U_MVPMATRIX));
-		
-		useShader(defaultShaderName, shaderParams);	
+		HashMap<String, ParamSetter> shaderParams = new HashMap<>();
+		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(defaultShader, Shader.U_COLOR, color));
+		shaderParams.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(defaultShader, Shader.U_MVPMATRIX));
+
+		vbo = renderer.createVbo(defaultShaderName, vertices.length);
+		useShader(vbo, shaderParams);	
 	}
 	
-	public void useShader(String shaderName, ArrayList<ParamSetter> params){
+	public void useShader(Vbo vbo, HashMap<String, ParamSetter> params){
 		if (id != null){
 			renderer.releaseId(id);
 		}
 
-		if ((id = renderer.generateId(shaderName, vertices.length)) == null){
-			renderer.createVbo(shaderName, vertices.length);
-			id = renderer.generateId(shaderName, vertices.length);
-		}
+		id = renderer.generateShaderParams(vbo);
 		
-		for (ParamSetter p : params){
-			id.addParam(p);
+		for (Map.Entry<String, ParamSetter> kv : params.entrySet()){
+			id.addParam(kv.getKey(), kv.getValue());
 		}
 	}
 	
@@ -77,7 +79,7 @@ public class Primitive implements Renderable {
 	
 	@Override
 	public void render() {
-		renderer.renderPrimitive(id, renderMode, color);
+		renderer.render(id, renderMode);
 	}
 
 	@Override

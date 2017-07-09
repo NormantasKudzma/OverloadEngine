@@ -1,10 +1,17 @@
 package com.ovl.testing;
 
+import java.util.HashMap;
+
 import com.ovl.controls.Controller;
 import com.ovl.controls.ControllerEventListener;
 import com.ovl.controls.ControllerManager;
 import com.ovl.controls.pc.KeyboardController;
+import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.ParamSetter;
+import com.ovl.engine.ParamSetterFactory;
 import com.ovl.engine.Renderer;
+import com.ovl.engine.Shader;
+import com.ovl.engine.Vbo;
 import com.ovl.game.BaseGame;
 import com.ovl.game.GameObject;
 import com.ovl.graphics.Color;
@@ -12,7 +19,6 @@ import com.ovl.graphics.Primitive;
 import com.ovl.graphics.Sprite;
 import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
-import com.ovl.utils.FastMath;
 import com.ovl.utils.OverloadRandom;
 import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
@@ -31,38 +37,44 @@ public class TestGame extends BaseGame {
 			addObject(obj);	
 		}*/
 
-		final GameObject obj = new GameObject(){
-			/*float fProgress = 0.0f;
-			
-			@Override
-			public void update(float deltaTime) {
-				super.update(deltaTime);
-				
-				fProgress += deltaTime * 300.0f;
-				if (fProgress >= 359.0f){
-					fProgress -= 359.0f;
-				}
-				
-				setPosition(FastMath.cosDeg(fProgress), FastMath.sinDeg(fProgress));
-			}*/
-		};
+		final GameObject obj = new GameObject();
 		obj.initEntity(BodyType.NON_INTERACTIVE);
-		obj.setPosition(0.0f, 0.0f);
+		obj.setPosition(-0.30f, -0.30f);
 		obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
-		addObject(obj);	
+		addObject(obj);
 		
-		GameObject clone1 = obj.clone();
+		Renderer r = OverloadEngine.getInstance().renderer;
+		Shader sh = r.createShader("Blur");
+		Vbo vbo = r.createVbo("Blur", 256, 4);
+		
+		Sprite blurredSprite = new Sprite(Paths.getResources() + "m.png");
+		
+		GameObject blurredObj = new GameObject();
+		blurredObj.initEntity(BodyType.NON_INTERACTIVE);
+		blurredObj.setPosition(0.35f, 0.35f);
+		blurredObj.setSprite(blurredSprite);
+		addObject(blurredObj);
+
+		HashMap<String, ParamSetter> shaderParams = new HashMap<String, ParamSetter>();
+		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(sh, Shader.U_COLOR, blurredSprite.getColor()));
+		shaderParams.put(Shader.U_TEXTURE, ParamSetterFactory.build(sh, Shader.U_TEXTURE, blurredSprite.getTexture()));
+		shaderParams.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(sh, Shader.U_MVPMATRIX));
+		blurredSprite.useShader(vbo, shaderParams);
+		
+		blurredSprite.updateVertices(new Vector2(0.3f, 0.3f), new Vector2(1.0f, 1.0f), 0.0f);
+		
+		/*GameObject clone1 = obj.clone();
 		clone1.setPosition(1.0f, 0.0f);
 		addObject(clone1);
 		
 		final GameObject clone2 = obj.clone();
 		clone2.setPosition(1.67f, 0.0f);
 		addObject(clone2);
-		
+		*/
 		
 		//primitive vbo test here
 		
-		{
+		/*{
 			Vector2[] verts = new Vector2[]{
 							new Vector2(0.7f, -1.0f),
 							new Vector2(1.0f, 1.0f),
@@ -74,7 +86,7 @@ public class TestGame extends BaseGame {
 			obj2.setPosition(1.0f, 1.0f);
 			obj2.setColor(new Color(0.25f, 0.9f, 0.2f));
 			addObject(obj2);
-		}
+		}*/
 		/*{
 			Vector2[] verts = new Vector2[]{
 							new Vector2(-1f, 0.4f),
@@ -209,13 +221,6 @@ public class TestGame extends BaseGame {
 				long time = System.currentTimeMillis();
 				if (time > last + delay){
 					last = time;
-					
-					Vector2 p = clone2.getPosition();
-					clone2.setPosition(p.x - 0.1f, p.y);
-					System.out.println("Pos is " + p.x);
-					
-					float[] rgba = obj.getColor().rgba;
-					rgba[0] = rgba[0] - 0.025f;
 				}
 			}
 		});

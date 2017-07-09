@@ -107,7 +107,6 @@ public class OverloadEnginePc extends OverloadEngine {
 
 		if (config.isDebug) {
 			frameCounter = new DebugFrameCounter();
-			frameCounter.getSimpleFont().setPosition(0.2f, 0.15f);
 		}
 	}
 	

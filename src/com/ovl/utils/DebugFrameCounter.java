@@ -11,6 +11,7 @@ public class DebugFrameCounter extends Label{
 
 	public DebugFrameCounter(){
 		super(null, "00");
+		getSimpleFont().setPosition(-0.72f, -0.9f);
 	}
 	
 	@Override

@@ -1,9 +1,6 @@
 package com.ovl.engine;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.Paths;
@@ -12,14 +9,27 @@ public class Shader {
 	public static class Handle {
 		public String name;
 		public int id;
+	}
+	
+	public static class Attribute extends Handle {
 		public int size;
 		public int offset;
 		
-		public Handle(String name, int id, int size, int offset){
-			this.id = id;
+		public Attribute(String name, int id, int size, int offset){
 			this.name = name;
+			this.id = id;
 			this.size = size;
 			this.offset = offset;
+		}
+	}
+	
+	public static class Uniform extends Handle {
+		public Class<?> type;
+		
+		public Uniform(String name, int id, Class<?> type){
+			this.name = name;
+			this.id = id;
+			this.type = type;
 		}
 	}
 
@@ -30,29 +40,18 @@ public class Shader {
 	public static final String U_MVPMATRIX = "u_MVPMatrix";
 	public static final String U_COLOR = "u_Color";
 	
-	static {
-		HashMap<String, Integer> sizes = new HashMap<String, Integer>();
-		sizes.put(A_POSITION, 2);
-		sizes.put(A_TEXCOORD, 2);
-		sizes.put(A_COLOR, 4);
-		sizes.put(U_TEXTURE, 0);
-		sizes.put(U_MVPMATRIX, 0);
-		sizes.put(U_COLOR, 0);
-		handleSizes = Collections.unmodifiableMap(sizes);
-	}
-	
-	public static final Map<String, Integer> handleSizes;
-	
 	private String resourceName;
 	private int programId = -1;
 	private int vsId = -1;
 	private int fsId = -1;
-	private ArrayList<Handle> handles;
-	private int totalHandlesSize = 0;
+	private int totalSize = 0;
+	private ArrayList<Uniform> uniforms;
+	private ArrayList<Attribute> attributes;
 	
 	public Shader(String name){
 		resourceName = name;
-		handles = new ArrayList<Handle>();
+		uniforms = new ArrayList<>();
+		attributes = new ArrayList<>();
 	}
 	
 	public String getVSCode(){
@@ -91,34 +90,33 @@ public class Shader {
 		this.fsId = fsId;
 	}
 	
-	public int getTotalHandlesSize(){
-		return totalHandlesSize;
+	public void addAttribute(String name, int id, int size, int offset){
+		attributes.add(new Attribute(name, id, size, offset));
+		totalSize += size;
 	}
 	
-	public void calculateOffsets(int typeSize){
-		int handleOffset = 0;
-		totalHandlesSize = 0;
-		for (Handle handle : handles){
-			handle.offset = handleOffset;
-			handleOffset += handle.size * typeSize;
-			totalHandlesSize += handle.size;
-		}
+	public void addUniform(String name, int id, Class<?> type){
+		uniforms.add(new Uniform(name, id, type));
 	}
 	
-	public void createHandle(String handle, int id){
-		handles.add(new Handle(handle, id, handleSizes.get(handle), 0));
+	public ArrayList<Uniform> getUniforms(){
+		return uniforms;
 	}
 	
-	public ArrayList<Handle> getHandles(){
-		return handles;
-	}
-	
-	public Handle getHandle(String name){
-		for (Handle handle : handles){
-			if (handle.name.equals(name)){
-				return handle;
+	public Uniform getUniform(String name){
+		for (Uniform u : uniforms){
+			if (u.name.equals(name)){
+				return u;
 			}
 		}
 		return null;
+	}
+	
+	public ArrayList<Attribute> getAttributes(){
+		return attributes;
+	}
+	
+	public int getTotalAttributesSize(){
+		return totalSize;
 	}
 }

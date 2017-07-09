@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.ovl.graphics.Color;
 import com.ovl.graphics.FontBuilder;
 import com.ovl.graphics.TextureLoader;
+import com.ovl.utils.Pair;
 import com.ovl.utils.Vector2;
 
 public abstract class Renderer {
@@ -53,8 +54,7 @@ public abstract class Renderer {
 	protected Vbo textureVbo;
 	protected Vbo boundVbo;
 	
-	protected HashMap<Class<?>, ParamSetterBuilder<?>> paramSetterBuilders = new HashMap<Class<?>, ParamSetterBuilder<?>>();
-	protected HashMap<String, Object> paramSetterDefaults = new HashMap<String, Object>();
+	protected HashMap<Class<?>, Pair<ParamSetter.Builder<?>, Object>> paramSetterBuilders = new HashMap<>();
 	protected HashMap<String, Shader> shaders = new HashMap<String, Shader>();
 	protected Shader activeShader = null;
 	
@@ -79,9 +79,7 @@ public abstract class Renderer {
 	
 	public abstract void preRender();
 	
-	public abstract void renderPrimitive(ShaderParams vboId, PrimitiveType mode, Color c);
-	
-	public abstract void renderTextured(ShaderParams vboId, Color c);
+	public abstract void render(ShaderParams vboId, PrimitiveType mode);
 	
 	public void setTextureData(ShaderParams vboId, Vector2 tl, Vector2 br){
 		Vbo vbo = vboId.vbo;
@@ -139,19 +137,8 @@ public abstract class Renderer {
 		}
 	}
 	
-	public ShaderParams generateId(String shaderName, int vertsPerObject){
-		Shader shader = shaders.get(shaderName);
-		if (shader == null){
-			return null;
-		}
-		
-		for (Vbo vbo : vbos){
-			if (vbo.getShader() == shader && vertsPerObject == vbo.getVertexCount()){
-				return new ShaderParams(vbo, vbo.generateId(), false);
-			}
-		}
-		
-		return null;
+	public ShaderParams generateShaderParams(Vbo vbo){
+		return new ShaderParams(vbo, vbo.generateId());
 	}
 	
 	public Vbo createVbo(String shaderName, int vertsPerObject){
@@ -174,12 +161,8 @@ public abstract class Renderer {
 		vboId.getVbo().releaseId(vboId.index);
 	}
 	
-	public HashMap<Class<?>, ParamSetterBuilder<?>> getParamSetterBuilders(){
+	public HashMap<Class<?>, Pair<ParamSetter.Builder<?>, Object>> getParamSetterBuilders(){
 		return paramSetterBuilders;
-	}
-	
-	public HashMap<String, Object> getParamSetterDefaults(){
-		return paramSetterDefaults;
 	}
 	
 	protected abstract void initVbo(Vbo vbo);

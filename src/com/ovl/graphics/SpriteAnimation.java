@@ -1,8 +1,9 @@
 package com.ovl.graphics;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.ovl.engine.ParamSetter;
+import com.ovl.engine.Vbo;
 import com.ovl.game.Updatable;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
@@ -41,7 +42,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		return clone;
 	}
 	
-	public void useShader(String shaderName, ArrayList<ParamSetter> params){
+	public void useShader(Vbo vbo, HashMap<String, ParamSetter> params){
 		//TODO:implement me!
 	}
 	

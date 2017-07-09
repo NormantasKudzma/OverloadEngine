@@ -21,8 +21,8 @@ public class Vbo {
 	public Vbo(Shader shader, int initialSize, int vertexCount, int dataSize){
 		this.vertexCount = vertexCount;
 		this.shader = shader;
-		stride = dataSize * shader.getTotalHandlesSize();
-		objectSize = vertexCount * shader.getTotalHandlesSize();
+		stride = dataSize * shader.getTotalAttributesSize();
+		objectSize = vertexCount * shader.getTotalAttributesSize();
 		typeSize = dataSize;
 
 		if (initialSize <= 0){

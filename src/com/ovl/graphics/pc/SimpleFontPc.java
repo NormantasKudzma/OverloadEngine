@@ -92,7 +92,10 @@ public class SimpleFontPc extends SimpleFont {
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
 		TextureLoaderPc textureLoader = ((TextureLoaderPc)RENDERER.getTextureLoader());
 		setSprite(new Sprite(textureLoader.getTexture(textSubImage)));
-		sprite.setColor(oldColor);
+		
+		if (oldColor != null){
+			sprite.setColor(oldColor);
+		}
 	}
 	
 	public void setFont(CustomFont f){

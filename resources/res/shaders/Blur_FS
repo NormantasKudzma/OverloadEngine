@@ -1,0 +1,16 @@
+precision mediump float; 
+uniform sampler2D u_Texture;
+uniform vec4 u_Color;
+varying vec2 v_TexCoord;
+
+
+void main() {	
+	vec4 finalColor = vec4(0.0f);
+	finalColor += texture2D(u_Texture, v_TexCoord + vec2(-0.005f, 0.0f)) * 0.0625f;
+	finalColor += texture2D(u_Texture, v_TexCoord + vec2(-0.01f, 0.0f)) * 0.25f;
+	finalColor += texture2D(u_Texture, v_TexCoord + vec2(0.0f, 0.0f)) * 0.375f;
+	finalColor += texture2D(u_Texture, v_TexCoord + vec2(0.01f, 0.0f)) * 0.25f;
+	finalColor += texture2D(u_Texture, v_TexCoord + vec2(0.005f, 0.0f)) * 0.0625f;
+	
+	gl_FragColor = finalColor;
+}

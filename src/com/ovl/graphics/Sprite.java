@@ -1,6 +1,7 @@
 package com.ovl.graphics;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.ParamSetter;
@@ -8,12 +9,15 @@ import com.ovl.engine.ParamSetterFactory;
 import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
 import com.ovl.engine.ShaderParams;
+import com.ovl.engine.Vbo;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
 public class Sprite implements Renderable, ICloneable {
 	protected static final Renderer renderer;
 	protected static final String defaultShaderName;
+	protected static final Shader defaultShader;
+	protected static final Vbo defaultVbo;
 	
 	private Texture texture;						// Sprite's texture
 	private Vector2 textureSize = new Vector2();
@@ -28,12 +32,9 @@ public class Sprite implements Renderable, ICloneable {
 	static {
 		defaultShaderName = "Texture";
 		renderer = OverloadEngine.getInstance().renderer;
-		renderer.createShader(defaultShaderName);
-		renderer.createVbo(defaultShaderName, 1024, 4);
+		defaultShader = renderer.createShader(defaultShaderName);
+		defaultVbo = renderer.createVbo(defaultShaderName, 1024, 4);
 	}
-	
-	// Internal vector for render calculations
-	//private Vector2 size = new Vector2();
 	
 	private Sprite(){
 		
@@ -48,14 +49,14 @@ public class Sprite implements Renderable, ICloneable {
 	}
 	
 	public Sprite(String path, Vector2 tl, Vector2 br){
-		init();
 		loadTexture(path);
+		init();
 		setTextureCoordinates(tl, br);
 	}
 	
 	public Sprite(Texture tex, Vector2 tl, Vector2 br){
-		init();
 		texture = tex;
+		init();
 		setTextureCoordinates(tl, br);
 	}
 	
@@ -109,23 +110,27 @@ public class Sprite implements Renderable, ICloneable {
 	}	
 	
 	private void init(){
-		ArrayList<ParamSetter> shaderParams = new ArrayList<ParamSetter>();
-		shaderParams.add(ParamSetterFactory.build(id, Shader.U_COLOR, color));
-		shaderParams.add(ParamSetterFactory.buildDefault(id, Shader.U_TEXTURE));
-		shaderParams.add(ParamSetterFactory.buildDefault(id, Shader.U_MVPMATRIX));
+		HashMap<String, ParamSetter> shaderParams = new HashMap<>();
+		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(defaultShader, Shader.U_COLOR, color));
+		shaderParams.put(Shader.U_TEXTURE, ParamSetterFactory.build(defaultShader, Shader.U_TEXTURE, texture));
+		shaderParams.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(defaultShader, Shader.U_MVPMATRIX));
 		
-		useShader(defaultShaderName, shaderParams);	
+		useShader(defaultVbo, shaderParams);	
 	}
 	
-	public void useShader(String shaderName, ArrayList<ParamSetter> params){
+	public void useShader(Vbo vbo, HashMap<String, ParamSetter> params){
 		if (id != null){
 			renderer.releaseId(id);
 		}
 		
-		id = renderer.generateId(shaderName, 4);
+		id = renderer.generateShaderParams(vbo);
 		
-		for (ParamSetter p : params){
-			id.addParam(p);
+		for (Map.Entry<String, ParamSetter> kv : params.entrySet()){
+			id.addParam(kv.getKey(), kv.getValue());
+		}
+		
+		if (texTopLeft != null && texBotRight != null){
+			renderer.setTextureData(id, texTopLeft, texBotRight);
 		}
 	}
 	
@@ -135,8 +140,7 @@ public class Sprite implements Renderable, ICloneable {
 
 	@Override
 	public void render() {
-		texture.bind();
-		renderer.renderTextured(id, color);
+		renderer.render(id, Renderer.PrimitiveType.TriangleStrip);
 	}
 	
 	public void setColor(Color c){

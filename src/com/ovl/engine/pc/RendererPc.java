@@ -4,11 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.Util;
@@ -21,9 +19,12 @@ import com.ovl.engine.Shader;
 import com.ovl.engine.ShaderParams;
 import com.ovl.engine.Vbo;
 import com.ovl.graphics.Color;
+import com.ovl.graphics.Texture;
 import com.ovl.graphics.pc.FontBuilderPc;
 import com.ovl.graphics.pc.TextureLoaderPc;
+import com.ovl.graphics.pc.TexturePc;
 import com.ovl.utils.Pair;
+import com.ovl.utils.Vector2;
 
 public final class RendererPc extends Renderer {
 	private FloatBuffer mvpMatrix;
@@ -46,13 +47,10 @@ public final class RendererPc extends Renderer {
 		primitiveModes[PrimitiveType.TriangleStrip.getIndex()] = GL11.GL_TRIANGLE_STRIP;
 		primitiveModes[PrimitiveType.Triangles.getIndex()] = GL11.GL_TRIANGLES;
 		
-		paramSetterBuilders.put(Color.class, new ColorParamSetter.Builder());
-		paramSetterBuilders.put(mvpMatrix.getClass(), new MatrixParamSetter.Builder());
-		paramSetterBuilders.put(Integer.class, new TextureParamSetter.Builder());
-		
-		paramSetterDefaults.put(Shader.U_COLOR, Color.WHITE);
-		paramSetterDefaults.put(Shader.U_MVPMATRIX, mvpMatrix);
-		paramSetterDefaults.put(Shader.U_TEXTURE, new Integer(0));		
+		paramSetterBuilders.put(Color.class, new Pair<ParamSetter.Builder<?>, Object>(new ColorParamSetter.Builder(), Color.WHITE));
+		paramSetterBuilders.put(mvpMatrix.getClass(), new Pair<ParamSetter.Builder<?>, Object>(new MatrixParamSetter.Builder(), mvpMatrix));
+		paramSetterBuilders.put(Texture.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TexturePc())));
+		paramSetterBuilders.put(TexturePc.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TexturePc())));
 	}
 	
 	public Shader createShader(String name){
@@ -67,12 +65,7 @@ public final class RendererPc extends Renderer {
 			GL20.glLinkProgram(shader.getProgramId());
 			Util.checkGLError();
 			
-			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shader.getProgramId());
-			
-			for (Pair<String, Integer> pair : handles){
-				shader.createHandle(pair.key, pair.value);
-			}
-			shader.calculateOffsets(BYTES_PER_FLOAT);
+			loadProgramInfo(shader);
 			shaders.put(name, shader);
 			
 			return shader;
@@ -88,7 +81,7 @@ public final class RendererPc extends Renderer {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GL11.glClearColor(0.75f, 0.25f, 0.4f, 1.0f);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 	}
@@ -109,7 +102,7 @@ public final class RendererPc extends Renderer {
 	}
 	
 	protected void cleanupShader(Shader shader){
-		for (Shader.Handle handle : shader.getHandles()){
+		for (Shader.Handle handle : shader.getAttributes()){
 			GL20.glDisableVertexAttribArray(handle.id);
 		}
 	}
@@ -118,11 +111,9 @@ public final class RendererPc extends Renderer {
 		GL20.glUseProgram(shader.getProgramId());
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
 		
-		for (Shader.Handle handle : shader.getHandles()){
-			if (handle.size > 0){
-				GL20.glVertexAttribPointer(handle.id, handle.size, GL11.GL_FLOAT, false, boundVbo.getStride(), handle.offset);
-				GL20.glEnableVertexAttribArray(handle.id);
-			}
+		for (Shader.Attribute a : shader.getAttributes()){
+			GL20.glVertexAttribPointer(a.id, a.size, GL11.GL_FLOAT, false, boundVbo.getStride(), a.offset);
+			GL20.glEnableVertexAttribArray(a.id);
 		}
 	}
 	
@@ -134,22 +125,50 @@ public final class RendererPc extends Renderer {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);*/
 	}
 	
-	protected ArrayList<Pair<String, Integer>> loadProgramInfo(int programId){
-		ArrayList<Pair<String, Integer>> handles = new ArrayList<Pair<String, Integer>>();
+	protected void loadProgramInfo(Shader shader){
+		int programId = shader.getProgramId();
 		GL20.glUseProgram(programId);
 		System.out.println("------------\nProgram info\n------------");
 		
 		String infoLog = GL20.glGetProgramInfoLog(programId, 2048);
 		System.out.println(infoLog);
 		
+		int glErr = GL11.glGetError();
+		if (glErr != GL11.GL_NO_ERROR){
+			System.err.println("LoadProgramInfo error " + glErr);
+			return;
+		}
+
+		IntBuffer lengthBuf = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		IntBuffer typeBuf = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		IntBuffer sizeBuf = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		
+		final int maxNameLength = 256;
+		ByteBuffer nameBuf = ByteBuffer.allocateDirect(256).order(ByteOrder.nativeOrder());
+		byte nameArr[] = new byte[maxNameLength];
+		
 		int count = GL20.glGetProgrami(programId, GL20.GL_ACTIVE_ATTRIBUTES);
+		int byteOffset = 0;
 		
 		// Attributes
 		System.out.printf("%-20s%-20s%-20s\n", "Attribute name", "Index", "Location");
 		for (int i = 0; i < count; ++i){
-			String attrib = GL20.glGetActiveAttrib(programId, i, 256);
+			lengthBuf.clear();
+			sizeBuf.clear();
+			typeBuf.clear();
+			nameBuf.clear();
+			GL20.glGetActiveAttrib(programId, i, lengthBuf, sizeBuf, typeBuf, nameBuf);
+			lengthBuf.rewind();
+			sizeBuf.rewind();
+			typeBuf.rewind();
+			nameBuf.rewind();
+			nameBuf.get(nameArr);
+			String attrib = new String(nameArr, 0, lengthBuf.get());
 			int loc = GL20.glGetAttribLocation(programId, attrib);
-			handles.add(new Pair<String, Integer>(attrib, loc));
+			int type = typeBuf.get();
+			int size = sizeBuf.get() * getSizeInFloats(type);
+			shader.addAttribute(attrib, loc, size, byteOffset);
+			byteOffset += size * BYTES_PER_FLOAT;
 			System.out.printf("%-20s%-20d%-20d\n", attrib, i, loc);
 		}
 		
@@ -159,14 +178,75 @@ public final class RendererPc extends Renderer {
 		System.out.println("------------");
 		System.out.printf("%-20s%-20s%-20s\n", "Uniform name", "Index", "Location");
 		for (int i = 0; i < count; ++i){
-			String uniform = GL20.glGetActiveUniform(programId, i, 256);
+			lengthBuf.clear();
+			sizeBuf.clear();
+			typeBuf.clear();
+			nameBuf.clear();
+			GL20.glGetActiveUniform(programId, i, lengthBuf, sizeBuf, typeBuf, nameBuf);
+			lengthBuf.rewind();
+			sizeBuf.rewind();
+			typeBuf.rewind();
+			nameBuf.rewind();
+			nameBuf.get(nameArr);
+			String uniform = new String(nameArr, 0, lengthBuf.get());
 			int loc = GL20.glGetUniformLocation(programId, uniform);
-			handles.add(new Pair<String, Integer>(uniform, loc));
+			shader.addUniform(uniform, loc, glTypeToOvl(typeBuf.get()));
 			System.out.printf("%-20s%-20d%-20d\n", uniform, i, loc);
 		}
 		System.out.println("------------");
+	}
+	
+	// Converts opengl type to ovl type
+	private Class<?> glTypeToOvl(int glType){
+		switch (glType){
+			case GL11.GL_FLOAT:{
+				return Float.class;
+			}
+			case GL11.GL_INT:{
+				return Integer.class;
+			}
+			case GL20.GL_SAMPLER_2D:{
+				return Texture.class;
+			}
+			case GL20.GL_FLOAT_VEC2:{
+				return Vector2.class;
+			}
+			case GL20.GL_FLOAT_VEC4:{
+				return Color.class;	// TODO: fixplz
+			}
+			case GL20.GL_FLOAT_MAT4:{
+				return mvpMatrix.getClass();
+			}
+		}
 		
-		return handles;
+		return null;
+	}
+	
+	// Returns opengl type size in floats
+	private int getSizeInFloats(int glType){
+		switch (glType){
+			case GL20.GL_FLOAT_VEC2:{
+				return 2;
+			}
+			case GL20.GL_FLOAT_VEC3:{
+				return 3;
+			}
+			case GL20.GL_FLOAT_VEC4:{
+				return 4;
+			}
+			case GL20.GL_FLOAT_MAT2:{
+				return 4;
+			}
+			case GL20.GL_FLOAT_MAT3:{
+				return 9;
+			}
+			case GL20.GL_FLOAT_MAT4:{
+				return 16;
+			}
+		}
+		
+		System.err.println("Unknown gl type " + glType);
+		return 0;
 	}
 	
 	public void preRender(){
@@ -180,8 +260,6 @@ public final class RendererPc extends Renderer {
 		}
 		
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 	}
 	
 	protected void prepareMvpMatrix(){
@@ -193,7 +271,7 @@ public final class RendererPc extends Renderer {
 		mvpMatrix.rewind();
 	}
 	
-	public void renderTextured(ShaderParams vboId, Color c){
+	public void render(ShaderParams vboId, PrimitiveType mode){
 		if (boundVbo != vboId.getVbo())
 		{
 			boundVbo = vboId.getVbo();
@@ -201,29 +279,7 @@ public final class RendererPc extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		/*GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
-		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, mvpMatrix);
-		GL20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);*/
-		
-		for (ParamSetter paramSetter : vboId.getParams()){
-			paramSetter.setParam();
-		}
-		
-		GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
-	}
-	
-	public void renderPrimitive(ShaderParams vboId, PrimitiveType mode, Color c){
-		if (boundVbo != vboId.getVbo())
-		{
-			boundVbo = vboId.getVbo();
-			activeShader = boundVbo.getShader();
-			prepareShader(activeShader);
-		}
-		
-		/*GL20.glUniform4f(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, c.rgba[0], c.rgba[1], c.rgba[2], c.rgba[3]);
-		GL20.glUniformMatrix4(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, false, mvpMatrix);*/
-		
-		for (ParamSetter paramSetter : vboId.getParams()){
+		for (ParamSetter paramSetter : vboId.getParams().values()){
 			paramSetter.setParam();
 		}
 		
