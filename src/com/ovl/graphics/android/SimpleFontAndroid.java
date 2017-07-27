@@ -3,10 +3,8 @@ package com.ovl.graphics.android;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
 
 import com.ovl.graphics.Color;
 import com.ovl.graphics.CustomFont;
@@ -83,8 +81,11 @@ public class SimpleFontAndroid extends SimpleFont {
 		Bitmap textSubImage = Bitmap.createBitmap(bmp, 0, 0, newWidth, newHeight);
 		
 		TextureLoaderAndroid textureLoader = ((TextureLoaderAndroid)RENDERER.getTextureLoader());
-		sprite = new Sprite(textureLoader.getTexture(textSubImage));
-		sprite.setColor(oldColor);
+		setSprite(new Sprite(textureLoader.getTexture(textSubImage)));
+		
+		if (oldColor != null){
+			sprite.setColor(oldColor);
+		}
 	}
 
 	@Override

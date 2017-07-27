@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="com/ovl/controls/android/|com/ovl/engine/android/|com/ovl/graphics/android/|com/ovl/utils/android/|com/ovl/testing/MainActivity.java" kind="src" path="src"/>
+	<classpathentry excluding="com/ovl/controls/android/|com/ovl/engine/android/|com/ovl/graphics/android/|com/ovl/utils/android/|com/ovl/testing/EngineTestActivity.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libs/usb4java-1.2.0.jar"/>

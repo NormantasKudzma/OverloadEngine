@@ -32,7 +32,7 @@ public class Button extends SpriteComponent{
 		setSprite(new Sprite(Paths.getUI() + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
 		setSprite(new Sprite(Paths.getUI() + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
 
-		addChild(label);
+		//addChild(label);
 	}
 
 	@Override

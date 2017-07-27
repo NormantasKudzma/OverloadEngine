@@ -98,20 +98,20 @@ public abstract class Renderer {
 	}
 	
 	// TODO: implement rotation
-	public void setVertexData(ShaderParams vboId, Vector2 tl, Vector2 br){
+	public void setVertexData(ShaderParams vboId, Vector2[] v){
 		Vbo vbo = vboId.vbo;
 		
-		if (tl == null || br == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
+		if (vboId.index < 0 || vboId.index >= vbo.getSize()){
 			return;
 		}
 		
 		vbo.setModified(true);
 		
 		int offset = vboId.index * vbo.getObjectSize();
-		vbo.getVbo().put(offset + 0, tl.x).put(offset + 1, br.y)
-					.put(offset + 4, tl.x).put(offset + 5, tl.y)
-					.put(offset + 8, br.x).put(offset + 9, br.y)
-					.put(offset + 12, br.x).put(offset + 13, tl.y);
+		vbo.getVbo().put(offset + 0, v[0].x).put(offset + 1, v[0].y)
+					.put(offset + 4, v[1].x).put(offset + 5, v[1].y)
+					.put(offset + 8, v[2].x).put(offset + 9, v[2].y)
+					.put(offset + 12, v[3].x).put(offset + 13, v[3].y);
 	}
 	
 	// TODO: refactor, so all kind of vbos use same methods

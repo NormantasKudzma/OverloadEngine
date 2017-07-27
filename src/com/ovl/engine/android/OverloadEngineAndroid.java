@@ -18,12 +18,10 @@ public class OverloadEngineAndroid extends OverloadEngine {
 	private class SurfaceViewRenderer implements GLSurfaceView.Renderer {
 		@Override
 		public void onDrawFrame(GL10 deprecated) {
+			loop();
+			
 			renderer.preRender();
 			game.render();
-			if (config.isDebug) {
-				frameCounter.update(deltaTime);
-				frameCounter.render();
-			}
 			renderer.postRender();
 		}
 
@@ -33,11 +31,14 @@ public class OverloadEngineAndroid extends OverloadEngine {
 			frameHeight = h;
 			frameWidth = w;
 			aspectRatio = 1.0f * w / h;
+			t0 = t1 = System.nanoTime();
 			
-			if (!isStarted)
-			{
-				run();
+			if (!isRunning){
+				isRunning = true;
+				init();
 			}
+			
+			surfaceView.requestRender();
 		}
 
 		@Override
@@ -49,7 +50,9 @@ public class OverloadEngineAndroid extends OverloadEngine {
 	private CustomSurfaceView surfaceView;
 	private SurfaceViewRenderer surfaceViewRenderer;
 	private Context ctx;
-	private boolean isStarted = false;
+	//private boolean isStarted = false;
+	private long t0, t1; // Frame start/end time;
+	private boolean isRunning = false;
 	
 	public OverloadEngineAndroid(EngineConfig config) {
 		super(config);
@@ -62,7 +65,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 
 	@Override
 	protected void init() {
-		isStarted = true;
+		//isStarted = true;
 		platform = EnginePlatform.PLATFORM_ANDROID;
 		platformAssetsRoot = "assets/";
 		
@@ -80,18 +83,17 @@ public class OverloadEngineAndroid extends OverloadEngine {
 		game.init();
 
 		if (config.isDebug) {
-			frameCounter = new DebugFrameCounter();
-			frameCounter.getSimpleFont().setPosition(0.2f, 0.15f);
+			/*frameCounter = new DebugFrameCounter();
+			frameCounter.update(deltaTime);
+			frameCounter.render();*/
 		}
 	}
 
 	@Override
 	protected void loop() {
-		new Thread(){
-			public void run() {
-				long t0, t1; // Frame start/end time
-				t0 = t1 = System.nanoTime();
-				while (!isCloseRequested) {
+		/*new Thread(){
+			public void run() {*/
+				//while (!isCloseRequested) {
 					t0 = System.nanoTime();
 					deltaTime = (t0 - t1) * 0.000000001f;
 					t1 = t0;
@@ -104,16 +106,17 @@ public class OverloadEngineAndroid extends OverloadEngine {
 	
 					surfaceView.requestRender();
 					
-					try {
+					/*try {
 						// plz FIXME ...
-						Thread.sleep((long)(Math.max(0.001f, 0.016667f - deltaTime) * 100));
+						long sleepTime = (long)(Math.max(0.001f, 0.016667f - deltaTime) * 100);
+						Thread.sleep(sleepTime);
 					}
 					catch (Exception e){
 						
-					}
-				}
-			}
-		}.start();
+					}*/
+				//}
+		/*	}
+		}.start();*/
 	}
 	
 	public Context getContext(){

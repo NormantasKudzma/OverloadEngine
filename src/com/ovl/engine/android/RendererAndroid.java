@@ -1,24 +1,27 @@
 package com.ovl.engine.android;
 
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.ParamSetter;
 import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
+import com.ovl.engine.ShaderParams;
 import com.ovl.engine.Vbo;
 import com.ovl.graphics.Color;
+import com.ovl.graphics.Texture;
 import com.ovl.graphics.android.FontBuilderAndroid;
+import com.ovl.graphics.android.TextureAndroid;
 import com.ovl.graphics.android.TextureLoaderAndroid;
 import com.ovl.utils.Pair;
 import com.ovl.utils.Vector2;
 import com.ovl.utils.android.Log;
 
 public final class RendererAndroid extends Renderer {
-	private float mvpMatrix[] = new float[16];
-	private float renderMatrix[] = new float[16];
+	private MatrixAndroid mvpMatrix = new MatrixAndroid();
 	
 	public RendererAndroid() {
 		textureLoader = new TextureLoaderAndroid();
@@ -34,6 +37,12 @@ public final class RendererAndroid extends Renderer {
 		primitiveModes[PrimitiveType.TriangleFan.getIndex()] = GLES20.GL_TRIANGLE_FAN;
 		primitiveModes[PrimitiveType.TriangleStrip.getIndex()] = GLES20.GL_TRIANGLE_STRIP;
 		primitiveModes[PrimitiveType.Triangles.getIndex()] = GLES20.GL_TRIANGLES;
+		
+		paramSetterBuilders.put(Color.class, new Pair<ParamSetter.Builder<?>, Object>(new ColorParamSetter.Builder(), Color.WHITE));
+		paramSetterBuilders.put(mvpMatrix.getClass(), new Pair<ParamSetter.Builder<?>, Object>(new MatrixParamSetter.Builder(), mvpMatrix));
+		paramSetterBuilders.put(Texture.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TextureAndroid())));
+		paramSetterBuilders.put(TextureAndroid.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), new TextureAndroid()));
+		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.Builder(), new MutableFloat(0.0f)));
 	}
 
 	@Override
@@ -41,21 +50,19 @@ public final class RendererAndroid extends Renderer {
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-		GLES20.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
 		/*Matrix.setLookAtM(mvpMatrix, 0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
 		Matrix.translateM(mvpMatrix, 0, -1.0f, -1.0f, 0.0f);*/
 		
-		Matrix.setIdentityM(mvpMatrix, 0);
-		
-		Matrix.setIdentityM(renderMatrix, 0);
-		prepareRenderMatrix(new Vector2(-1.0f, -1.0f), new Vector2(1.0f, 1.0f), 0.0f);
+		Matrix.setIdentityM(mvpMatrix.matrixImpl, 0);
+		//mvpMatrix.matrixImpl[0] = 2.0f / OverloadEngine.getInstance().aspectRatio;
 	}
 
-	protected ArrayList<Pair<String, Integer>> loadProgramInfo(int programId){
-		ArrayList<Pair<String, Integer>> handles = new ArrayList<Pair<String, Integer>>();
+	protected void loadProgramInfo(Shader shader){
+		int programId = shader.getProgramId();
 		GLES20.glUseProgram(programId);
 		Log.w("------------\nProgram info\n------------");
 		
@@ -67,18 +74,21 @@ public final class RendererAndroid extends Renderer {
 		int count = ib[0];
 		
 		int length[] = new int[1];
-		int size[] = new int[1];
-		int type[] = new int[1];
+		int glSize[] = new int[1];
+		int glType[] = new int[1];
 		byte name[] = new byte[256];
+		int byteOffset = 0;
 		
 		// Attributes
 		Log.w(String.format("%-20s%-20s%-20s\n", "Attribute name", "Index", "Location"));
 		for (int i = 0; i < count; ++i){
-			GLES20.glGetActiveAttrib(programId, i, 256, length, 0, size, 0, type, 0, name, 0);
+			GLES20.glGetActiveAttrib(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
 			name[length[0]] = '\0';
 			String attrib = new String(name, 0, length[0]);
 			int loc = GLES20.glGetAttribLocation(programId, attrib);
-			handles.add(new Pair<String, Integer>(attrib, loc));
+			int size = glSize[0] * getSizeInFloats(glType[0]);
+			shader.addAttribute(attrib, loc, size, byteOffset);
+			byteOffset += size * BYTES_PER_FLOAT;
 			Log.w(String.format("%-20s%-20d%-20d\n", attrib, i, loc));
 		}
 		
@@ -89,16 +99,67 @@ public final class RendererAndroid extends Renderer {
 		Log.w("------------");
 		Log.w(String.format("%-20s%-20s%-20s\n", "Uniform name", "Index", "Location"));
 		for (int i = 0; i < count; ++i){
-			GLES20.glGetActiveUniform(programId, i, 256, length, 0, size, 0, type, 0, name, 0);
+			GLES20.glGetActiveUniform(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
 			name[length[0]] = '\0';
 			String uniform = new String(name, 0, length[0]);
 			int loc = GLES20.glGetUniformLocation(programId, uniform);
-			handles.add(new Pair<String, Integer>(uniform, loc));
+			shader.addUniform(uniform, loc, glTypeToOvl(glType[0]));
 			Log.w(String.format("%-20s%-20d%-20d\n", uniform, i, loc));
 		}
 		Log.w("------------");
+	}
+
+	// Converts opengl type to ovl type
+	private Class<?> glTypeToOvl(int glType){
+		switch (glType){
+			case GLES20.GL_FLOAT:{
+				return Float.class;
+			}
+			case GLES20.GL_INT:{
+				return Integer.class;
+			}
+			case GLES20.GL_SAMPLER_2D:{
+				return Texture.class;
+			}
+			case GLES20.GL_FLOAT_VEC2:{
+				return Vector2.class;
+			}
+			case GLES20.GL_FLOAT_VEC4:{
+				return Color.class;	// TODO: fixplz
+			}
+			case GLES20.GL_FLOAT_MAT4:{
+				return mvpMatrix.getClass();
+			}
+		}
 		
-		return handles;
+		return null;
+	}
+	
+	// Returns opengl type size in floats
+	private int getSizeInFloats(int glType){
+		switch (glType){
+			case GLES20.GL_FLOAT_VEC2:{
+				return 2;
+			}
+			case GLES20.GL_FLOAT_VEC3:{
+				return 3;
+			}
+			case GLES20.GL_FLOAT_VEC4:{
+				return 4;
+			}
+			case GLES20.GL_FLOAT_MAT2:{
+				return 4;
+			}
+			case GLES20.GL_FLOAT_MAT3:{
+				return 9;
+			}
+			case GLES20.GL_FLOAT_MAT4:{
+				return 16;
+			}
+		}
+		
+		System.err.println("Unknown gl type " + glType);
+		return 0;
 	}
 	
 	public Shader createShader(String name){
@@ -112,20 +173,7 @@ public final class RendererAndroid extends Renderer {
 			GLES20.glAttachShader(shader.getProgramId(), shader.getFSId());
 			GLES20.glLinkProgram(shader.getProgramId());
 			
-			int glerr = GLES20.glGetError();
-			if (glerr != GLES20.GL_NO_ERROR){
-				Log.w("Create shader gl error " + glerr);
-			}
-			
-			ArrayList<Pair<String, Integer>> handles = loadProgramInfo(shader.getProgramId());
-			
-			for (Pair<String, Integer> pair : handles){
-				int handleIndex = Shader.getHandleIndexByName(pair.key);
-				if (handleIndex != -1){
-					shader.createHandle(handleIndex, pair.value);
-				}
-			}
-			shader.calculateOffsets(BYTES_PER_FLOAT);
+			loadProgramInfo(shader);
 			shaders.put(name, shader);
 			
 			return shader;
@@ -162,39 +210,34 @@ public final class RendererAndroid extends Renderer {
 	}
 	
 	protected void prepareShader(Shader shader){
-		Shader.Handle handle = null;
 		GLES20.glUseProgram(shader.getProgramId());
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boundVbo.getId());
-		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
-			if ((handle = shader.getHandle(i)) != null){
-				GLES20.glVertexAttribPointer(handle.id, handle.size, GLES20.GL_FLOAT, false, boundVbo.getStride(), handle.offset);
-				GLES20.glEnableVertexAttribArray(handle.id);
-			}
+		
+		for (Shader.Attribute a : shader.getAttributes()){
+			GLES20.glVertexAttribPointer(a.id, a.size, GLES20.GL_FLOAT, false, boundVbo.getStride(), a.offset);
+			GLES20.glEnableVertexAttribArray(a.id);
 		}
 	}
 	
 	protected void cleanupShader(Shader shader){
-		Shader.Handle handle = null;
-		for (int i = 0; i < Shader.HANDLE_COUNT; ++i){
-			if ((handle = shader.getHandle(i)) != null){
-				GLES20.glDisableVertexAttribArray(handle.id);
-			}
+		for (Shader.Handle handle : shader.getAttributes()){
+			GLES20.glDisableVertexAttribArray(handle.id);
 		}
 	}
 
-	protected void prepareRenderMatrix(Vector2 position, Vector2 scale, float rotation){
-		Matrix.setIdentityM(renderMatrix, 0);
+	/*protected void prepareRenderMatrix(Vector2 position, Vector2 scale, float rotation){
+		Matrix.setIdentityM(renderMatrix.matrixImpl, 0);
 
 		//Matrix.translateM(renderMatrix, 0, -size.x, -size.y, 0.0f);
-		Matrix.translateM(renderMatrix, 0, position.x, position.y, 0.0f);
-		Matrix.scaleM(renderMatrix, 0, scale.x, scale.y, 1.0f);
+		Matrix.translateM(renderMatrix.matrixImpl, 0, position.x, position.y, 0.0f);
+		Matrix.scaleM(renderMatrix.matrixImpl, 0, scale.x, scale.y, 1.0f);
 		
 		// android gets no rotation either, kek kek
-		Matrix.multiplyMM(renderMatrix, 0, mvpMatrix, 0, renderMatrix, 0);
-	}
+		Matrix.multiplyMM(renderMatrix.matrixImpl, 0, mvpMatrix.matrixImpl, 0, renderMatrix.matrixImpl, 0);
+	}*/
 	
 	@Override
-	public void renderTextured(VboId vboId, Color c) {
+	public void render(ShaderParams vboId, PrimitiveType mode){
 		if (boundVbo != vboId.getVbo())
 		{
 			boundVbo = vboId.getVbo();
@@ -202,27 +245,9 @@ public final class RendererAndroid extends Renderer {
 			prepareShader(activeShader);
 		}
 		
-		//prepareRenderMatrix(size, position, scale, rotation);
-		
-		GLES20.glUniform4fv(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, 1, c.rgba, 0);
-		GLES20.glUniformMatrix4fv(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, 1, false, renderMatrix, 0);		
-		GLES20.glUniform1i(activeShader.getHandle(Shader.HANDLE_U_TEX).id, 0);
-		
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
-	}
-	
-	@Override
-	public void renderPrimitive(VboId vboId, PrimitiveType mode, Color c) {
-		if (boundVbo != vboId.getVbo())
-		{
-			boundVbo = vboId.getVbo();
-			activeShader = boundVbo.getShader();
-			prepareShader(activeShader);
+		for (ParamSetter paramSetter : vboId.getParams().values()){
+			paramSetter.setParam();
 		}
-
-		//prepareRenderMatrix(Vector2.zero, position, scale, rotation);
-		GLES20.glUniform4fv(activeShader.getHandle(Shader.HANDLE_U_COLOR).id, 1, c.rgba, 0);
-		GLES20.glUniformMatrix4fv(activeShader.getHandle(Shader.HANDLE_U_MVPMATRIX).id, 1, false, renderMatrix, 0);		
 		
 		GLES20.glDrawArrays(primitiveModes[mode.getIndex()], vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
@@ -246,7 +271,7 @@ public final class RendererAndroid extends Renderer {
 		return shader;
 	}
 	
-	public void deleteVbo(VboId vboId){
+	public void deleteVbo(ShaderParams vboId){
 		Vbo vbo = vboId.getVbo();
 		IntBuffer buffer = IntBuffer.allocate(1);
 		buffer.put(vbo.getId());

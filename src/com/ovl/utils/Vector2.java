@@ -136,7 +136,7 @@ public final class Vector2 {
 		return this;
 	}
 	
-	public Vector2 normalized(){
+	public Vector2 normalize(){
 		float len = len();
 		x /= len;
 		y /= len;
@@ -158,25 +158,29 @@ public final class Vector2 {
 	}
 	
 	public Vector2 rotate(float angle){
+		float aspect = OverloadEngine.getInstance().aspectRatio;
 		angle = FastMath.normalizeAngle(angle);
 		float sin = FastMath.sinDeg(angle);
 		float cos = FastMath.cosDeg(angle);
-		float xi = x * cos - y * sin;
-		float yi = x * sin + y * cos;
+		float xi = x * cos - y * sin / aspect;
+		float yi = x * sin * aspect + y * cos;
 		x = xi;
 		y = yi;
 		return this;
 	}
 	
-	public Vector2 rotateAroundPoint(Vector2 point, float radAngle){
+	public Vector2 rotateAroundPoint(Vector2 point, float angle){
 		float dx = x - point.x;
 		float dy = y - point.y;
+		/*x_rotated = ((x - x_origin) * cos(angle)) - ((y_origin - y) * sin(angle)) + x_origin
+		y_rotated = ((y_origin - y) * cos(angle)) - ((x - x_origin) * sin(angle)) + y_origin*/
+		float aspect = OverloadEngine.getInstance().aspectRatio;
+		angle = FastMath.normalizeAngle(angle);
+		float sina = FastMath.sinDeg(angle);
+		float cosa = FastMath.cosDeg(angle);
 		
-		float sina = FastMath.sin(radAngle);
-		float cosa = FastMath.cos(radAngle);
-		
-		x = cosa * dx - sina * dy + point.x;
-		y = sina * dx + cosa * dy + point.y;
+		x = cosa * dx - sina * dy / aspect + point.x;
+		y = sina * dx * aspect + cosa * dy + point.y;
 		return this;
 	}
 	

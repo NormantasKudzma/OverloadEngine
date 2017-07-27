@@ -37,7 +37,6 @@ public class Primitive implements Renderable {
 		vertices = verts;
 		this.renderMode = renderMode;
 		init();
-		refreshVertexData();
 	}
 
 	private void init(){
@@ -59,6 +58,7 @@ public class Primitive implements Renderable {
 		for (Map.Entry<String, ParamSetter> kv : params.entrySet()){
 			id.addParam(kv.getKey(), kv.getValue());
 		}
+		refreshVertexData();
 	}
 	
 	@Override
@@ -109,12 +109,12 @@ public class Primitive implements Renderable {
 		refreshVertexData();
 	}
 	
-	private void refreshVertexData(){
+	public void refreshVertexData(){
 		renderer.setPrimitiveData(id, vertices, color);
 	}
 	
 	// TODO: implement
 	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
-		//
+		refreshVertexData();
 	}
 }

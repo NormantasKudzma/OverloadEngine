@@ -1,4 +1,4 @@
-package com.ovl.controls;
+package com.ovl.controls.pc;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,6 +12,8 @@ import org.usb4java.InterfaceDescriptor;
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 
+import com.ovl.controls.Controller;
+import com.ovl.controls.ControllerKeybind;
 import com.ovl.utils.Pair;
 
 public class UsbController extends Controller {

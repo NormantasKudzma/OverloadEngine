@@ -10,6 +10,7 @@ import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
 import com.ovl.engine.ShaderParams;
 import com.ovl.engine.Vbo;
+import com.ovl.utils.FastMath;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
@@ -23,8 +24,7 @@ public class Sprite implements Renderable, ICloneable {
 	private Vector2 textureSize = new Vector2();
 	private Vector2 texTopLeft;		// Texture coordinates
 	private Vector2 texBotRight;
-	private Vector2 vertTopLeft;	// Vertices, scaled, rotated, positioned
-	private Vector2 vertBotRight;
+	private Vector2 verts[] = new Vector2[4];
 	
 	private Color color = new Color();
 	private ShaderParams id;
@@ -110,6 +110,10 @@ public class Sprite implements Renderable, ICloneable {
 	}	
 	
 	private void init(){
+		for (int i = 0; i < verts.length; ++i){
+			verts[i] = new Vector2();
+		}
+		
 		HashMap<String, ParamSetter> shaderParams = new HashMap<>();
 		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(defaultShader, Shader.U_COLOR, color));
 		shaderParams.put(Shader.U_TEXTURE, ParamSetterFactory.build(defaultShader, Shader.U_TEXTURE, texture));
@@ -171,13 +175,22 @@ public class Sprite implements Renderable, ICloneable {
 		Vector2.pixelCoordsToNormal(textureSize);
 	}
 	
-	// TODO: implement rotation
-	public void updateVertices(Vector2 pos, Vector2 scale, float rotation)
-	{
+	public void updateVertices(Vector2 pos, Vector2 scale, float angle)
+	{		
 		Vector2 halfSize = textureSize.copy().mul(0.5f);
-		vertTopLeft = pos.copy().add(-halfSize.x, halfSize.y).mul(scale);
-		vertBotRight = pos.copy().add(halfSize.x, -halfSize.y).mul(scale);
+		verts[0].set(-halfSize.x, -halfSize.y).mul(scale);
+		verts[1].set(-halfSize.x, halfSize.y).mul(scale);
+		verts[2].set(halfSize.x, -halfSize.y).mul(scale);
+		verts[3].set(halfSize.x, halfSize.y).mul(scale);
 		
-		renderer.setVertexData(id, vertTopLeft, vertBotRight);
+		for (int i = 0; i < verts.length; ++i){
+			if (angle != 0.0f)
+			{
+				verts[i].rotate(angle);
+			}
+			verts[i].add(pos);
+		}
+		
+		renderer.setVertexData(id, verts);
 	}
 }

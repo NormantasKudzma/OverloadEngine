@@ -10,12 +10,11 @@ public class CheckBox extends SpriteComponent{
 	public class CheckBoxClickListener implements OnClickListener {
 		@Override
 		public void clickFunction(Vector2 pos) {
-			isChecked = !isChecked;
-			setState(isChecked ? EUIState.CLICKED : EUIState.NORMAL);
+			setChecked(!isChecked);
 		}
 	}
 	
-	private boolean isChecked = false;
+	private boolean isChecked = true;
 	private Label label;
 	
 	public CheckBox(BaseGame game) {
@@ -37,9 +36,8 @@ public class CheckBox extends SpriteComponent{
 	}
 	
 	public void setChecked(boolean checked){
-		if (checked != isChecked){
-			clickListener.clickFunction(null);
-		}
+		isChecked = checked;
+		setState(isChecked ? EUIState.CLICKED : EUIState.NORMAL);
 	}
 
 	public void setText(SimpleFont text){

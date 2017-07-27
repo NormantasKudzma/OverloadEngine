@@ -2,12 +2,6 @@ package com.ovl.testing;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang3.mutable.MutableFloat;
-
-import com.ovl.controls.Controller;
-import com.ovl.controls.ControllerEventListener;
-import com.ovl.controls.ControllerManager;
-import com.ovl.controls.pc.KeyboardController;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.ParamSetter;
 import com.ovl.engine.ParamSetterFactory;
@@ -18,11 +12,9 @@ import com.ovl.game.BaseGame;
 import com.ovl.game.GameObject;
 import com.ovl.graphics.Color;
 import com.ovl.graphics.Primitive;
-import com.ovl.graphics.Sprite;
 import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
 import com.ovl.utils.OverloadRandom;
-import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {
@@ -30,6 +22,67 @@ public class TestGame extends BaseGame {
 	
 	@Override
 	public void init() {
+		Vector2 prim[] = new Vector2[]{
+			new Vector2(-0.5f, -0.5f),
+			new Vector2(0.0f, 0.5f),
+			new Vector2(0.5f, -0.5f)
+		};
+
+		Primitive p = new Primitive(prim, Renderer.PrimitiveType.Triangles);
+		Renderer r = OverloadEngine.getInstance().renderer;
+		Shader distShader = r.createShader("Dist");
+		Vbo vbo = r.createVbo("Dist", 1024, 3);
+		HashMap<String, ParamSetter> params = new HashMap<String, ParamSetter>();
+		params.put(Shader.U_COLOR, ParamSetterFactory.build(distShader, Shader.U_COLOR, p.getColor()));
+		params.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(distShader, Shader.U_MVPMATRIX));
+		
+		
+		p.useShader(vbo, params);
+		
+		GameObject obj = new GameObject(this);
+		obj.initEntity(BodyType.NON_INTERACTIVE);
+		obj.setSprite(p);
+		addObject(obj);
+		
+		/*{
+		GameObject text = new GameObject(this);
+		text.initEntity(BodyType.NON_INTERACTIVE);
+		text.setSprite(new Sprite(Paths.getResources() + "w.png"));
+		text.setPosition(-0.2f, 0.0f);
+		addObject(text);
+		}
+		
+		{
+		GameObject text = new GameObject(this);
+		text.initEntity(BodyType.NON_INTERACTIVE);
+		text.setSprite(new Sprite(Paths.getResources() + "w.png"));
+		text.setRotation(45.0f);
+		text.setScale(2.0f, 2.0f);
+		addObject(text);
+		}
+		
+		{
+			GameObject text = new GameObject(this);
+		text.initEntity(BodyType.NON_INTERACTIVE);
+		text.setSprite(new Sprite(Paths.getResources() + "w.png"));
+		text.setRotation(90.0f);
+		text.setPosition(0.2f, 0.0f);
+		text.setScale(2.0f, 2.0f);
+		addObject(text);
+		}*/
+		
+		Vector2 lines[] = new Vector2[]{
+			new Vector2(-1.0f, 0.0f),
+			new Vector2(1.0f, 0.0f),
+			new Vector2(0.0f, 1.0f),
+			new Vector2(0.0f, -1.0f)
+		};
+		
+		GameObject lineObj = new GameObject(this);
+		lineObj.initEntity(BodyType.NON_INTERACTIVE);
+		lineObj.setSprite(new Primitive(lines, Renderer.PrimitiveType.Lines));
+		addObject(lineObj);
+		
 		/*{
 			GameObject obj = new GameObject();
 			obj.initEntity(BodyType.NON_INTERACTIVE);
@@ -38,8 +91,34 @@ public class TestGame extends BaseGame {
 			//obj.setColor(new Color(0.0f, 0.0f, 1.0f));
 			addObject(obj);	
 		}*/
+		
+		/*Label l1 = new Label(this, "1"){
+			float t = 0.0f;
+			public void update(float deltaTime) {
+				t += deltaTime;
+				if (t > 0.05f){
+					t = 0.0f;
+					setText("" + Math.random());
+				}
+			};
+		};
+		l1.getSimpleFont().setPosition(-0.5f, 0.0f);
+		addObject(l1);
+		
+		Label l2 = new Label(this, "2");
+		l2.getSimpleFont().setPosition(0.5f, 0.0f);
+		addObject(l2);
+		
+		/*Button btn = new Button(this, "hi");
+		btn.setPosition(-0.25f, -0.25f);
+		addObject(btn);*/
+		
+		/*final CheckBox cb = new CheckBox(this);
+		cb.setText("abc");
+		cb.setPosition(0.25f, 0.25f);
+		addObject(cb);*/
 
-		final GameObject obj = new GameObject();
+		/*final GameObject obj = new GameObject();
 		obj.initEntity(BodyType.NON_INTERACTIVE);
 		obj.setPosition(-0.30f, -0.30f);
 		obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
@@ -57,7 +136,7 @@ public class TestGame extends BaseGame {
 		blurredObj.setSprite(blurredSprite);
 		addObject(blurredObj);
 
-		final MutableFloat blurStrength = new MutableFloat(0.001f);
+		final Float blurStrength = new Float(0.2f);
 		
 		HashMap<String, ParamSetter> shaderParams = new HashMap<String, ParamSetter>();
 		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(sh, Shader.U_COLOR, blurredSprite.getColor()));
@@ -74,8 +153,7 @@ public class TestGame extends BaseGame {
 		
 		final GameObject clone2 = obj.clone();
 		clone2.setPosition(1.67f, 0.0f);
-		addObject(clone2);
-		*/
+		addObject(clone2);*/
 		
 		//primitive vbo test here
 		
@@ -205,9 +283,20 @@ public class TestGame extends BaseGame {
 			@Override
 			public void handleEvent(long eventArg, Vector2 pos, int... params) {
 				//Vector2.pixelCoordsToNormal(pos);
-				clampToGrid(pos);
+				/*clampToGrid(pos);
 				highlight(pos);
+				cb.onHover(pos);
 			}
+		});
+		c.addKeybind(0, new ControllerEventListener(){
+
+			@Override
+			public void handleEvent(long eventArg, Vector2 pos, int... params) {
+				if (params[0] == 1){
+					cb.onClick(pos);
+				}
+			}
+			
 		});
 		c.startController();*/
 		
@@ -216,7 +305,7 @@ public class TestGame extends BaseGame {
 			createLetter("a", new Vector2(i, 2.05f + OverloadRandom.nextRandom(200) * 0.001f));
 		}*/
 		
-		KeyboardController k = (KeyboardController)ControllerManager.getInstance().getController(Controller.Type.TYPE_KEYBOARD);
+		/*KeyboardController k = (KeyboardController)ControllerManager.getInstance().getController(Controller.Type.TYPE_KEYBOARD);
 		// LEFT
 		k.addKeybind(203, new ControllerEventListener(){
 			long last = 0;
@@ -245,7 +334,7 @@ public class TestGame extends BaseGame {
 				}
 			}
 		});
-		k.startController();
+		k.startController();*/
 	}
 	
 	void createLetter(String text, Vector2 pos){

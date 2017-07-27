@@ -9,6 +9,11 @@ public class CustomFontAndroid implements CustomFont {
 	private String name;
 	private int size;
 	
+	public CustomFontAndroid(Typeface typeface){
+		f = typeface;
+		size = 20;
+	}
+	
 	public CustomFontAndroid(String name, int style, int size){
 		f = Typeface.create(name, style);
 		this.name = name;
@@ -17,7 +22,10 @@ public class CustomFontAndroid implements CustomFont {
 	
 	@Override
 	public CustomFont deriveFont(float size) {
-		return new CustomFontAndroid(name, f.getStyle(), (int)size);
+		CustomFontAndroid clone = new CustomFontAndroid(f);
+		clone.name = name;
+		clone.size = (int)size;
+		return clone;
 	}
 	
 	public Typeface getTypeface(){

@@ -10,19 +10,28 @@ import android.view.View;
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.android.OverloadEngineAndroid;
 
-public class MainActivity extends Activity {
+public class EngineTestActivity extends Activity {
+	OverloadEngineAndroid engine;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+
 		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		ConfigurationInfo info = am.getDeviceConfigurationInfo();
 		
 		if (info.reqGlEsVersion >= 0x20000){		
-			EngineConfig cfg = new EngineConfig();
-			cfg.game = new TestGame();
-			cfg.isDebug = true;
-			OverloadEngineAndroid engine = new OverloadEngineAndroid(cfg);
+			if (engine == null){
+				EngineConfig cfg = new EngineConfig();
+				cfg.game = new TestGame();
+				cfg.isDebug = true;
+				engine = new OverloadEngineAndroid(cfg);
+			}
 			setContentView(engine.getSurfaceView(this));
 		}
 	}

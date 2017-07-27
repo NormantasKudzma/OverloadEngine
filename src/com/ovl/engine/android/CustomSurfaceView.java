@@ -10,7 +10,7 @@ public class CustomSurfaceView extends GLSurfaceView {
         setRenderer(surfaceViewRenderer);
 		
 		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-		setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
-		setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS);
+		//setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+		//setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS);
 	}
 }

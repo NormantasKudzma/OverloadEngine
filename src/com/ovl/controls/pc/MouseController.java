@@ -31,7 +31,7 @@ public class MouseController extends Controller {
 			return;
 		}
 		
-		mousePos.set(Mouse.getX(), Mouse.getY()).mul(widthInverse, heightInverse);
+		mousePos.set(Mouse.getX(), Mouse.getY()).mul(widthInverse, heightInverse).sub(1.0f, 1.0f);
 		int intmask;
 
 		if (mouseMoveListener != null) {

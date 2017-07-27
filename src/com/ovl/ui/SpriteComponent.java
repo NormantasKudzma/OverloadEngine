@@ -109,6 +109,7 @@ public class SpriteComponent extends Composite{
 	public void setSprite(Renderable spr, EUIState state, boolean isHover){
 		sprites[state.getIndex(isHover)] = spr;
 		setState(EUIState.NORMAL);
+		super.setSprite(spr);
 	}
 	
 	public void setSprites(Renderable[] sprites){
@@ -116,5 +117,16 @@ public class SpriteComponent extends Composite{
 			this.sprites[i] = sprites[i];
 		}
 		setState(EUIState.NORMAL);
+	}
+
+	public void setPosition(Vector2 pos){
+		super.setPosition(pos);
+		if (sprites != null){
+			for (Renderable i : sprites){
+				if (i != null){
+					i.updateVertices(pos, getScale(), getRotation());
+				}
+			}
+		}
 	}
 }

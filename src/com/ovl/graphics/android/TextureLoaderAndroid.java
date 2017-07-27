@@ -52,7 +52,7 @@ public class TextureLoaderAndroid extends TextureLoader {
 	
 	public Texture getTexture(Bitmap bmp){
 		int textureID = createTextureID();
-		Texture texture = new TextureAndroid(GLES20.GL_TEXTURE_2D, textureID);
+		Texture texture = new TextureAndroid(textureID);
 
 		// bind this texture
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureID);

@@ -52,9 +52,7 @@ public class FastMath {
 			angle = ONEQTR_PI;
 		}
 		angle += (0.1963f * r * r - 0.9817f) * r;
-		/*
-		 * if ( y < 0.0f ) return( -angle ); // negate if in quad III or IV else return( angle );
-		 */
+		if ( y < 0.0f ) return( -angle ); // negate if in quad III or IV else return( angle );
 		return angle;
 	}
 
