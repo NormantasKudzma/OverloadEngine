@@ -3,6 +3,7 @@ package com.ovl.graphics;
 import java.util.HashMap;
 
 import com.ovl.engine.ParamSetter;
+import com.ovl.engine.ShaderParams;
 import com.ovl.engine.Vbo;
 import com.ovl.game.Updatable;
 import com.ovl.utils.ICloneable;
@@ -22,6 +23,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 
 	}
 
+	@Override
 	public SpriteAnimation clone(){
 		SpriteAnimation clone = new SpriteAnimation();
 		Sprite sprites[][] = new Sprite[spriteArray.length][];
@@ -42,10 +44,21 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		return clone;
 	}
 	
+	@Override
 	public void useShader(Vbo vbo, HashMap<String, ParamSetter> params){
 		//TODO:implement me!
 	}
 	
+	public ShaderParams getShaderParams(){
+		// TODO: implement me!?
+		return null;
+	}
+
+	public void setShaderParams(ShaderParams params){
+		// TODO: implement me?
+	}
+	
+	@Override
 	public void destroy(){
 		for (int i = 0; i < spriteArray.length; ++i){
 			for (int j = 0; j < spriteArray[i].length; ++j){
@@ -55,6 +68,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		spriteArray = null;
 	}
 	
+	@Override
 	public Color getColor(){
 		return spriteArray[currentState][currentFrame].getColor();
 	}
@@ -63,6 +77,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		return spriteArray[currentState].length * frameDelay;
 	}
 	
+	@Override
 	public Vector2 getSize(){
 		return size;
 	}
@@ -77,6 +92,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		size = spriteArray[currentState][currentFrame].getSize();
 	}
 	
+	@Override
 	public void setColor(Color c){
 		spriteArray[currentState][currentFrame].setColor(c);
 	}
@@ -105,6 +121,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		currentFrame = 0;
 	}
 	
+	@Override
 	public void update(float deltaTime){
 		if (isPaused){
 			return;
@@ -120,6 +137,7 @@ public class SpriteAnimation implements Renderable, Updatable, ICloneable{
 		}
 	}
 	
+	@Override
 	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
 		for (Sprite[] i : spriteArray){
 			for (Sprite j : i){

@@ -1,291 +1,199 @@
 package com.ovl.testing;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-import com.ovl.engine.OverloadEngine;
-import com.ovl.engine.ParamSetter;
-import com.ovl.engine.ParamSetterFactory;
-import com.ovl.engine.Renderer;
-import com.ovl.engine.Shader;
-import com.ovl.engine.Vbo;
 import com.ovl.game.BaseGame;
 import com.ovl.game.GameObject;
 import com.ovl.graphics.Color;
+import com.ovl.graphics.DynamicBatchLayer;
+import com.ovl.graphics.Layer;
 import com.ovl.graphics.Primitive;
-import com.ovl.physics.PhysicsBody.BodyType;
+import com.ovl.graphics.SimpleFont;
+import com.ovl.graphics.SortedLayer;
+import com.ovl.graphics.Sprite;
+import com.ovl.graphics.StaticBatchLayer;
+import com.ovl.graphics.UnsortedLayer;
+import com.ovl.ui.Button;
 import com.ovl.ui.Label;
+import com.ovl.ui.OnClickListener;
+import com.ovl.utils.FastMath;
 import com.ovl.utils.OverloadRandom;
+import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
 
 public class TestGame extends BaseGame {
 	private Primitive highlight;
+	private ArrayList<Vector2> clicks = new ArrayList<Vector2>();
+	
+	Layer unsortedLayer;// = new UnsortedLayer("unsorted", 100);
+	Layer sortedLayer;// = new SortedLayer("sorted", 110);
+	StaticBatchLayer staticBatchLayer;// = new StaticBatchLayer("static", 120);
+	DynamicBatchLayer dynamicBatchLayer;
+	
+	Button showUnsorted;
+	Button showSorted;
+	Button showStatic;
+	Button showDynamic;
 	
 	@Override
 	public void init() {
-		Vector2 prim[] = new Vector2[]{
-			new Vector2(-0.5f, -0.5f),
-			new Vector2(0.0f, 0.5f),
-			new Vector2(0.5f, -0.5f)
-		};
-
-		Primitive p = new Primitive(prim, Renderer.PrimitiveType.Triangles);
-		Renderer r = OverloadEngine.getInstance().renderer;
-		Shader distShader = r.createShader("Dist");
-		Vbo vbo = r.createVbo("Dist", 1024, 3);
-		HashMap<String, ParamSetter> params = new HashMap<String, ParamSetter>();
-		params.put(Shader.U_COLOR, ParamSetterFactory.build(distShader, Shader.U_COLOR, p.getColor()));
-		params.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(distShader, Shader.U_MVPMATRIX));
-		
-		
-		p.useShader(vbo, params);
-		
-		GameObject obj = new GameObject(this);
-		obj.initEntity(BodyType.NON_INTERACTIVE);
-		obj.setSprite(p);
-		addObject(obj);
-		
-		/*{
-		GameObject text = new GameObject(this);
-		text.initEntity(BodyType.NON_INTERACTIVE);
-		text.setSprite(new Sprite(Paths.getResources() + "w.png"));
-		text.setPosition(-0.2f, 0.0f);
-		addObject(text);
-		}
-		
-		{
-		GameObject text = new GameObject(this);
-		text.initEntity(BodyType.NON_INTERACTIVE);
-		text.setSprite(new Sprite(Paths.getResources() + "w.png"));
-		text.setRotation(45.0f);
-		text.setScale(2.0f, 2.0f);
-		addObject(text);
-		}
-		
-		{
-			GameObject text = new GameObject(this);
-		text.initEntity(BodyType.NON_INTERACTIVE);
-		text.setSprite(new Sprite(Paths.getResources() + "w.png"));
-		text.setRotation(90.0f);
-		text.setPosition(0.2f, 0.0f);
-		text.setScale(2.0f, 2.0f);
-		addObject(text);
-		}*/
-		
-		Vector2 lines[] = new Vector2[]{
-			new Vector2(-1.0f, 0.0f),
-			new Vector2(1.0f, 0.0f),
-			new Vector2(0.0f, 1.0f),
-			new Vector2(0.0f, -1.0f)
-		};
-		
-		GameObject lineObj = new GameObject(this);
-		lineObj.initEntity(BodyType.NON_INTERACTIVE);
-		lineObj.setSprite(new Primitive(lines, Renderer.PrimitiveType.Lines));
-		addObject(lineObj);
-		
-		/*{
-			GameObject obj = new GameObject();
-			obj.initEntity(BodyType.NON_INTERACTIVE);
-			obj.setPosition(0.0f, 0.0f);
-			obj.setSprite(new Sprite(Paths.getUI() + "square_yellow.png"));
-			//obj.setColor(new Color(0.0f, 0.0f, 1.0f));
-			addObject(obj);	
-		}*/
-		
-		/*Label l1 = new Label(this, "1"){
-			float t = 0.0f;
-			public void update(float deltaTime) {
-				t += deltaTime;
-				if (t > 0.05f){
-					t = 0.0f;
-					setText("" + Math.random());
-				}
-			};
-		};
-		l1.getSimpleFont().setPosition(-0.5f, 0.0f);
-		addObject(l1);
-		
-		Label l2 = new Label(this, "2");
-		l2.getSimpleFont().setPosition(0.5f, 0.0f);
-		addObject(l2);
-		
-		/*Button btn = new Button(this, "hi");
-		btn.setPosition(-0.25f, -0.25f);
-		addObject(btn);*/
-		
-		/*final CheckBox cb = new CheckBox(this);
-		cb.setText("abc");
-		cb.setPosition(0.25f, 0.25f);
-		addObject(cb);*/
-
-		/*final GameObject obj = new GameObject();
-		obj.initEntity(BodyType.NON_INTERACTIVE);
-		obj.setPosition(-0.30f, -0.30f);
-		obj.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));
-		addObject(obj);
-		
-		Renderer r = OverloadEngine.getInstance().renderer;
-		Shader sh = r.createShader("Blur");
-		Vbo vbo = r.createVbo("Blur", 256, 4);
-		
-		Sprite blurredSprite = new Sprite(Paths.getResources() + "m.png");
-		
-		GameObject blurredObj = new GameObject();
-		blurredObj.initEntity(BodyType.NON_INTERACTIVE);
-		blurredObj.setPosition(0.35f, 0.35f);
-		blurredObj.setSprite(blurredSprite);
-		addObject(blurredObj);
-
-		final Float blurStrength = new Float(0.2f);
-		
-		HashMap<String, ParamSetter> shaderParams = new HashMap<String, ParamSetter>();
-		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(sh, Shader.U_COLOR, blurredSprite.getColor()));
-		shaderParams.put(Shader.U_TEXTURE, ParamSetterFactory.build(sh, Shader.U_TEXTURE, blurredSprite.getTexture()));
-		shaderParams.put("u_BlurStr", ParamSetterFactory.build(sh, "u_BlurStr", blurStrength));
-		shaderParams.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(sh, Shader.U_MVPMATRIX));
-		blurredSprite.useShader(vbo, shaderParams);
-		
-		blurredSprite.updateVertices(new Vector2(0.3f, 0.3f), new Vector2(1.0f, 1.0f), 0.0f);
-		
-		/*GameObject clone1 = obj.clone();
-		clone1.setPosition(1.0f, 0.0f);
-		addObject(clone1);
-		
-		final GameObject clone2 = obj.clone();
-		clone2.setPosition(1.67f, 0.0f);
-		addObject(clone2);*/
-		
-		//primitive vbo test here
-		
-		/*{
-			Vector2[] verts = new Vector2[]{
-							new Vector2(0.7f, -1.0f),
-							new Vector2(1.0f, 1.0f),
-							};
-			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
-			GameObject obj2 = new GameObject();
-			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setSprite(p);
-			obj2.setPosition(1.0f, 1.0f);
-			obj2.setColor(new Color(0.25f, 0.9f, 0.2f));
-			addObject(obj2);
-		}*/
-		/*{
-			Vector2[] verts = new Vector2[]{
-							new Vector2(-1f, 0.4f),
-							new Vector2(0f, 0.4f),
-							};
-			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
-			GameObject obj2 = new GameObject();
-			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setSprite(p);
-			obj2.setPosition(1.0f, 1.0f);
-			obj2.setColor(new Color(0.25f, 0.9f, 0.2f));
-			addObject(obj2);
-		}
-		
-		{
-			Vector2[] verts = new Vector2[]{
-							new Vector2(-0.8f, -0.8f),
-							new Vector2(0f, 0.8f),
-							new Vector2(0.8f, -0.8f),
-							//new Vector2(0.0f, 0.0f)
-							};
-			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Triangles);
-			GameObject obj2 = new GameObject();
-			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setSprite(p);
-			obj2.setPosition(1.0f, 1.0f);
-			obj2.setColor(new Color(0.9f, 0.9f, 0.9f, 0.25f));
-			addObject(obj2);
-		}*/
-		/*{
-			Vector2[] verts = new Vector2[]{
-							//new Vector2(0.85f, 0.8f),
-							//new Vector2(-0.75f, -0.8f),
-							new Vector2(-0.45f, 0.5f),
-							new Vector2(0.55f, -0.5f),
-							};
-			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
-			GameObject obj2 = new GameObject();
-			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setSprite(p);
-			obj2.setPosition(1.0f, 1.0f);
-			obj2.setColor(new Color(0.8f, 0.1f, 0.5f));
-			addObject(obj2);
-		}
-
-		{
-			Vector2[] verts = new Vector2[]{
-							//new Vector2(0.85f, 0.8f),
-							//new Vector2(-0.75f, -0.8f),
-							new Vector2(-0.45f, 0f),
-							new Vector2(0.55f, 0f),
-							};
-			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
-			GameObject obj2 = new GameObject();
-			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setSprite(p);
-			obj2.setPosition(1.0f, 1.0f);
-			obj2.setColor(new Color(0.2f, 0.0f, 0.8f));
-			addObject(obj2);
-		}*/
-		/*{
-			Vector2[] verts = new Vector2[]{new Vector2(0.5f, -0.5f), new Vector2(0.5f, 0.5f)};
-			Primitive p = new Primitive(verts, Renderer.PrimitiveType.Lines);
-			GameObject obj2 = new GameObject();
-			obj2.initEntity(BodyType.NON_INTERACTIVE);
-			obj2.setSprite(p);
-			obj2.setPosition(1.0f, 1.0f);
-			addObject(obj2);
-		}*/
-		
-		
-		/*super.init();
-		
-		{
-			final int size = 80;
-			Vector2 verts[] = new Vector2[size];
-			
-			for (int i = 0; i < 20; i += 1){
-				verts[i * 2] = new Vector2(0, 1.8f - i * 0.2f);
-				verts[i * 2 + 1] = new Vector2(0.2f + i * 0.2f, 2.0f);
-	
-				verts[i * 2 + 40] = new Vector2(0, 0.2f + i * 0.2f);
-				verts[i * 2 + 41] = new Vector2(0.2f + i * 0.2f, 0.0f);
+		showUnsorted = new Button(this, "");
+		showUnsorted.setPosition(-0.7f, 0.8f);
+		showUnsorted.setScale(0.25f, 0.25f);
+		showUnsorted.setClickListener(new OnClickListener(){
+			@Override
+			public void clickFunction(Vector2 pos) {
+				removeLayer(unsortedLayer.getIndex());
+				removeLayer(sortedLayer.getIndex());
+				removeLayer(staticBatchLayer.getIndex());
+				removeLayer(dynamicBatchLayer.getIndex());
+				addLayer(unsortedLayer);
 			}
+		});
+		addObject(showUnsorted);
+		
+		SimpleFont textUnsorted = SimpleFont.create("Unsorted");
+		textUnsorted.setPosition(-0.7f, 0.8f);
+		addObject(textUnsorted);
+		
+		showSorted = new Button(this, "");
+		showSorted.setPosition(-0.7f, 0.6f);
+		showSorted.setScale(0.25f, 0.25f);
+		showSorted.setClickListener(new OnClickListener(){
+			@Override
+			public void clickFunction(Vector2 pos) {
+				removeLayer(unsortedLayer.getIndex());
+				removeLayer(sortedLayer.getIndex());
+				removeLayer(staticBatchLayer.getIndex());
+				removeLayer(dynamicBatchLayer.getIndex());
+				addLayer(sortedLayer);
+			}
+		});
+		addObject(showSorted);
+		
+		SimpleFont textSorted = SimpleFont.create("Sorted");
+		textSorted.setPosition(-0.7f, 0.6f);
+		addObject(textSorted);
+		
+		showStatic = new Button(this, "");
+		showStatic.setPosition(-0.7f, 0.4f);
+		showStatic.setScale(0.25f, 0.25f);
+		showStatic.setClickListener(new OnClickListener(){
+			@Override
+			public void clickFunction(Vector2 pos) {
+				removeLayer(unsortedLayer.getIndex());
+				removeLayer(sortedLayer.getIndex());
+				removeLayer(staticBatchLayer.getIndex());
+				removeLayer(dynamicBatchLayer.getIndex());
+				addLayer(staticBatchLayer);
+			}
+		});
+		addObject(showStatic);
+		
+		SimpleFont textDynamic = SimpleFont.create("Static");
+		textDynamic.setPosition(-0.7f, 0.4f);
+		addObject(textDynamic);
+		
+		showDynamic = new Button(this, "");
+		showDynamic.setPosition(-0.7f, 0.2f);
+		showDynamic.setScale(0.25f, 0.25f);
+		showDynamic.setClickListener(new OnClickListener(){
+			@Override
+			public void clickFunction(Vector2 pos) {
+				removeLayer(unsortedLayer.getIndex());
+				removeLayer(sortedLayer.getIndex());
+				removeLayer(staticBatchLayer.getIndex());
+				removeLayer(dynamicBatchLayer.getIndex());
+				addLayer(dynamicBatchLayer);
+			}
+		});
+		addObject(showDynamic);
+		
+		SimpleFont textStatic = SimpleFont.create("Dynamic");
+		textStatic.setPosition(-0.7f, 0.2f);
+		addObject(textStatic);
+
+		unsortedLayer = new UnsortedLayer("unsorted", 100);
+		sortedLayer = new SortedLayer("sorted", 110);
+		staticBatchLayer = new StaticBatchLayer("static", 120);
+		dynamicBatchLayer = new DynamicBatchLayer("dynamic", 130);
+		
+		addLayer(unsortedLayer);
+		
+		Sprite sheets[] = new Sprite[]{
+			new Sprite(Paths.getResources() + "brick.png"),
+			new Sprite(Paths.getResources() + "brick1.png"),
+			new Sprite(Paths.getResources() + "brick2.png"),
+			new Sprite(Paths.getResources() + "brick3.png"),
+			new Sprite(Paths.getResources() + "brick4.png"),
+			new Sprite(Paths.getResources() + "brick5.png"),
+			new Sprite(Paths.getResources() + "brick6.png"),
+			new Sprite(Paths.getResources() + "catacomb.png"),
+			new Sprite(Paths.getResources() + "crypt.png"),
+			new Sprite(Paths.getResources() + "gallery.png"),
+			new Sprite(Paths.getResources() + "gehena.png"),
+			new Sprite(Paths.getResources() + "hive.png"),
+			new Sprite(Paths.getResources() + "moss.png"),
+			new Sprite(Paths.getResources() + "mucus.png"),
+			new Sprite(Paths.getResources() + "normal.png"),
+			new Sprite(Paths.getResources() + "pandem1.png"),
+			new Sprite(Paths.getResources() + "pandem2.png"),
+			new Sprite(Paths.getResources() + "pandem3.png"),
+			new Sprite(Paths.getResources() + "pandem4.png"),
+			new Sprite(Paths.getResources() + "rock.png"),
+			new Sprite(Paths.getResources() + "tunnel.png"),
+			new Sprite(Paths.getResources() + "pandem6.png"),
+			new Sprite(Paths.getResources() + "q1.png"),
+			new Sprite(Paths.getResources() + "q2.png"),
+			new Sprite(Paths.getResources() + "q3.png"),
+			new Sprite(Paths.getResources() + "q4.png"),
+			new Sprite(Paths.getResources() + "q5.png"),
+			new Sprite(Paths.getResources() + "q6.png"),
+			new Sprite(Paths.getResources() + "q7.png"),
+		};
+		
+		final int numsprites = 21;
+		int x = 0;
+		int y = 0;
+		float xStep = (1.8f / numsprites);
+		float yStep = (2.0f / sheets.length);
+		
+		for (int i = 0; i < numsprites; ++i){
+			x = (i % 8) * 64;
+			y = (i / 8) * 64;
 			
-			Primitive grid = new Primitive(verts, Renderer.PrimitiveType.Lines);
-			
-			GameObject gridObj = new GameObject();
-			gridObj.setSprite(grid);
-			gridObj.initEntity(BodyType.NON_INTERACTIVE);
-			addObject(gridObj);
+			for (int j = 0; j < sheets.length; ++j){
+				final float r2d = FastMath.RAD2DEG;
+				final Vector2 pos = new Vector2(-0.9f + xStep * 0.5f + xStep * i, 1.0f - yStep * 0.4f - yStep * j);
+				GameObject o = new GameObject(this){
+					/*float timeSum = OverloadRandom.nextRandom(1000) * 0.01f;
+					
+					@Override
+					public void update(float deltaTime) {
+						timeSum += deltaTime * 3.0f;
+						setPosition(pos.x, pos.y + FastMath.sinDeg((int)(timeSum * r2d) % 360) * 0.05f);
+					}*/
+				};
+				o.setSprite(Sprite.getSpriteFromSheet(x, y, 64, 64, sheets[j]));
+				o.setPosition(pos);
+				unsortedLayer.addObject(o);
+				sortedLayer.addObject(o);
+				staticBatchLayer.addObject(o);
+				dynamicBatchLayer.addObject(o);
+			}
 		}
 		
-		float hw = 0.1f;
-		
-		Vector2 verts[] = new Vector2[4];
-		verts[0] = new Vector2(1.0f - hw, 1.0f + hw);
-		verts[1] = new Vector2(1.0f, 1.0f + 2 * hw);
-		verts[2] = new Vector2(1.0f + hw, 1.0f + hw);
-		verts[3] = new Vector2(1.0f, 1.0f);
-		
-		highlight = new Primitive(verts, Renderer.PrimitiveType.Quads);
-		
-		GameObject hlObj = new GameObject();
-		hlObj.setSprite(highlight);
-		hlObj.initEntity(BodyType.NON_INTERACTIVE);
-		addObject(hlObj);*/
+		staticBatchLayer.finish();
+		dynamicBatchLayer.finish();
 		
 		/*MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
 		c.setMouseMoveListener(new ControllerEventListener(){
 			@Override
 			public void handleEvent(long eventArg, Vector2 pos, int... params) {
-				//Vector2.pixelCoordsToNormal(pos);
-				/*clampToGrid(pos);
-				highlight(pos);
-				cb.onHover(pos);
+				showUnsorted.onHover(pos);
+				showSorted.onHover(pos);
+				showStatic.onHover(pos);
+				showDynamic.onHover(pos);
 			}
 		});
 		c.addKeybind(0, new ControllerEventListener(){
@@ -293,48 +201,18 @@ public class TestGame extends BaseGame {
 			@Override
 			public void handleEvent(long eventArg, Vector2 pos, int... params) {
 				if (params[0] == 1){
-					cb.onClick(pos);
+					postClick(pos);
 				}
 			}
 			
 		});
 		c.startController();*/
-		
-		/*float w = 0.05f;
-		for (float i = w * 0.5f; i <= 2.0f; i += w){
-			createLetter("a", new Vector2(i, 2.05f + OverloadRandom.nextRandom(200) * 0.001f));
-		}*/
-		
-		/*KeyboardController k = (KeyboardController)ControllerManager.getInstance().getController(Controller.Type.TYPE_KEYBOARD);
-		// LEFT
-		k.addKeybind(203, new ControllerEventListener(){
-			long last = 0;
-			final long delay = 150;
-			
-			@Override
-			public void handleEvent(long eventArg, Vector2 pos, int... params) {
-				long time = System.currentTimeMillis();
-				if (time > last + delay){
-					blurStrength.add(-0.001f);
-					System.out.println("now " + blurStrength);
-				}
-			}
-		});
-		// RIGHT
-		k.addKeybind(205, new ControllerEventListener(){
-			long last = 0;
-			final long delay = 150;
-			
-			@Override
-			public void handleEvent(long eventArg, Vector2 pos, int... params) {
-				long time = System.currentTimeMillis();
-				if (time > last + delay){
-					blurStrength.add(0.001f);
-					System.out.println("now " + blurStrength);
-				}
-			}
-		});
-		k.startController();*/
+	}
+	
+	public void postClick(Vector2 pos){
+		synchronized (clicks){
+			clicks.add(pos);
+		}
 	}
 	
 	void createLetter(String text, Vector2 pos){
@@ -382,6 +260,17 @@ public class TestGame extends BaseGame {
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
+		
+		synchronized (clicks){
+			for (int i = 0; i < clicks.size(); ++i){
+				Vector2 pos = clicks.get(i);
+				showUnsorted.onClick(pos);
+				showSorted.onClick(pos);
+				showStatic.onClick(pos);
+				showDynamic.onClick(pos);
+			}
+			clicks.clear();
+		}
 	}
 	
 	public final Vector2 clampToGrid(Vector2 pos){

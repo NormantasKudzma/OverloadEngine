@@ -83,9 +83,8 @@ public class OverloadEngineAndroid extends OverloadEngine {
 		game.init();
 
 		if (config.isDebug) {
-			/*frameCounter = new DebugFrameCounter();
-			frameCounter.update(deltaTime);
-			frameCounter.render();*/
+			frameCounter = new DebugFrameCounter();
+			game.addObject(frameCounter);
 		}
 	}
 

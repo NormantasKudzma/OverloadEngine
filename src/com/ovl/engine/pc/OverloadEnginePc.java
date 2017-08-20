@@ -14,13 +14,14 @@ import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.ConfigManager;
 import com.ovl.utils.DebugFrameCounter;
-import com.ovl.utils.pc.PhysicsDebugDraw;
+import com.ovl.utils.Vector2;
 
 public class OverloadEnginePc extends OverloadEngine {
 	public OverloadEnginePc(EngineConfig config){
 		super(config);
 	}
 	
+	@Override
 	protected void destroy() {
 		if (game != null){
 			game.destroy();
@@ -30,6 +31,7 @@ public class OverloadEnginePc extends OverloadEngine {
 		AL.destroy();
 	}
 
+	@Override
 	protected void init() {
 		File nativesFolder = null;
 		switch (LWJGLUtil.getPlatform()) {
@@ -58,7 +60,15 @@ public class OverloadEnginePc extends OverloadEngine {
 		Settings.parseConfig(ConfigManager.gameConfiguration);
 		platformAssetsRoot = "";
 		
-		aspectRatio = (float) (1.0f * frameWidth) / frameHeight;
+		aspectRatio = 1.0f * frameWidth / frameHeight;
+		
+		if (referenceHeight <= 0){
+			referenceHeight = frameHeight;
+		}
+		if (referenceWidth <= 0){
+			referenceWidth = frameWidth;
+		}
+		referenceScale = Math.min(1.0f * frameWidth / referenceWidth, 1.0f * frameHeight / referenceHeight);
 		
 		try {
 			Display.setTitle(config.title);
@@ -107,9 +117,11 @@ public class OverloadEnginePc extends OverloadEngine {
 
 		if (config.isDebug) {
 			frameCounter = new DebugFrameCounter();
+			game.addObject(frameCounter);
 		}
 	}
 	
+	@Override
 	protected void loop() {
 		long t0, t1; // Frame start/end time
 		t0 = t1 = System.nanoTime();
@@ -129,17 +141,17 @@ public class OverloadEnginePc extends OverloadEngine {
 			game.render();
 
 			// Render debug things
-			if (config.isDebug) {
+			/*if (config.isDebug) {
 				PhysicsDebugDraw.render();
 
 				frameCounter.update(deltaTime);
 				frameCounter.render();
-			}
+			}*/
 			renderer.postRender();
 
 			//
 			Display.update();
-			Display.sync(config.targetFps);
+			//Display.sync(config.targetFps);
 		}
 	}
 }

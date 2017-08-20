@@ -31,10 +31,15 @@
  */
 package com.ovl.graphics;
 
-import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public abstract class TextureLoader {
+	public enum TexSize {
+		POT,
+		NON_POT;
+	}
+	
 	/** The table of textures that have been loaded in this loader */
 	protected HashMap<String, Texture> table = new HashMap<String, Texture>();
 
@@ -45,25 +50,14 @@ public abstract class TextureLoader {
 
 	}
 
-	/**
-	 * Create a new texture ID
-	 * 
-	 * @return A new texture ID
-	 */
 	protected abstract int createTextureID();
 
-	/**
-	 * Load a texture
-	 * 
-	 * @param resourceName
-	 *            The location of the resource to load
-	 * @return The loaded texture
-	 * @throws IOException
-	 *             Indicates a failure to access the resource
-	 * @throws LWJGLException 
-	 */
 	public abstract Texture getTexture(String resourceName);
+	
+	public abstract Texture createTexture(ByteBuffer buf, int width, int height, TexSize type);
 
+	public abstract ByteBuffer getTextureData(Texture tex);
+	
 	/**
 	 * Get the closest greater power of 2 to the fold number
 	 * 

@@ -4,7 +4,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import com.ovl.controls.Controller;
-import com.ovl.controls.Controller.Type;
 import com.ovl.controls.ControllerEventListener;
 import com.ovl.controls.ControllerKeybind;
 import com.ovl.utils.Vector2;

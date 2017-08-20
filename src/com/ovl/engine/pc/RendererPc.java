@@ -50,12 +50,13 @@ public final class RendererPc extends Renderer {
 		
 		paramSetterBuilders.put(Color.class, new Pair<ParamSetter.Builder<?>, Object>(new ColorParamSetter.Builder(), Color.WHITE));
 		paramSetterBuilders.put(mvpMatrix.getClass(), new Pair<ParamSetter.Builder<?>, Object>(new MatrixParamSetter.Builder(), mvpMatrix));
-		paramSetterBuilders.put(Texture.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TexturePc())));
-		paramSetterBuilders.put(TexturePc.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TexturePc())));
+		paramSetterBuilders.put(Texture.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), (new TexturePc())));
+		paramSetterBuilders.put(TexturePc.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), (new TexturePc())));
 		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new MutableFloatParamSetter.Builder(), new MutableFloat(0.0f)));
 		paramSetterBuilders.put(Float.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.Builder(), new Float(0.0f)));
 	}
 	
+	@Override
 	public Shader createShader(String name){
 		try {
 			Shader shader = new Shader(name);
@@ -79,6 +80,7 @@ public final class RendererPc extends Renderer {
 		return null;
 	}
 	
+	@Override
 	public void init(){
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -89,6 +91,7 @@ public final class RendererPc extends Renderer {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 	}
 
+	@Override
 	protected int compileShader(int type, String shaderCode) {
 		int shader = GL20.glCreateShader(type);
 
@@ -110,16 +113,22 @@ public final class RendererPc extends Renderer {
 		}
 	}
 	
-	protected void prepareShader(Shader shader){
+	protected void useShader(Shader shader){
+		activeShader = shader;
 		GL20.glUseProgram(shader.getProgramId());
+	}
+	
+	protected void bindVbo(Vbo vbo){
+		boundVbo = vbo;
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, boundVbo.getId());
 		
-		for (Shader.Attribute a : shader.getAttributes()){
+		for (Shader.Attribute a : activeShader.getAttributes()){
 			GL20.glVertexAttribPointer(a.id, a.size, GL11.GL_FLOAT, false, boundVbo.getStride(), a.offset);
 			GL20.glEnableVertexAttribArray(a.id);
 		}
 	}
 	
+	@Override
 	public void postRender(){
 		// Disable vertex array
 		/*if (activeShader != null){
@@ -252,6 +261,7 @@ public final class RendererPc extends Renderer {
 		return 0;
 	}
 	
+	@Override
 	public void preRender(){
 		for (Vbo vbo : vbos){
 			if (vbo.isModified()){
@@ -266,35 +276,54 @@ public final class RendererPc extends Renderer {
 	}
 	
 	protected void prepareMvpMatrix(){
+		OverloadEngine engine = OverloadEngine.getInstance();
+		
 		Matrix4f mvp = new Matrix4f();
-		mvp.m00 = 2.0f / OverloadEngine.getInstance().aspectRatio;
+		mvp.m00 = 2.0f / engine.aspectRatio;
 				
 		mvpMatrix.clear();
 		mvp.store(mvpMatrix);
 		mvpMatrix.rewind();
 	}
 	
-	public void render(ShaderParams vboId, PrimitiveType mode){
+	private void setParams(ShaderParams vboId){
+		if (activeShader != vboId.getVbo().getShader()){
+			useShader(vboId.getVbo().getShader());
+		}
+		
 		if (boundVbo != vboId.getVbo())
 		{
-			boundVbo = vboId.getVbo();
-			activeShader = boundVbo.getShader();
-			prepareShader(activeShader);
+			bindVbo(vboId.getVbo());
 		}
 		
 		for (ParamSetter paramSetter : vboId.getParams().values()){
 			paramSetter.setParam();
 		}
-		
-		GL11.glDrawArrays(primitiveModes[mode.getIndex()], vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
+	}
+	
+	@Override
+	public void render(ShaderParams vboId, PrimitiveType mode){
+		render(vboId, mode, vboId.getIndex() * vboId.getVbo().getVertexCount(), vboId.getVbo().getVertexCount());
+	}
+	
+	public void render(ShaderParams vboId, PrimitiveType mode, int offset, int count){
+		setParams(vboId);
+		GL11.glDrawArrays(primitiveModes[mode.getIndex()], offset, count);
+	}
+	
+	public void renderIndexed(ShaderParams vboId, PrimitiveType mode, ByteBuffer indices, int count){
+		setParams(vboId);
+		GL11.glDrawElements(primitiveModes[mode.getIndex()], count, GL11.GL_UNSIGNED_SHORT, indices);
 	}
 
+	@Override
 	public void deleteVbo(ShaderParams vboId){
 		Vbo vbo = vboId.getVbo();
 		GL15.glDeleteBuffers(vbo.getId());
 		vbos.remove(vbo);
 	}
 	
+	@Override
 	protected void initVbo(Vbo vbo){
 		IntBuffer buffer = BufferUtils.createIntBuffer(1);
 		GL15.glGenBuffers(buffer);

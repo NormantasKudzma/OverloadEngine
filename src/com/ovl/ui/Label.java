@@ -33,6 +33,7 @@ public class Label extends Component {
 		font.setText(text);
 	}
 	
+	@Override
 	public void setColor(Color c){
 		font.setColor(c);
 	}

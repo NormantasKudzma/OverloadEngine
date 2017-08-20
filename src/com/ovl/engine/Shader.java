@@ -54,8 +54,8 @@ public class Shader {
 	
 	public Shader(String name){
 		resourceName = name;
-		uniforms = new ArrayList<>();
-		attributes = new ArrayList<>();
+		uniforms = new ArrayList<Uniform>();
+		attributes = new ArrayList<Attribute>();
 	}
 	
 	public String getVSCode(){

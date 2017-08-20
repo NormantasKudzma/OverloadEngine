@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.ovl.game.BaseGame;
 import com.ovl.utils.DebugFrameCounter;
+import com.ovl.utils.Vector2;
 
 public abstract class OverloadEngine {
 	public enum EnginePlatform {
@@ -17,10 +18,12 @@ public abstract class OverloadEngine {
 	
 	protected enum Settings {
 		framewidth {
+			@Override
 			public String get(){
 				return "" + engine.frameWidth;
 			}
 			
+			@Override
 			public void set(String value) {
 				try {
 					engine.frameWidth = Integer.parseInt(value);
@@ -31,10 +34,12 @@ public abstract class OverloadEngine {
 			}
 		},
 		frameheight {
+			@Override
 			public String get() {
 				return "" + engine.frameHeight;
 			}
 			
+			@Override
 			public void set(String value) {
 				try {
 					engine.frameHeight = Integer.parseInt(value);
@@ -75,8 +80,40 @@ public abstract class OverloadEngine {
 					e.printStackTrace();
 				}
 			}
+		},
+		referencewidth {
+			@Override
+			public String get() {
+				return "" + engine.referenceWidth;
+			}
+			
+			@Override
+			public void set(String value) {
+				try {
+					engine.referenceWidth = Integer.parseInt(value);
+				}
+				catch (Exception e){
+					e.printStackTrace();
+				}
+			}
+		},
+		referenceheight {
+			@Override
+			public String get() {
+				return "" + engine.referenceHeight;
+			}
+			
+			@Override
+			public void set(String value) {
+				try {
+					engine.referenceHeight = Integer.parseInt(value);
+				}
+				catch (Exception e){
+					e.printStackTrace();
+				}
+			}
 		};
-
+		
 		public static OverloadEngine engine;
 		
 		public abstract String get();
@@ -113,6 +150,8 @@ public abstract class OverloadEngine {
 	
 	public Renderer renderer;
 	public int frameWidth, frameHeight;
+	public int referenceWidth, referenceHeight;
+	public float referenceScale;
 	public float aspectRatio;
 	public boolean isFullScreen = true;
 

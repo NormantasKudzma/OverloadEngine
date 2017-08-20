@@ -11,6 +11,7 @@ public class Symbol implements Cloneable {
 		this.offset = offset;
 	}
 
+	@Override
 	public Symbol clone(){
 		Symbol clone = new Symbol(sprite.clone(), offset.copy());
 		return clone;

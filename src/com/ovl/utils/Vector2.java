@@ -201,6 +201,16 @@ public final class Vector2 {
 		return toVec2(this);
 	}
 	
+	public Vector2 pixelToNormal(){
+		final OverloadEngine engine = OverloadEngine.getInstance();
+		return mul(engine.aspectRatio / engine.frameWidth, 2.0f / engine.frameHeight).mul(engine.referenceScale);
+	}
+	
+	public Vector2 normalToPixel(){
+		final OverloadEngine engine = OverloadEngine.getInstance();
+		return mul(engine.frameWidth, engine.frameHeight).div(engine.aspectRatio, 2.0f).div(engine.referenceScale);
+	}
+	
 	public static Vector2 add(Vector2 i, Vector2 j){
 		return new Vector2(i.x + j.x, i.y + j.y);
 	}
@@ -257,7 +267,7 @@ public final class Vector2 {
 		/*i.mul(2.0f)
 		 .div(engine.frameHeight, engine.frameWidth)
 		 .div(engine.aspectRatio, 1.0f / engine.aspectRatio);*/
-		i.mul(engine.aspectRatio / engine.frameWidth, 2.0f / engine.frameHeight);
+		i.mul(engine.aspectRatio / engine.frameWidth, 2.0f / engine.frameHeight).mul(engine.referenceScale);
 		return i;
 	}
 	

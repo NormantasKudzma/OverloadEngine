@@ -7,6 +7,7 @@ import com.ovl.graphics.Renderable;
 import com.ovl.physics.Collidable;
 import com.ovl.physics.PhysicsBody;
 import com.ovl.physics.PhysicsWorld;
+import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
@@ -27,6 +28,7 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 	
 	public GameObject(BaseGame game) {
 		this.game = game;
+		initEntity(BodyType.NON_INTERACTIVE);
 	}
 
 	public void applyForce(Vector2 dir) {
@@ -37,6 +39,7 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 		body.applyImpulse(dir);
 	}
 
+	@Override
 	public GameObject clone(){
 		GameObject clone = null;
 		try {
@@ -127,9 +130,10 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 	}
 
 	public void initEntity(PhysicsBody.BodyType type) {
-		if (body == null){
-			body = PhysicsWorld.getInstance().getNewBody(type, this);
+		if (body != null){
+			body.destroyBody();
 		}
+		body = PhysicsWorld.getInstance().getNewBody(type, this);
 	}
 
 	public boolean isDestroyed() {
@@ -226,6 +230,7 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 		this.isVisible = isVisible;
 	}
 
+	@Override
 	public void update(float deltaTime) {
 		if (spriteUpdatable != null) {
 			spriteUpdatable.update(deltaTime);

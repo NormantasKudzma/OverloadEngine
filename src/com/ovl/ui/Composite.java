@@ -79,6 +79,7 @@ public class Composite extends Component {
 		}
 	}
 	
+	@Override
 	public void setPosition(Vector2 pos){
 		Vector2 delta = pos.copy().sub(getPosition());
 		for (Component component : children){
@@ -87,6 +88,7 @@ public class Composite extends Component {
 		super.setPosition(pos.x, pos.y);
 	}
 	
+	@Override
 	public void setPosition(float x, float y){	
 		setPosition(new Vector2(x, y));
 	}

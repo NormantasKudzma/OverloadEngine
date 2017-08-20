@@ -1,12 +1,10 @@
 package com.ovl.graphics.pc;
 
-import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
@@ -14,6 +12,7 @@ import static org.lwjgl.opengl.GL11.glTexParameteri;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -66,12 +65,12 @@ public class TextureLoaderPc extends TextureLoader {
 	public TextureLoaderPc() {
 		glAlphaColorModel = new ComponentColorModel(
 				ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] { 8, 8,
-						8, 8 }, true, false, ComponentColorModel.TRANSLUCENT,
+						8, 8 }, true, false, Transparency.TRANSLUCENT,
 				DataBuffer.TYPE_BYTE);
 
 		glColorModel = new ComponentColorModel(
 				ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] { 8, 8,
-						8, 0 }, false, false, ComponentColorModel.OPAQUE,
+						8, 0 }, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
 	}
 
@@ -80,11 +79,13 @@ public class TextureLoaderPc extends TextureLoader {
 	 * 
 	 * @return A new texture ID
 	 */
+	@Override
 	protected int createTextureID() {
 		glGenTextures(textureIDBuffer);
 		return textureIDBuffer.get(0);
 	}
 
+	@Override
 	public Texture getTexture(String resourceName){
 		Texture tex = table.get(resourceName);
 
@@ -101,37 +102,55 @@ public class TextureLoaderPc extends TextureLoader {
 	}
 	
 	public Texture getTexture(BufferedImage bufferedImage){
-		int srcPixelFormat = -1;
+		// convert that image into a byte buffer of texture data
+		ByteBuffer buf = convertImageData(bufferedImage);
+		return createTexture(buf, bufferedImage.getWidth(), bufferedImage.getHeight(), TexSize.POT);
+	}
+	
+	@Override
+	public Texture createTexture(ByteBuffer buf, int width, int height, TexSize type) {
 		int textureID = createTextureID();
 		Texture texture = new TexturePc(textureID);
 
-		// bind this texture
-		glBindTexture(GL_TEXTURE_2D, textureID);
+		texture.bind();
 
-		texture.setWidth(bufferedImage.getWidth());
-		texture.setHeight(bufferedImage.getHeight());
+		texture.setWidth(width);
+		texture.setHeight(height);
 
-		if (bufferedImage.getColorModel().hasAlpha()) {
-			srcPixelFormat = GL_RGBA;
-		} else {
-			srcPixelFormat = GL_RGB;
-		}
-
-		// convert that image into a byte buffer of texture data
-		ByteBuffer textureBuffer = convertImageData(bufferedImage, texture);
+		int texWidth = type == TexSize.POT ? get2Fold(width) : width;
+		int texHeight = type == TexSize.POT ? get2Fold(height) : height;
+		texture.setTextureWidth(texWidth);
+		texture.setTextureHeight(texHeight);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
 		// produce a texture from the byte buffer
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-				get2Fold(bufferedImage.getWidth()),
-				get2Fold(bufferedImage.getHeight()), 0, srcPixelFormat,
-				GL_UNSIGNED_BYTE, textureBuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
 
 		return texture;
 	}
 
+	public ByteBuffer getTextureData(Texture tex){
+		tex.bind();
+
+		int tw = (int)(tex.getImageWidth() / tex.getWidth());
+		int th = (int)(tex.getImageHeight() / tex.getHeight());
+		ByteBuffer buf = ByteBuffer.allocateDirect(tw * th * 4).order(ByteOrder.nativeOrder());
+		
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+		GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
+		buf.rewind();
+		
+		int glerr = GL11.glGetError();
+		if (glerr != GL11.GL_NO_ERROR){
+			System.err.println("GL err! " + glerr);
+			return null;
+		}
+		
+		return buf;
+	}
+	
 	/**
 	 * Convert the buffered image to a texture
 	 * 
@@ -141,16 +160,13 @@ public class TextureLoaderPc extends TextureLoader {
 	 *            The texture to store the data into
 	 * @return A buffer containing the data
 	 */
-	private ByteBuffer convertImageData(BufferedImage bufferedImage, Texture texture) {
+	private ByteBuffer convertImageData(BufferedImage bufferedImage) {
 		ByteBuffer imageBuffer;
 		WritableRaster raster;
 		BufferedImage texImage;
 
 		int texWidth = get2Fold(bufferedImage.getWidth());
 		int texHeight = get2Fold(bufferedImage.getHeight());
-
-		texture.setTextureHeight(texHeight);
-		texture.setTextureWidth(texWidth);
 
 		// create a raster that can be used by OpenGL as a source
 		// for a texture
@@ -205,4 +221,6 @@ public class TextureLoaderPc extends TextureLoader {
 
 		return bufferedImage;
 	}
+
+
 }

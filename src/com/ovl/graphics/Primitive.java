@@ -40,7 +40,7 @@ public class Primitive implements Renderable {
 	}
 
 	private void init(){
-		HashMap<String, ParamSetter> shaderParams = new HashMap<>();
+		HashMap<String, ParamSetter> shaderParams = new HashMap<String, ParamSetter>();
 		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(defaultShader, Shader.U_COLOR, color));
 		shaderParams.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(defaultShader, Shader.U_MVPMATRIX));
 
@@ -48,6 +48,7 @@ public class Primitive implements Renderable {
 		useShader(vbo, shaderParams);	
 	}
 	
+	@Override
 	public void useShader(Vbo vbo, HashMap<String, ParamSetter> params){
 		if (id != null){
 			renderer.releaseId(id);
@@ -59,6 +60,17 @@ public class Primitive implements Renderable {
 			id.addParam(kv.getKey(), kv.getValue());
 		}
 		refreshVertexData();
+	}
+	
+	public ShaderParams getShaderParams(){
+		return id;
+	}
+	
+	public void setShaderParams(ShaderParams params){
+		if (id != null){
+			renderer.releaseId(id);
+		}
+		id = params;
 	}
 	
 	@Override
@@ -114,6 +126,7 @@ public class Primitive implements Renderable {
 	}
 	
 	// TODO: implement
+	@Override
 	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
 		refreshVertexData();
 	}

@@ -1,17 +1,30 @@
 package com.ovl.utils;
 
+import com.ovl.engine.Renderer;
+import com.ovl.graphics.Color;
+import com.ovl.graphics.Primitive;
 import com.ovl.physics.PhysicsBody.BodyType;
 import com.ovl.ui.Label;
 
 public class DebugFrameCounter extends Label{
-	private boolean isFirstFrame = true;
-	private float debugTime = 0;
 	private float fpsTextUpdate = 0.0f;
-	private float numFrames = 0;
+	private int frame = 0;
+	private final float textUpdate = 0.5f;
+	
+	private final int max = 120;
+	private float frameTimeSum = 0.0f;
+	private float frameTimes[] = new float[max];
+	private Vector2 verts[] = new Vector2[max * 6];
+	private Primitive bar;
 
 	public DebugFrameCounter(){
-		super(null, "00");
+		super(null, "-");
 		getSimpleFont().setPosition(-0.72f, -0.9f);
+		for (int i = 0; i < verts.length; ++i){
+			verts[i] = new Vector2();
+		}
+		bar = new Primitive(verts, Renderer.PrimitiveType.Triangles);
+		bar.setColor(new Color(0.8f, 0.8f, 0.0f));
 	}
 	
 	@Override
@@ -21,22 +34,26 @@ public class DebugFrameCounter extends Label{
 	
 	@Override
 	public void update(float deltaTime) {
-		if (!isFirstFrame){
-			numFrames++;
-			debugTime += deltaTime;
-			fpsTextUpdate += deltaTime;
-			
-			// Only set text every once in a while (text is expensive)
-			if (fpsTextUpdate > 0.5f){
-				setText((int)(numFrames / debugTime) + " fps");
-				fpsTextUpdate = 0.0f;
-				numFrames = 0.0f;
-				debugTime = 0.0f;
-			}
+		fpsTextUpdate += deltaTime;
+		
+		// Only set text every once in a while (text is expensive)
+		if (fpsTextUpdate > textUpdate){
+			setText(String.format("%2.2f ms", 1000.0f * frameTimeSum / max));
+			fpsTextUpdate -= textUpdate;
 		}
 		
-		if (isFirstFrame){
-			isFirstFrame = false;
+		frameTimeSum -= frameTimes[frame];
+		frameTimeSum += deltaTime;
+		frameTimes[frame] = deltaTime;
+		/*System.arraycopy(verts, 6, verts, 0, verts.length - 6);*/
+		if (++frame >= max){
+			frame = 0;
 		}
+	}
+	
+	@Override
+	public void render() {
+		super.render();
+		/*bar.render();*/
 	}
 }

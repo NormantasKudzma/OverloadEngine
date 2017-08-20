@@ -3,7 +3,6 @@ package com.ovl.controls.pc;
 import org.lwjgl.input.Keyboard;
 
 import com.ovl.controls.Controller;
-import com.ovl.controls.Controller.Type;
 import com.ovl.controls.ControllerKeybind;
 
 public class KeyboardController extends Controller {
@@ -12,6 +11,7 @@ public class KeyboardController extends Controller {
 		type = Type.TYPE_KEYBOARD;
 	}
 
+	@Override
 	public void pollController() {
 		if (!isActive()){
 			return;

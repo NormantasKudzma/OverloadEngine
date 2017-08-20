@@ -10,14 +10,13 @@ import com.ovl.engine.Renderer;
 import com.ovl.engine.Shader;
 import com.ovl.engine.ShaderParams;
 import com.ovl.engine.Vbo;
-import com.ovl.utils.FastMath;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
 public class Sprite implements Renderable, ICloneable {
 	protected static final Renderer renderer;
-	protected static final String defaultShaderName;
-	protected static final Shader defaultShader;
+	public static final String defaultShaderName;
+	public static final Shader defaultShader;
 	protected static final Vbo defaultVbo;
 	
 	private Texture texture;						// Sprite's texture
@@ -60,6 +59,7 @@ public class Sprite implements Renderable, ICloneable {
 		setTextureCoordinates(tl, br);
 	}
 	
+	@Override
 	public Sprite clone(){
 		Sprite clone = new Sprite();
 		clone.init();
@@ -69,6 +69,7 @@ public class Sprite implements Renderable, ICloneable {
 		return clone;
 	}
 	
+	@Override
 	public void destroy(){
 		renderer.releaseId(id);
 		id = null;
@@ -78,6 +79,7 @@ public class Sprite implements Renderable, ICloneable {
 		textureSize = null;
 	}
 	
+	@Override
 	public Color getColor(){
 		return color;
 	}
@@ -86,6 +88,7 @@ public class Sprite implements Renderable, ICloneable {
 		return textureSize.copy();
 	}
 	
+	@Override
 	public Vector2 getSize(){
 		return textureSize.copy();
 	}
@@ -114,7 +117,7 @@ public class Sprite implements Renderable, ICloneable {
 			verts[i] = new Vector2();
 		}
 		
-		HashMap<String, ParamSetter> shaderParams = new HashMap<>();
+		HashMap<String, ParamSetter> shaderParams = new HashMap<String, ParamSetter>();
 		shaderParams.put(Shader.U_COLOR, ParamSetterFactory.build(defaultShader, Shader.U_COLOR, color));
 		shaderParams.put(Shader.U_TEXTURE, ParamSetterFactory.build(defaultShader, Shader.U_TEXTURE, texture));
 		shaderParams.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(defaultShader, Shader.U_MVPMATRIX));
@@ -122,6 +125,7 @@ public class Sprite implements Renderable, ICloneable {
 		useShader(defaultVbo, shaderParams);	
 	}
 	
+	@Override
 	public void useShader(Vbo vbo, HashMap<String, ParamSetter> params){
 		if (id != null){
 			renderer.releaseId(id);
@@ -136,6 +140,18 @@ public class Sprite implements Renderable, ICloneable {
 		if (texTopLeft != null && texBotRight != null){
 			renderer.setTextureData(id, texTopLeft, texBotRight);
 		}
+		renderer.setVertexData(id, verts);
+	}
+	
+	public ShaderParams getShaderParams(){
+		return id;
+	}
+	
+	public void setShaderParams(ShaderParams params){
+		if (id != null){
+			renderer.releaseId(id);
+		}
+		id = params;
 	}
 	
 	public void loadTexture(String path){
@@ -147,6 +163,7 @@ public class Sprite implements Renderable, ICloneable {
 		renderer.render(id, Renderer.PrimitiveType.TriangleStrip);
 	}
 	
+	@Override
 	public void setColor(Color c){
 		color.set(c);
 	}
@@ -170,13 +187,23 @@ public class Sprite implements Renderable, ICloneable {
 		setTextureSize(texture.getImageWidth(), texture.getImageHeight());
 	}
 	
-	public void setTextureSize(int w, int h){
-		textureSize.set(w, h);
-		Vector2.pixelCoordsToNormal(textureSize);
+	public Vector2[] getTexCoords(){
+		return new Vector2[]{
+			texTopLeft,
+			texBotRight
+		};
 	}
 	
-	public void updateVertices(Vector2 pos, Vector2 scale, float angle)
-	{		
+	public Vector2[] getVerts(){
+		return verts;
+	}
+	
+	public void setTextureSize(int w, int h){
+		textureSize.set(w, h).pixelToNormal();
+	}
+	
+	@Override
+	public void updateVertices(Vector2 pos, Vector2 scale, float angle){		
 		Vector2 halfSize = textureSize.copy().mul(0.5f);
 		verts[0].set(-halfSize.x, -halfSize.y).mul(scale);
 		verts[1].set(-halfSize.x, halfSize.y).mul(scale);

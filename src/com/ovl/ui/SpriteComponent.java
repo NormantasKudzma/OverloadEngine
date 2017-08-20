@@ -59,6 +59,7 @@ public class SpriteComponent extends Composite{
 		}
 	}
 	
+	@Override
 	protected void hoverStarted(){
 		if (!isHoveredOver){
 			setHovered(true);
@@ -119,6 +120,7 @@ public class SpriteComponent extends Composite{
 		setState(EUIState.NORMAL);
 	}
 
+	@Override
 	public void setPosition(Vector2 pos){
 		super.setPosition(pos);
 		if (sprites != null){

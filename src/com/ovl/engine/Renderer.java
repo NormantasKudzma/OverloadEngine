@@ -1,5 +1,6 @@
 package com.ovl.engine;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -54,7 +55,7 @@ public abstract class Renderer {
 	protected Vbo textureVbo;
 	protected Vbo boundVbo;
 	
-	protected HashMap<Class<?>, Pair<ParamSetter.Builder<?>, Object>> paramSetterBuilders = new HashMap<>();
+	protected HashMap<Class<?>, Pair<ParamSetter.Builder<?>, Object>> paramSetterBuilders = new HashMap<Class<?>, Pair<ParamSetter.Builder<?>, Object>>();
 	protected HashMap<String, Shader> shaders = new HashMap<String, Shader>();
 	protected Shader activeShader = null;
 	
@@ -81,6 +82,10 @@ public abstract class Renderer {
 	
 	public abstract void render(ShaderParams vboId, PrimitiveType mode);
 	
+	public abstract void render(ShaderParams vboId, PrimitiveType mode, int offset, int count);
+	
+	public abstract void renderIndexed(ShaderParams vboId, PrimitiveType mode, ByteBuffer indices, int count);
+	
 	public void setTextureData(ShaderParams vboId, Vector2 tl, Vector2 br){
 		Vbo vbo = vboId.vbo;
 		
@@ -101,7 +106,7 @@ public abstract class Renderer {
 	public void setVertexData(ShaderParams vboId, Vector2[] v){
 		Vbo vbo = vboId.vbo;
 		
-		if (vboId.index < 0 || vboId.index >= vbo.getSize()){
+		if (v == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
 			return;
 		}
 		

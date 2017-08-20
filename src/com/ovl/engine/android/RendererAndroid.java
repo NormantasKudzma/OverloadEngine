@@ -1,5 +1,6 @@
 package com.ovl.engine.android;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import android.opengl.GLES20;
@@ -53,12 +54,9 @@ public final class RendererAndroid extends Renderer {
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-
-		/*Matrix.setLookAtM(mvpMatrix, 0, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
-		Matrix.translateM(mvpMatrix, 0, -1.0f, -1.0f, 0.0f);*/
 		
 		Matrix.setIdentityM(mvpMatrix.matrixImpl, 0);
-		//mvpMatrix.matrixImpl[0] = 2.0f / OverloadEngine.getInstance().aspectRatio;
+		mvpMatrix.matrixImpl[0] = 2.0f / OverloadEngine.getInstance().aspectRatio;
 	}
 
 	protected void loadProgramInfo(Shader shader){
@@ -209,11 +207,16 @@ public final class RendererAndroid extends Renderer {
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);	
 	}
 	
-	protected void prepareShader(Shader shader){
+	protected void useShader(Shader shader){
+		activeShader = shader;
 		GLES20.glUseProgram(shader.getProgramId());
+	}
+	
+	protected void bindVbo(Vbo vbo){
+		boundVbo = vbo;
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, boundVbo.getId());
 		
-		for (Shader.Attribute a : shader.getAttributes()){
+		for (Shader.Attribute a : activeShader.getAttributes()){
 			GLES20.glVertexAttribPointer(a.id, a.size, GLES20.GL_FLOAT, false, boundVbo.getStride(), a.offset);
 			GLES20.glEnableVertexAttribArray(a.id);
 		}
@@ -225,33 +228,37 @@ public final class RendererAndroid extends Renderer {
 		}
 	}
 
-	/*protected void prepareRenderMatrix(Vector2 position, Vector2 scale, float rotation){
-		Matrix.setIdentityM(renderMatrix.matrixImpl, 0);
-
-		//Matrix.translateM(renderMatrix, 0, -size.x, -size.y, 0.0f);
-		Matrix.translateM(renderMatrix.matrixImpl, 0, position.x, position.y, 0.0f);
-		Matrix.scaleM(renderMatrix.matrixImpl, 0, scale.x, scale.y, 1.0f);
+	private void setParams(ShaderParams vboId){
+		if (activeShader != vboId.getVbo().getShader()){
+			useShader(vboId.getVbo().getShader());
+		}
 		
-		// android gets no rotation either, kek kek
-		Matrix.multiplyMM(renderMatrix.matrixImpl, 0, mvpMatrix.matrixImpl, 0, renderMatrix.matrixImpl, 0);
-	}*/
-	
-	@Override
-	public void render(ShaderParams vboId, PrimitiveType mode){
 		if (boundVbo != vboId.getVbo())
 		{
-			boundVbo = vboId.getVbo();
-			activeShader = boundVbo.getShader();
-			prepareShader(activeShader);
+			bindVbo(vboId.getVbo());
 		}
 		
 		for (ParamSetter paramSetter : vboId.getParams().values()){
 			paramSetter.setParam();
 		}
-		
-		GLES20.glDrawArrays(primitiveModes[mode.getIndex()], vboId.getIndex() * boundVbo.getVertexCount(), boundVbo.getVertexCount());
 	}
-
+	
+	@Override
+	public void render(ShaderParams vboId, PrimitiveType mode){
+		render(vboId, mode, vboId.getIndex() * vboId.getVbo().getVertexCount(), vboId.getVbo().getVertexCount());
+	}
+	
+	public void render(ShaderParams vboId, PrimitiveType mode, int offset, int count){
+		setParams(vboId);
+		GLES20.glDrawArrays(primitiveModes[mode.getIndex()], offset, count);
+	}
+	
+	@Override
+	public void renderIndexed(ShaderParams vboId, PrimitiveType mode, ByteBuffer indices, int count) {
+		setParams(vboId);
+		GLES20.glDrawElements(primitiveModes[mode.getIndex()], count, GLES20.GL_UNSIGNED_BYTE, indices);
+	}
+	
 	@Override
 	protected int compileShader(int type, String shaderCode) {
 		int shader = GLES20.glCreateShader(type);
@@ -285,4 +292,5 @@ public final class RendererAndroid extends Renderer {
 		vbo.setId(buffer.get(0));
 		vbos.add(vbo);
 	}
+
 }

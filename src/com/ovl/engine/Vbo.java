@@ -67,7 +67,7 @@ public class Vbo {
 	}
 	
 	public int getSize(){
-		return nextId;
+		return bufferSize / objectSize;
 	}
 	
 	public int getCapacity(){

@@ -36,10 +36,12 @@ public class SimpleFontPc extends SimpleFont {
 		measureGraphics.dispose();
 	}
 	
+	@Override
 	public CustomFont getFont(){
 		return font;
 	}
 	
+	@Override
 	protected void initBufferedImage(int w, int h){
 		bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		measureGraphics = (Graphics2D)bufferedImage.getGraphics();
@@ -50,6 +52,7 @@ public class SimpleFontPc extends SimpleFont {
 		measureGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	}
 	
+	@Override
 	protected void prerenderText(){
 		if (text == null || text.isEmpty()){
 			return;
@@ -98,6 +101,7 @@ public class SimpleFontPc extends SimpleFont {
 		}
 	}
 	
+	@Override
 	public void setFont(CustomFont f){
 		if (font != null && f.equals(font)){
 			return;

@@ -65,6 +65,7 @@ public class UsbController extends Controller {
 		return productVendor;
 	}
 
+	@Override
 	public boolean startController() {
 		if (isActive() || !super.startController()){
 			return false;
@@ -98,6 +99,7 @@ public class UsbController extends Controller {
 		return true;
 	}
 
+	@Override
 	protected void destroyController() {
 		stopController();
 		
@@ -121,6 +123,7 @@ public class UsbController extends Controller {
 		super.destroyController();
 	}
 
+	@Override
 	public void pollController() {
 		if (!isActive()){
 			return;

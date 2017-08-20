@@ -2,12 +2,11 @@ package com.ovl.graphics.pc;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
 
 import com.ovl.graphics.Texture;
 
 public class TexturePc extends Texture {
-	static final int boundTextures[] = new int[GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS];
+	static final int boundTextures[] = new int[64 /*GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS*/];
 	
 	public TexturePc(){
 		super();

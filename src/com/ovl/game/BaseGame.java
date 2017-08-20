@@ -3,6 +3,7 @@ package com.ovl.game;
 import java.util.ArrayList;
 
 import com.ovl.graphics.Layer;
+import com.ovl.graphics.UnsortedLayer;
 import com.ovl.physics.PhysicsWorld;
 import com.ovl.ui.BaseDialog;
 import com.ovl.utils.Vector2;
@@ -25,7 +26,7 @@ public class BaseGame implements Updatable {
 		layers = new ArrayList<Layer>();
 		physicsWorld = PhysicsWorld.getInstance();
 		
-		layers.add(new Layer(Layer.DEFAULT_NAME, Layer.DEFAULT_INDEX));
+		layers.add(new UnsortedLayer(Layer.DEFAULT_NAME, Layer.DEFAULT_INDEX));
 	}
 
 	public void addDialog(BaseDialog d){
@@ -64,10 +65,10 @@ public class BaseGame implements Updatable {
 	}
 	
 	public void addLayer(String layerName, int index){
-		addLayer(new Layer(layerName, index));
+		addLayer(new UnsortedLayer(layerName, index));
 	}
 	
-	public void clearLayer(Layer l){
+	public void clearLayer(UnsortedLayer l){
 		clearLayer(l.getName());
 	}
 	
@@ -261,6 +262,7 @@ public class BaseGame implements Updatable {
 	 * 
 	 * @param deltaTime - time that has passed since last frame (in seconds)
 	 */
+	@Override
 	public void update(float deltaTime) {
 		/*if (soundManager != null){
 			soundManager.update(deltaTime);
@@ -287,11 +289,8 @@ public class BaseGame implements Updatable {
 		}
 
 		// Update all entities
-		Layer layer = null;
 		for (int i = 0; i < layers.size(); i++) {
-			layer = layers.get(i);
-			layer.update(deltaTime);
-			layer.destroyMarkedObjects();
+			layers.get(i).update(deltaTime);
 		}
 	}
 

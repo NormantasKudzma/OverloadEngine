@@ -27,6 +27,7 @@ public class Transform {
 		rotation += t.rotation;
 	}
 	
+	@Override
 	public Transform clone(){
 		return new Transform(this);
 	}
