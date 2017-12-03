@@ -11,7 +11,7 @@ import com.ovl.utils.Pair;
 import com.ovl.utils.Vector2;
 
 public abstract class Renderer {
-	public enum PrimitiveType {
+	public static enum PrimitiveType {
 		Lines(0),
 		LineStrip(1),
 		LineLoop(2),

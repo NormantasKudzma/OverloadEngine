@@ -24,7 +24,7 @@ public class PhysicsBody {
 	 * 	Internal type of PhysicsBody. Not to be confused with org.jbox2d.dynamics.BodyType,
 	 * 	which marks type for box2d body.
 	 */
-	public enum BodyType {
+	public static enum BodyType {
 		/** 
 		* 	This type marks a physics body, which will not interact with the world. 
 		* 	Created physics body will not have a box2d body attached to it.
@@ -38,7 +38,7 @@ public class PhysicsBody {
 		INTERACTIVE
 	}
 	
-	public enum MaskType {
+	public static enum MaskType {
 		EXCLUDE,
 		INCLUDE,
 		SET,

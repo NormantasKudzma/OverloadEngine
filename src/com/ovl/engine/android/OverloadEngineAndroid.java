@@ -31,6 +31,15 @@ public class OverloadEngineAndroid extends OverloadEngine {
 			frameHeight = h;
 			frameWidth = w;
 			aspectRatio = 1.0f * w / h;
+			
+			if (referenceHeight <= 0){
+				referenceHeight = frameHeight;
+			}
+			if (referenceWidth <= 0){
+				referenceWidth = frameWidth;
+			}
+			referenceScale = Math.min(1.0f * frameWidth / referenceWidth, 1.0f * frameHeight / referenceHeight);
+			
 			t0 = t1 = System.nanoTime();
 			
 			if (!isRunning){

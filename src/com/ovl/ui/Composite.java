@@ -8,7 +8,6 @@ import com.ovl.utils.Vector2;
 public class Composite extends Component {
 	protected Component lastClickable;
 	protected ArrayList<Component> children;
-	protected ArrayList<Component> destroyList;
 	
 	public Composite(BaseGame game) {
 		super(game);
@@ -30,7 +29,6 @@ public class Composite extends Component {
 	protected void initialize(){
 		super.initialize();
 		children = new ArrayList<Component>(1);
-		destroyList = new ArrayList<Component>(1);
 	}
 	
 	@Override
@@ -99,16 +97,7 @@ public class Composite extends Component {
 			super.update(deltaTime);
 			for (Component component : children){
 				component.update(deltaTime);
-				if (component.isDestroyed()){
-					destroyList.add(component);
-				}
 			}
-			
-			for (int i = 0; i < destroyList.size(); ++i){
-				destroyList.get(i).onDestroy();
-				destroyList.get(i).destroy();
-			}
-			destroyList.clear();
 		}
 	}
 }

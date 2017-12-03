@@ -61,11 +61,12 @@ public class Sprite implements Renderable, ICloneable {
 	
 	@Override
 	public Sprite clone(){
-		Sprite clone = new Sprite();
-		clone.init();
-		clone.texture = texture;
-		clone.setTextureCoordinates(texTopLeft.copy(), texBotRight.copy());
-		clone.textureSize = textureSize.copy();
+		Sprite clone = new Sprite(texture, texTopLeft, texBotRight);
+		clone.useShader(id.getVbo(), id.getParams());
+		clone.textureSize.set(textureSize);
+		for (int i = 0; i < clone.verts.length; ++i){
+			clone.verts[i].set(verts[i]);
+		}
 		return clone;
 	}
 	
@@ -140,7 +141,7 @@ public class Sprite implements Renderable, ICloneable {
 		if (texTopLeft != null && texBotRight != null){
 			renderer.setTextureData(id, texTopLeft, texBotRight);
 		}
-		renderer.setVertexData(id, verts);
+		refreshVertexData();
 	}
 	
 	public ShaderParams getShaderParams(){
@@ -217,7 +218,10 @@ public class Sprite implements Renderable, ICloneable {
 			}
 			verts[i].add(pos);
 		}
-		
+		refreshVertexData();
+	}
+	
+	private void refreshVertexData(){
 		renderer.setVertexData(id, verts);
 	}
 }

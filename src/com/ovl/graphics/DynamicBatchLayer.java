@@ -62,7 +62,7 @@ public class DynamicBatchLayer extends Layer {
 	private ArrayList<PackedSprite> objects = new ArrayList<PackedSprite>();
 	private HashMap<Integer, ArrayList<PackedSprite>> spritesToPack = new HashMap<Integer, ArrayList<PackedSprite>>();
 
-	private static final int packingSpace = 1;
+	private static final int packingSpace = 8;
 	private int atlasWidth, atlasHeight;
 	private Vector2 packPos = new Vector2();
 
@@ -152,10 +152,11 @@ public class DynamicBatchLayer extends Layer {
 			
 			byte line[] = new byte[ps.targetUV.w * 4];
 			texData.position((ps.targetUV.y * atlasWidth + ps.targetUV.x) * 4);
-			buf.position((ps.sourceUV.y * pixelW + ps.sourceUV.x) * 4);
+			int startPixel = (ps.sourceUV.y * pixelW + ps.sourceUV.x) * 4;
+			int stride = pixelW * 4;
 			for (int j = 0; j < ps.targetUV.h; ++j){
+				buf.position(startPixel + stride * j);
 				buf.get(line, 0, line.length);
-				buf.position(buf.position() + (pixelW - ps.sourceUV.w) * 4);
 				texData.put(line, 0, line.length);
 				texData.position(texData.position() + (atlasWidth - ps.targetUV.w) * 4);
 			}
@@ -287,8 +288,8 @@ public class DynamicBatchLayer extends Layer {
 	}
 
 	private boolean placeBox(PackedSprite box) {
-		final int xStep = box.targetUV.w + 1;
-		final int yStep = box.targetUV.h + 1;
+		final int xStep = box.targetUV.w + 4;
+		final int yStep = box.targetUV.h + 4;
 		for (int x = 0; x < atlasWidth; x += xStep) {
 			for (int y = 0; y < atlasWidth; y += yStep) {
 				if (!boxCollide(box, x, y)) {

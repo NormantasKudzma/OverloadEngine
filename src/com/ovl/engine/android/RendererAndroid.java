@@ -256,7 +256,7 @@ public final class RendererAndroid extends Renderer {
 	@Override
 	public void renderIndexed(ShaderParams vboId, PrimitiveType mode, ByteBuffer indices, int count) {
 		setParams(vboId);
-		GLES20.glDrawElements(primitiveModes[mode.getIndex()], count, GLES20.GL_UNSIGNED_BYTE, indices);
+		GLES20.glDrawElements(primitiveModes[mode.getIndex()], count, GLES20.GL_UNSIGNED_SHORT, indices);
 	}
 	
 	@Override

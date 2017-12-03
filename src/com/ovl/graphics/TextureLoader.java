@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public abstract class TextureLoader {
-	public enum TexSize {
+	public static enum TexSize {
 		POT,
 		NON_POT;
 	}

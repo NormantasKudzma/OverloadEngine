@@ -6,17 +6,13 @@ import com.ovl.graphics.Color;
 import com.ovl.graphics.Renderable;
 import com.ovl.physics.Collidable;
 import com.ovl.physics.PhysicsBody;
-import com.ovl.physics.PhysicsWorld;
 import com.ovl.physics.PhysicsBody.BodyType;
+import com.ovl.physics.PhysicsWorld;
 import com.ovl.utils.ICloneable;
 import com.ovl.utils.Vector2;
 
 public class GameObject implements Collidable, Updatable, ICloneable {
-	protected boolean isDestructible = true;
-	protected boolean isLifetimeFinite = false;
-	protected boolean isToBeDestroyed = false;
 	protected boolean isVisible = true;
-	protected float lifetime = 0.0f;
 	protected PhysicsBody body;
 	protected BaseGame game = null;
 	protected Renderable sprite;
@@ -47,15 +43,10 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 			if (obj instanceof GameObject){
 				clone = (GameObject)obj;
 				clone.body = body.clone(clone);
-				clone.initEntity(body.getType());
-				clone.isDestructible = isDestructible;
-				clone.isLifetimeFinite = isLifetimeFinite;
-				clone.isToBeDestroyed = isToBeDestroyed;
 				clone.isVisible = isVisible;
-				clone.lifetime = lifetime;
 				
 				if (sprite instanceof ICloneable && sprite instanceof Renderable){
-					clone.sprite = (Renderable)((ICloneable)sprite).clone();
+					clone.setSprite((Renderable)((ICloneable)sprite).clone());
 				}
 				else {
 					// If current renderable does not support cloning, leave it null
@@ -98,10 +89,6 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 		return body.getBody().m_linearVelocity.x;
 	}
 	
-	public float getLifetime(){
-		return lifetime;
-	}
-	
 	public PhysicsBody getPhysicsBody() {
 		return body;
 	}
@@ -136,31 +123,14 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 		body = PhysicsWorld.getInstance().getNewBody(type, this);
 	}
 
-	public boolean isDestroyed() {
-		return isToBeDestroyed;
-	}
-
-	public boolean isDestructible() {
-		return isDestructible;
-	}
-
 	public boolean isVisible() {
 		return isVisible;
-	}
-
-	public void markForDestruction() {
-		isToBeDestroyed = true;
 	}
 
 	public void onDestroy() {
 		//
 	}
 
-	public void setLifetime(float time) {
-		lifetime = time;
-		isLifetimeFinite = true;
-	}
-	
 	public void render() {
 		if (!isVisible || sprite == null) {
 			return;
@@ -234,13 +204,6 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 	public void update(float deltaTime) {
 		if (spriteUpdatable != null) {
 			spriteUpdatable.update(deltaTime);
-		}
-
-		if (isLifetimeFinite) {
-			lifetime -= deltaTime;
-			if (lifetime <= 0.0f) {
-				markForDestruction();
-			}
 		}
 	}
 	
