@@ -1,6 +1,7 @@
 package com.ovl.engine;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,25 +35,15 @@ public abstract class Renderer {
 		private int index;
 	}
 	
-	public enum VboType {
-		Textured,
-		Primitive
-	}
-	
 	public static final int BYTES_PER_FLOAT = 4;
 	public static final int DATA_PER_VERTEX = 4;	//xy, uv - not necessarilly in that order
 	public static final int VERTICES_PER_SPRITE = 4;
 	public static final int DATA_PER_SPRITE = VERTICES_PER_SPRITE * DATA_PER_VERTEX;
 	public static final int DATA_PER_PRIMITIVE = 2; //xy - not necessarilly in that order
 	
-	public static final int SHADER_TEXTURE = 0;
-	public static final int SHADER_PRIMITIVE = 1;
-	public static final int SHADER_COUNT = 2;
-	
 	protected final int primitiveModes[] = new int[PrimitiveType.values().length];
 	
 	protected ArrayList<Vbo> vbos = new ArrayList<Vbo>();
-	protected Vbo textureVbo;
 	protected Vbo boundVbo;
 	
 	protected HashMap<Class<?>, Pair<ParamSetter.Builder<?>, Object>> paramSetterBuilders = new HashMap<Class<?>, Pair<ParamSetter.Builder<?>, Object>>();
@@ -86,7 +77,7 @@ public abstract class Renderer {
 	
 	public abstract void renderIndexed(ShaderParams vboId, PrimitiveType mode, ByteBuffer indices, int count);
 	
-	public void setTextureData(ShaderParams vboId, Vector2 tl, Vector2 br){
+	/*public void setTextureData(ShaderParams vboId, Vector2 tl, Vector2 br){
 		Vbo vbo = vboId.vbo;
 		
 		if (tl == null || br == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
@@ -96,13 +87,12 @@ public abstract class Renderer {
 		vbo.setModified(true);
 		
 		int offset = vboId.index * vbo.getObjectSize();
-		vbo.getVbo().put(2 + offset, tl.x).put(3 + offset, br.y)
-			.put(6 + offset, tl.x).put(7 + offset, tl.y)
-			.put(10 + offset, br.x).put(11 + offset, br.y)
-			.put(14 + offset, br.x).put(15 + offset, tl.y);
+		vbo.getBuffer().put(2 + offset, tl.x).put(3 + offset, br.y)
+					.put(6 + offset, tl.x).put(7 + offset, tl.y)
+					.put(10 + offset, br.x).put(11 + offset, br.y)
+					.put(14 + offset, br.x).put(15 + offset, tl.y);
 	}
 	
-	// TODO: implement rotation
 	public void setVertexData(ShaderParams vboId, Vector2[] v){
 		Vbo vbo = vboId.vbo;
 		
@@ -113,10 +103,46 @@ public abstract class Renderer {
 		vbo.setModified(true);
 		
 		int offset = vboId.index * vbo.getObjectSize();
-		vbo.getVbo().put(offset + 0, v[0].x).put(offset + 1, v[0].y)
-					.put(offset + 4, v[1].x).put(offset + 5, v[1].y)
-					.put(offset + 8, v[2].x).put(offset + 9, v[2].y)
-					.put(offset + 12, v[3].x).put(offset + 13, v[3].y);
+		vbo.getBuffer().put(offset + 0, v[0].x).put(offset + 1, v[0].y)
+						.put(offset + 4, v[1].x).put(offset + 5, v[1].y)
+						.put(offset + 8, v[2].x).put(offset + 9, v[2].y)
+						.put(offset + 12, v[3].x).put(offset + 13, v[3].y);
+	}*/
+	
+	public void setVertexData(final ShaderParams vboId, final String attribute, Vector2... data){
+		Vbo vbo = vboId.vbo;
+				
+		if (data == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
+			return;
+		}
+		
+		vbo.setModified(true);
+		
+		Shader.Attribute attr = null;
+		for (Shader.Attribute a : vbo.getShader().getAttributes()){
+			if (a.name.equals(attribute)){
+				attr = a;
+				break;
+			}
+		}
+		
+		if (attr == null){
+			System.err.println(String.format("Could not modify vertices, attribute %s not found in shader", attribute));
+			return;
+		}
+		
+		int offset = vboId.index * vbo.getObjectSize() + (attr.offset / BYTES_PER_FLOAT);
+		int attributesSize = vbo.getShader().getTotalAttributesSize();
+		FloatBuffer buf = vbo.getBuffer();
+		for (Vector2 v : data){
+			try {
+				buf.put(offset, v.x).put(offset + 1, v.y);
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+			offset += attributesSize;
+		}
 	}
 	
 	// TODO: refactor, so all kind of vbos use same methods
@@ -133,7 +159,7 @@ public abstract class Renderer {
 		
 		int offset = vboId.index * vbo.getObjectSize();
 		for (int i = 0; i < vertices.length; ++i){
-			vbo.getVbo()
+			vbo.getBuffer()
 				.put(offset + 0, vertices[i].x)
 				.put(offset + 1, vertices[i].y);
 			

@@ -15,11 +15,10 @@ public class Shader {
 		public int size;
 		public int offset;
 		
-		public Attribute(String name, int id, int size, int offset){
+		public Attribute(String name, int id, int size){
 			this.name = name;
 			this.id = id;
 			this.size = size;
-			this.offset = offset;
 		}
 	}
 	
@@ -50,12 +49,10 @@ public class Shader {
 	private int fsId = -1;
 	private int totalSize = 0;
 	private ArrayList<Uniform> uniforms;
-	private ArrayList<Attribute> attributes;
+	private Attribute attributes[];
 	
 	public Shader(String name){
 		resourceName = name;
-		uniforms = new ArrayList<Uniform>();
-		attributes = new ArrayList<Attribute>();
 	}
 	
 	public String getVSCode(){
@@ -94,13 +91,37 @@ public class Shader {
 		this.fsId = fsId;
 	}
 	
-	public void addAttribute(String name, int id, int size, int offset){
-		attributes.add(new Attribute(name, id, size, offset));
+	public void startAttributeDeclaration(int count){
+		if (attributes == null) {
+			attributes = new Attribute[count];
+		}
+	}
+	
+	public void startUniformDeclaration(int count){
+		if (uniforms == null) {
+			uniforms = new ArrayList<>();
+		}
+	}
+	
+	public void addAttribute(String name, int id, int size){
+		attributes[id] = new Attribute(name, id, size);
 		totalSize += size;
 	}
 	
 	public void addUniform(String name, int id, Class<?> type){
 		uniforms.add(new Uniform(name, id, type));
+	}
+	
+	public void finishAttributeDeclaration(){
+		int byteOffset = 0;
+		for (Attribute attr : attributes){
+			attr.offset = byteOffset;
+			byteOffset += attr.size * Renderer.BYTES_PER_FLOAT;
+		}
+	}
+	
+	public void finishUniformDeclaration(){
+		
 	}
 	
 	public ArrayList<Uniform> getUniforms(){
@@ -116,7 +137,7 @@ public class Shader {
 		return null;
 	}
 	
-	public ArrayList<Attribute> getAttributes(){
+	public Attribute[] getAttributes(){
 		return attributes;
 	}
 	

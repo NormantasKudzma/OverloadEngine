@@ -75,7 +75,8 @@ public class DynamicBatchLayer extends Layer {
 	}
 
 	public void addObject(GameObject obj) {
-		if (obj == null || !(obj.getSprite() instanceof Sprite)) {
+		/** unsupported atm
+		/*if (obj == null || !(obj.getSprite() instanceof Sprite)) {
 			return;
 		}
 		
@@ -84,7 +85,7 @@ public class DynamicBatchLayer extends Layer {
 		Vector2 sheetSizeCoef = new Vector2(sprite.getTexture().getWidth(), sprite.getTexture().getHeight());
 		sheetSizeCoef.div(sprite.getTexture().getImageWidth(), sprite.getTexture().getImageHeight());
 		
-		Vector2 texCoords[] = sprite.getTexCoords();
+		Vector2 texCoords[] = sprite.getUV_TopLeft_BotRight();
 		Vector2 tl = texCoords[0].copy().div(sheetSizeCoef);
 		Vector2 br = texCoords[1].copy().div(sheetSizeCoef);
 
@@ -113,7 +114,7 @@ public class DynamicBatchLayer extends Layer {
 			spritesToPack.put(texId, boxes);
 		}
 
-		objects.add(new PackedSprite(obj, rect, uv));
+		objects.add(new PackedSprite(obj, rect, uv));*/
 	}
 
 	public void finish() {
@@ -163,7 +164,8 @@ public class DynamicBatchLayer extends Layer {
 			texData.rewind();
 		}
 		
-		tex = renderer.getTextureLoader().createTexture(texData, atlasWidth, atlasHeight, TextureLoader.TexSize.NON_POT);
+		// unsupported atm
+		//tex = renderer.getTextureLoader().createTexture(texData, atlasWidth, atlasHeight, TextureLoader.TexSize.NON_POT);
 		params = new HashMap<String, ParamSetter>();
 		params.put(Shader.U_COLOR, ParamSetterFactory.buildDefault(Sprite.defaultShader, Shader.U_COLOR));
 		params.put(Shader.U_TEXTURE, ParamSetterFactory.build(Sprite.defaultShader, Shader.U_TEXTURE, tex));
@@ -216,7 +218,8 @@ public class DynamicBatchLayer extends Layer {
 				}
 			}
 			
-			Vector2 tl = new Vector2(ps.targetUV.x, ps.targetUV.y).mul(sheetSizeCoef);
+			/* Unsupported atm
+			 * Vector2 tl = new Vector2(ps.targetUV.x, ps.targetUV.y).mul(sheetSizeCoef);
 			Vector2 br = new Vector2(ps.targetUV.x + ps.targetUV.w, ps.targetUV.y + ps.targetUV.h).mul(sheetSizeCoef);
 			renderer.setTextureData(ps.id, tl, br);
 			
@@ -229,7 +232,7 @@ public class DynamicBatchLayer extends Layer {
 				.putShort((short) (offset + 1))
 				.putShort((short) (offset + 0))
 				.putShort((short) (offset + 2))
-				.putShort((short) (offset + 3));
+				.putShort((short) (offset + 3));*/
 		}
 		indices.rewind();
 		

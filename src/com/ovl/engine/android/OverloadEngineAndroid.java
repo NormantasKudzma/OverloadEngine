@@ -28,6 +28,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 		@Override
 		public void onSurfaceChanged(GL10 deprecated, int w, int h) {
 			GLES20.glViewport(0, 0, w, h);
+			
 			frameHeight = h;
 			frameWidth = w;
 			aspectRatio = 1.0f * w / h;
@@ -99,32 +100,13 @@ public class OverloadEngineAndroid extends OverloadEngine {
 
 	@Override
 	protected void loop() {
-		/*new Thread(){
-			public void run() {*/
-				//while (!isCloseRequested) {
-					t0 = System.nanoTime();
-					deltaTime = (t0 - t1) * 0.000000001f;
-					t1 = t0;
-	
-					// Poll controllers for input
-					//ControllerManager.getInstance().pollControllers();
-	
-					// Update game logic
-					game.update(deltaTime);
-	
-					surfaceView.requestRender();
-					
-					/*try {
-						// plz FIXME ...
-						long sleepTime = (long)(Math.max(0.001f, 0.016667f - deltaTime) * 100);
-						Thread.sleep(sleepTime);
-					}
-					catch (Exception e){
-						
-					}*/
-				//}
-		/*	}
-		}.start();*/
+		t0 = System.nanoTime();
+		deltaTime = (t0 - t1) * 0.000000001f;
+		t1 = t0;
+
+		game.update(deltaTime);
+
+		surfaceView.requestRender();
 	}
 	
 	public Context getContext(){

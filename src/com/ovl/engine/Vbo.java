@@ -62,7 +62,7 @@ public class Vbo {
 		releasedIds.add(id);
 	}
 	
-	public FloatBuffer getVbo(){
+	public FloatBuffer getBuffer(){
 		return vbo;
 	}
 	

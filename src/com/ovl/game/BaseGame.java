@@ -246,6 +246,14 @@ public class BaseGame implements Updatable {
 		return null;
 	}
 	
+	public Layer removeLayer(Layer layer){
+		if (layers.remove(layer)){
+			return layer;
+		}
+		
+		return null;
+	}
+	
 	public void setDialogVisible(String name, boolean isVisible){
 		BaseDialog d;
 		for (int i = 0; i < dialogList.size(); i++){

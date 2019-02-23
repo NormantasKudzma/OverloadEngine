@@ -1,10 +1,17 @@
 package com.ovl.testing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.ParamSetter;
+import com.ovl.engine.ParamSetterFactory;
+import com.ovl.engine.Renderer;
+import com.ovl.engine.Shader;
+import com.ovl.engine.Vbo;
 import com.ovl.game.BaseGame;
 import com.ovl.game.GameObject;
-import com.ovl.graphics.Color;
+import com.ovl.graphics.BadLayer;
 import com.ovl.graphics.DynamicBatchLayer;
 import com.ovl.graphics.Layer;
 import com.ovl.graphics.Primitive;
@@ -14,10 +21,7 @@ import com.ovl.graphics.Sprite;
 import com.ovl.graphics.StaticBatchLayer;
 import com.ovl.graphics.UnsortedLayer;
 import com.ovl.ui.Button;
-import com.ovl.ui.Label;
 import com.ovl.ui.OnClickListener;
-import com.ovl.utils.FastMath;
-import com.ovl.utils.OverloadRandom;
 import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
 
@@ -29,14 +33,46 @@ public class TestGame extends BaseGame {
 	Layer sortedLayer;// = new SortedLayer("sorted", 110);
 	StaticBatchLayer staticBatchLayer;// = new StaticBatchLayer("static", 120);
 	DynamicBatchLayer dynamicBatchLayer;
+	BadLayer badLayer;
 	
 	Button showUnsorted;
 	Button showSorted;
 	Button showStatic;
 	Button showDynamic;
+	Button showBad;
+
+	public void init(){
+		{
+			Renderer r = OverloadEngine.getInstance().renderer;
+			Shader outlineShader = r.createShader("Outline");
+			Vbo outlineVbo = r.createVbo("Outline", 16, 4);
+
+			/*Shader outlineShader = r.createShader("Texture");
+			Vbo outlineVbo = r.createVbo("Texture", 16, 4);*/
+			
+			Sprite sprite = new Sprite(Paths.getResources() + "r.png");
+			
+			HashMap<String, ParamSetter> params = new HashMap<>();
+			params.put(Shader.U_COLOR, ParamSetterFactory.build(outlineShader, Shader.U_COLOR, sprite.getColor()));
+			params.put(Shader.U_TEXTURE, ParamSetterFactory.build(outlineShader, Shader.U_TEXTURE, sprite.getTexture()));
+			params.put(Shader.U_MVPMATRIX, ParamSetterFactory.buildDefault(outlineShader, Shader.U_MVPMATRIX));
+			sprite.useShader(outlineVbo, params);
+			
+			GameObject obj = new GameObject();
+			obj.setSprite(sprite);
+			obj.setPosition(-0.2f, 0.0f);
+			addObject(obj);
+		}
+		{
+			/*Sprite sprite = new Sprite(Paths.getResources() + "r.png");
+			GameObject obj = new GameObject();
+			obj.setSprite(sprite);
+			obj.setPosition(0.2f, 0.0f);
+			addObject(obj);*/
+		}
+	}
 	
-	@Override
-	public void init() {
+	public void init_o() {
 		showUnsorted = new Button(this, "");
 		showUnsorted.setPosition(-0.7f, 0.8f);
 		showUnsorted.setScale(0.25f, 0.25f);
@@ -47,6 +83,7 @@ public class TestGame extends BaseGame {
 				removeLayer(sortedLayer.getIndex());
 				removeLayer(staticBatchLayer.getIndex());
 				removeLayer(dynamicBatchLayer.getIndex());
+				removeLayer(badLayer.getIndex());
 				addLayer(unsortedLayer);
 			}
 		});
@@ -66,6 +103,7 @@ public class TestGame extends BaseGame {
 				removeLayer(sortedLayer.getIndex());
 				removeLayer(staticBatchLayer.getIndex());
 				removeLayer(dynamicBatchLayer.getIndex());
+				removeLayer(badLayer.getIndex());
 				addLayer(sortedLayer);
 			}
 		});
@@ -85,14 +123,15 @@ public class TestGame extends BaseGame {
 				removeLayer(sortedLayer.getIndex());
 				removeLayer(staticBatchLayer.getIndex());
 				removeLayer(dynamicBatchLayer.getIndex());
+				removeLayer(badLayer.getIndex());
 				addLayer(staticBatchLayer);
 			}
 		});
 		addObject(showStatic);
 		
-		SimpleFont textDynamic = SimpleFont.create("Static");
-		textDynamic.setPosition(-0.7f, 0.4f);
-		addObject(textDynamic);
+		SimpleFont textStatic = SimpleFont.create("Static");
+		textStatic.setPosition(-0.7f, 0.4f);
+		addObject(textStatic);
 		
 		showDynamic = new Button(this, "");
 		showDynamic.setPosition(-0.7f, 0.2f);
@@ -104,22 +143,45 @@ public class TestGame extends BaseGame {
 				removeLayer(sortedLayer.getIndex());
 				removeLayer(staticBatchLayer.getIndex());
 				removeLayer(dynamicBatchLayer.getIndex());
+				removeLayer(badLayer.getIndex());
 				addLayer(dynamicBatchLayer);
 			}
 		});
 		addObject(showDynamic);
 		
-		SimpleFont textStatic = SimpleFont.create("Dynamic");
-		textStatic.setPosition(-0.7f, 0.2f);
-		addObject(textStatic);
+		SimpleFont textDynamic = SimpleFont.create("Dynamic");
+		textDynamic.setPosition(-0.7f, 0.2f);
+		addObject(textDynamic);
+		
+		showBad = new Button(this, "");
+		showBad.setPosition(-0.7f, 0.0f);
+		showBad.setScale(0.25f, 0.25f);
+		showBad.setClickListener(new OnClickListener(){
+			@Override
+			public void clickFunction(Vector2 pos) {
+				removeLayer(unsortedLayer.getIndex());
+				removeLayer(sortedLayer.getIndex());
+				removeLayer(staticBatchLayer.getIndex());
+				removeLayer(dynamicBatchLayer.getIndex());
+				removeLayer(badLayer.getIndex());
+				addLayer(badLayer);
+			}
+		});
+		addObject(showBad);
+		
+		SimpleFont textBad = SimpleFont.create("Bad");
+		textBad.setPosition(-0.7f, 0.0f);
+		addObject(textBad);
+		
 
 		unsortedLayer = new UnsortedLayer("unsorted", 100);
 		sortedLayer = new SortedLayer("sorted", 110);
 		staticBatchLayer = new StaticBatchLayer("static", 120);
 		dynamicBatchLayer = new DynamicBatchLayer("dynamic", 130);
+		badLayer = new BadLayer("bad", 140);
 		
 		addLayer(unsortedLayer);
-		
+
 		Sprite sheets[] = new Sprite[]{
 			new Sprite(Paths.getResources() + "brick.png"),
 			new Sprite(Paths.getResources() + "brick1.png"),
@@ -163,28 +225,21 @@ public class TestGame extends BaseGame {
 			y = (i / 8) * 64;
 			
 			for (int j = 0; j < sheets.length; ++j){
-				final float r2d = FastMath.RAD2DEG;
 				final Vector2 pos = new Vector2(-0.9f + xStep * 0.5f + xStep * i, 1.0f - yStep * 0.4f - yStep * j);
-				GameObject o = new GameObject(this){
-					/*float timeSum = OverloadRandom.nextRandom(1000) * 0.01f;
-					
-					@Override
-					public void update(float deltaTime) {
-						timeSum += deltaTime * 3.0f;
-						setPosition(pos.x, pos.y + FastMath.sinDeg((int)(timeSum * r2d) % 360) * 0.05f);
-					}*/
-				};
+				GameObject o = new GameObject();
 				o.setSprite(Sprite.getSpriteFromSheet(x, y, 64, 64, sheets[j]));
 				o.setPosition(pos);
 				unsortedLayer.addObject(o);
-				sortedLayer.addObject(o);
-				staticBatchLayer.addObject(o);
-				dynamicBatchLayer.addObject(o);
+				sortedLayer.addObject(o.clone());
+				staticBatchLayer.addObject(o.clone());
+				dynamicBatchLayer.addObject(o.clone());
+				badLayer.addObject(o.clone());
 			}
 		}
 		
 		staticBatchLayer.finish();
-		dynamicBatchLayer.finish();
+		//dynamicBatchLayer.finish();
+		badLayer.finish();
 		
 		/*MouseController c = (MouseController)ControllerManager.getInstance().getController(Controller.Type.TYPE_MOUSE);
 		c.setMouseMoveListener(new ControllerEventListener(){
@@ -194,6 +249,7 @@ public class TestGame extends BaseGame {
 				showSorted.onHover(pos);
 				showStatic.onHover(pos);
 				showDynamic.onHover(pos);
+				showBad.onHover(pos);
 			}
 		});
 		c.addKeybind(0, new ControllerEventListener(){
@@ -217,29 +273,7 @@ public class TestGame extends BaseGame {
 	
 	void createLetter(String text, Vector2 pos){
 		{
-			Label l = new Label(this, text){
-				float changeDelta = OverloadRandom.nextRandom(100) * 0.001f + 0.35f;
-				float nextChange = changeDelta;
-				float vSpeed = OverloadRandom.nextRandom(30) * 0.0001f + 0.0025f;
-				float vSpeedChange = OverloadRandom.nextRandom(10000) * 0.0001f * 0.00001f;
-				
-				@Override
-				public void update(float deltaTime) {
-					super.update(deltaTime);
-					getPosition().y -= vSpeed;
-					vSpeed += vSpeedChange;
-					
-					nextChange -= deltaTime;
-					if (nextChange <= 0.0f){
-						nextChange = changeDelta;
-						setText("" + (char)(OverloadRandom.nextRandom(93) + 33));
-					}
-				}
-			};
-			l.setLifetime(8.0f);
-			l.setColor(new Color(0.05f, 0.85f, 0.08f, 1.0f));
-			l.setPosition(pos.copy());
-			addObject(l);
+			
 		}
 		/*{
 			Label l = new Label(this, text){
@@ -268,6 +302,7 @@ public class TestGame extends BaseGame {
 				showSorted.onClick(pos);
 				showStatic.onClick(pos);
 				showDynamic.onClick(pos);
+				showBad.onClick(pos);
 			}
 			clicks.clear();
 		}

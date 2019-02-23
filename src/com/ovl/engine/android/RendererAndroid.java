@@ -1,6 +1,7 @@
 package com.ovl.engine.android;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import android.opengl.GLES20;
@@ -51,9 +52,10 @@ public final class RendererAndroid extends Renderer {
 		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GLES20.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glFrontFace(GLES20.GL_CCW);
 		
 		Matrix.setIdentityM(mvpMatrix.matrixImpl, 0);
 		mvpMatrix.matrixImpl[0] = 2.0f / OverloadEngine.getInstance().aspectRatio;
@@ -75,20 +77,20 @@ public final class RendererAndroid extends Renderer {
 		int glSize[] = new int[1];
 		int glType[] = new int[1];
 		byte name[] = new byte[256];
-		int byteOffset = 0;
 		
 		// Attributes
 		Log.w(String.format("%-20s%-20s%-20s\n", "Attribute name", "Index", "Location"));
+		shader.startAttributeDeclaration(count);
 		for (int i = 0; i < count; ++i){
 			GLES20.glGetActiveAttrib(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
 			name[length[0]] = '\0';
 			String attrib = new String(name, 0, length[0]);
 			int loc = GLES20.glGetAttribLocation(programId, attrib);
 			int size = glSize[0] * getSizeInFloats(glType[0]);
-			shader.addAttribute(attrib, loc, size, byteOffset);
-			byteOffset += size * BYTES_PER_FLOAT;
-			Log.w(String.format("%-20s%-20d%-20d\n", attrib, i, loc));
+			shader.addAttribute(attrib, loc, size);
+			Log.w(String.format("%-20s%-20d%-20d", attrib, i, loc));
 		}
+		shader.finishAttributeDeclaration();
 		
 		GLES20.glGetProgramiv(programId, GLES20.GL_ACTIVE_UNIFORMS, ib, 0);
 		count = ib[0];
@@ -96,14 +98,16 @@ public final class RendererAndroid extends Renderer {
 		// Uniforms
 		Log.w("------------");
 		Log.w(String.format("%-20s%-20s%-20s\n", "Uniform name", "Index", "Location"));
+		shader.startUniformDeclaration(count);
 		for (int i = 0; i < count; ++i){
 			GLES20.glGetActiveUniform(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
 			name[length[0]] = '\0';
 			String uniform = new String(name, 0, length[0]);
 			int loc = GLES20.glGetUniformLocation(programId, uniform);
 			shader.addUniform(uniform, loc, glTypeToOvl(glType[0]));
-			Log.w(String.format("%-20s%-20d%-20d\n", uniform, i, loc));
+			Log.w(String.format("%-20s%-20d%-20d", uniform, i, loc));
 		}
+		shader.finishUniformDeclaration();
 		Log.w("------------");
 	}
 
@@ -196,9 +200,9 @@ public final class RendererAndroid extends Renderer {
 		for (Vbo vbo : vbos){
 			if (vbo.isModified()){
 				vbo.setModified(false);
-				vbo.getVbo().rewind();
+				vbo.getBuffer().rewind();
 				GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo.getId());
-				GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vbo.getCapacity() * BYTES_PER_FLOAT, vbo.getVbo(), GLES20.GL_STATIC_DRAW);
+				GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vbo.getCapacity() * BYTES_PER_FLOAT, vbo.getBuffer(), GLES20.GL_STATIC_DRAW);
 			}
 		}
 		
@@ -233,8 +237,7 @@ public final class RendererAndroid extends Renderer {
 			useShader(vboId.getVbo().getShader());
 		}
 		
-		if (boundVbo != vboId.getVbo())
-		{
+		if (boundVbo != vboId.getVbo()){
 			bindVbo(vboId.getVbo());
 		}
 		
@@ -280,17 +283,17 @@ public final class RendererAndroid extends Renderer {
 	
 	public void deleteVbo(ShaderParams vboId){
 		Vbo vbo = vboId.getVbo();
-		IntBuffer buffer = IntBuffer.allocate(1);
+		IntBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
 		buffer.put(vbo.getId());
+		buffer.rewind();
 		GLES20.glDeleteBuffers(1, buffer);
 		vbos.remove(vbo);
 	}
 	
 	protected void initVbo(Vbo vbo){
-		IntBuffer buffer = IntBuffer.allocate(1);
+		IntBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
 		GLES20.glGenBuffers(1, buffer);
 		vbo.setId(buffer.get(0));
 		vbos.add(vbo);
 	}
-
 }

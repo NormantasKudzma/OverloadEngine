@@ -66,6 +66,8 @@ public class EngineTestActivity extends Activity {
 				cfg.game = game;
 				cfg.isDebug = true;
 				engine = new OverloadEngineAndroid(cfg);
+				engine.referenceWidth = 960;
+				engine.referenceHeight = 640;
 			}
 			setContentView(engine.getSurfaceView(this));
 		}

@@ -10,6 +10,7 @@ import org.lwjgl.opengl.DisplayMode;
 import com.ovl.controls.ControllerManager;
 import com.ovl.controls.pc.KeyboardController;
 import com.ovl.controls.pc.MouseController;
+import com.ovl.controls.pc.UsbControllerManager;
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.utils.ConfigManager;
@@ -27,6 +28,7 @@ public class OverloadEnginePc extends OverloadEngine {
 			game.destroy();
 		}
 		ControllerManager.getInstance().destroyManager();
+		UsbControllerManager.destroy();
 		Display.destroy();
 		AL.destroy();
 	}
@@ -109,6 +111,7 @@ public class OverloadEnginePc extends OverloadEngine {
 		ControllerManager controllerManager = ControllerManager.getInstance();
 		controllerManager.addController(new KeyboardController(0));
 		controllerManager.addController(new MouseController(0));
+		UsbControllerManager.init();
 		
 		// Create and initialize game
 		game = config.game;

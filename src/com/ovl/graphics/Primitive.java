@@ -89,6 +89,10 @@ public class Primitive implements Renderable {
 		return vertices[index];
 	}
 	
+	public Vector2[] getVertices(){
+		return vertices;
+	}
+	
 	@Override
 	public void render() {
 		renderer.render(id, renderMode);

@@ -31,21 +31,23 @@ public class MouseController extends Controller {
 		}
 		
 		mousePos.set(Mouse.getX(), Mouse.getY()).mul(widthInverse, heightInverse).sub(1.0f, 1.0f);
-		int intmask;
 
 		if (mouseMoveListener != null) {
 			mouseMoveListener.handleEvent(0, mousePos);
 		}
 
-		for (int i = 0; i < Mouse.getButtonCount(); ++i){
-			buttonStates[i] += Mouse.isButtonDown(i) ? 1 : -buttonStates[i];
-		}
+		int intmask;
+		int newState;
 		
 		for (ControllerKeybind bind : keyBindings) {
 			intmask = bind.getIntmask();
-			if (Mouse.isButtonDown(intmask)){
-				bind.getCallback().handleEvent(intmask, mousePos, buttonStates[intmask]);
+			
+			newState = Mouse.isButtonDown(intmask) ? 1 : 0;
+			if (newState != buttonStates[intmask]){
+				bind.getCallback().handleEvent(intmask, mousePos, newState);
 			}
+			
+			buttonStates[intmask] = newState;
 		}
 	}
 

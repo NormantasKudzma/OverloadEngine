@@ -86,7 +86,7 @@ public final class RendererPc extends Renderer {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glClearColor(0.75f, 0.25f, 0.4f, 1.0f);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 	}
@@ -266,9 +266,9 @@ public final class RendererPc extends Renderer {
 		for (Vbo vbo : vbos){
 			if (vbo.isModified()){
 				vbo.setModified(false);
-				vbo.getVbo().rewind();
+				vbo.getBuffer().rewind();
 				GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo.getId());
-				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo.getVbo(), GL15.GL_STATIC_DRAW);
+				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo.getBuffer(), GL15.GL_STATIC_DRAW);
 			}
 		}
 		

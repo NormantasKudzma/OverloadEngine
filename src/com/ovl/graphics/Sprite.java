@@ -21,9 +21,8 @@ public class Sprite implements Renderable, ICloneable {
 	
 	private Texture texture;						// Sprite's texture
 	private Vector2 textureSize = new Vector2();
-	private Vector2 texTopLeft;		// Texture coordinates
-	private Vector2 texBotRight;
 	private Vector2 verts[] = new Vector2[4];
+	private Vector2 uv[] = new Vector2[4];
 	
 	private Color color = new Color();
 	private ShaderParams id;
@@ -50,18 +49,18 @@ public class Sprite implements Renderable, ICloneable {
 	public Sprite(String path, Vector2 tl, Vector2 br){
 		loadTexture(path);
 		init();
-		setTextureCoordinates(tl, br);
+		setUV(tl, br);
 	}
 	
 	public Sprite(Texture tex, Vector2 tl, Vector2 br){
 		texture = tex;
 		init();
-		setTextureCoordinates(tl, br);
+		setUV(tl, br);
 	}
 	
 	@Override
 	public Sprite clone(){
-		Sprite clone = new Sprite(texture, texTopLeft, texBotRight);
+		Sprite clone = new Sprite(texture, uv[1], uv[3]);
 		clone.useShader(id.getVbo(), id.getParams());
 		clone.textureSize.set(textureSize);
 		for (int i = 0; i < clone.verts.length; ++i){
@@ -75,8 +74,6 @@ public class Sprite implements Renderable, ICloneable {
 		renderer.releaseId(id);
 		id = null;
 		texture = null;
-		texTopLeft = null;
-		texBotRight = null;
 		textureSize = null;
 	}
 	
@@ -109,13 +106,17 @@ public class Sprite implements Renderable, ICloneable {
 		botRight.mul(sheetSizeCoef);
 		
 		Sprite sprite = new Sprite(sheet.getTexture(), topLeft, botRight);
-		sprite.setTextureSize(w, h);
+		sprite.setTextureSize_Pixel(w, h);
 		return sprite;
 	}	
 	
 	private void init(){
 		for (int i = 0; i < verts.length; ++i){
 			verts[i] = new Vector2();
+		}
+		
+		for (int i = 0; i < uv.length; ++i){
+			uv[i] = new Vector2();
 		}
 		
 		HashMap<String, ParamSetter> shaderParams = new HashMap<String, ParamSetter>();
@@ -138,9 +139,8 @@ public class Sprite implements Renderable, ICloneable {
 			id.addParam(kv.getKey(), kv.getValue());
 		}
 		
-		if (texTopLeft != null && texBotRight != null){
-			renderer.setTextureData(id, texTopLeft, texBotRight);
-		}
+		renderer.setVertexData(id, Shader.A_TEXCOORD, uv);
+			
 		refreshVertexData();
 	}
 	
@@ -169,47 +169,56 @@ public class Sprite implements Renderable, ICloneable {
 		color.set(c);
 	}
 	
-	private void setTextureCoordinates(Vector2 tl, Vector2 br){
+	public void setUV(Vector2 tl, Vector2 br){
 		if (tl == null){
-			texTopLeft = new Vector2();
-		}
-		else {
-			texTopLeft = tl.copy();
+			tl = new Vector2();
 		}
 
 		if (br == null) {
-			texBotRight = new Vector2(texture.getWidth(), texture.getHeight());
+			br = new Vector2(texture.getWidth(), texture.getHeight());
 		}
-		else {
-			texBotRight = br.copy();
-		}
+
+		uv[0].set(tl.x, br.y);
+		uv[1].set(tl.x, tl.y);
+		uv[2].set(br.x, br.y);
+		uv[3].set(br.x, tl.y);
 		
-		renderer.setTextureData(id, texTopLeft, texBotRight);
-		setTextureSize(texture.getImageWidth(), texture.getImageHeight());
+		//renderer.setTextureData(id, texTopLeft, texBotRight);
+		renderer.setVertexData(id, Shader.A_TEXCOORD, uv);
+		setTextureSize_Pixel(texture.getImageWidth(), texture.getImageHeight());
 	}
 	
-	public Vector2[] getTexCoords(){
-		return new Vector2[]{
-			texTopLeft,
-			texBotRight
-		};
+	public void setUV(Vector2[] uv){
+		for (int i = 0; i < this.uv.length; ++i){
+			this.uv[i].set(uv[i]);
+		}
+		
+		renderer.setVertexData(id, Shader.A_TEXCOORD, uv);
+	}
+	
+	public Vector2[] getUV(){
+		return uv;
 	}
 	
 	public Vector2[] getVerts(){
 		return verts;
 	}
 	
-	public void setTextureSize(int w, int h){
+	public void setTextureSize_Pixel(int w, int h){
 		textureSize.set(w, h).pixelToNormal();
+	}
+	
+	public void setTextureSize_Normal(Vector2 s){
+		textureSize.set(s);
 	}
 	
 	@Override
 	public void updateVertices(Vector2 pos, Vector2 scale, float angle){		
-		Vector2 halfSize = textureSize.copy().mul(0.5f);
-		verts[0].set(-halfSize.x, -halfSize.y).mul(scale);
-		verts[1].set(-halfSize.x, halfSize.y).mul(scale);
-		verts[2].set(halfSize.x, -halfSize.y).mul(scale);
-		verts[3].set(halfSize.x, halfSize.y).mul(scale);
+		Vector2 halfSize = textureSize.copy().mul(0.5f).mul(scale);
+		verts[0].set(-halfSize.x, -halfSize.y);
+		verts[1].set(-halfSize.x, halfSize.y);
+		verts[2].set(halfSize.x, -halfSize.y);
+		verts[3].set(halfSize.x, halfSize.y);
 		
 		for (int i = 0; i < verts.length; ++i){
 			if (angle != 0.0f)
@@ -222,6 +231,6 @@ public class Sprite implements Renderable, ICloneable {
 	}
 	
 	private void refreshVertexData(){
-		renderer.setVertexData(id, verts);
+		renderer.setVertexData(id, Shader.A_POSITION ,verts);
 	}
 }

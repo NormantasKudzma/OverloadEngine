@@ -133,7 +133,7 @@ public class TextureLoaderPc extends TextureLoader {
 
 	public ByteBuffer getTextureData(Texture tex){
 		tex.bind();
-
+		
 		int tw = (int)(tex.getImageWidth() / tex.getWidth());
 		int th = (int)(tex.getImageHeight() / tex.getHeight());
 		ByteBuffer buf = ByteBuffer.allocateDirect(tw * th * 4).order(ByteOrder.nativeOrder());

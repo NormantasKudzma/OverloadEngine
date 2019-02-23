@@ -16,7 +16,7 @@ import com.ovl.controls.Controller;
 import com.ovl.controls.ControllerKeybind;
 import com.ovl.utils.Pair;
 
-public class UsbController extends Controller {
+public class UsbController extends Controller {	
 	public static final long DEFAULT_POLL_TIMEOUT_MCS = 20000; // Poll sleep time in microseconds	
 	
 	private ByteBuffer buffer;

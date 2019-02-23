@@ -1,6 +1,4 @@
-package com.ovl.engine.android;
-
-import android.opengl.GLES20;
+package com.ovl.engine.arm;
 
 import com.ovl.engine.ParamSetter;
 import com.ovl.graphics.Texture;
@@ -13,7 +11,7 @@ public class TextureParamSetter extends ParamSetter {
 		}
 	}
 	
-	private Texture texture;
+	Texture texture;
 	
 	public TextureParamSetter(int paramId, Texture tex){
 		super(paramId);
@@ -23,6 +21,6 @@ public class TextureParamSetter extends ParamSetter {
 	@Override
 	public void setParam() {
 		texture.bind();
-		GLES20.glUniform1i(shaderParamId, texture.getTarget());
+		OverloadEngineArm.gl.glUniform1i(shaderParamId, texture.getTarget());
 	}
 }

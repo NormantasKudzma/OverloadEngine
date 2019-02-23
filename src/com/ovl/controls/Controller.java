@@ -131,7 +131,12 @@ public abstract class Controller {
 	}
 
 	public void setUnmaskedCallback(ControllerEventListener callback) {
-		defaultCallback = new ControllerKeybind(-1, callback);
+		if (callback != null){
+			defaultCallback = new ControllerKeybind(-1, callback);
+		}
+		else {
+			defaultCallback = null;
+		}
 	}
 
 	public boolean startController(){

@@ -9,7 +9,7 @@ public class OverloadRandom {
 		random = new Random();
 	}
 	
-	public static int nextRandom(int i){
+	public static int next(int i){
 		return random.nextInt(i);
 	}
 }

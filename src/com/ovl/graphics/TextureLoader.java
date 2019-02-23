@@ -39,6 +39,18 @@ public abstract class TextureLoader {
 		POT,
 		NON_POT;
 	}
+
+	public static enum ColorFormat {
+		RGB,
+		RGBA
+	}
+	
+	public static class ImageData {
+		public ByteBuffer buffer;
+		public int width;
+		public int height;
+		public ColorFormat format;
+	}
 	
 	/** The table of textures that have been loaded in this loader */
 	protected HashMap<String, Texture> table = new HashMap<String, Texture>();
@@ -47,14 +59,14 @@ public abstract class TextureLoader {
 	 * Create a new texture loader based on the game panel
 	 */
 	protected TextureLoader() {
-
+		
 	}
 
 	protected abstract int createTextureID();
 
 	public abstract Texture getTexture(String resourceName);
 	
-	public abstract Texture createTexture(ByteBuffer buf, int width, int height, TexSize type);
+	public abstract Texture createTexture(ImageData data, TexSize type);
 
 	public abstract ByteBuffer getTextureData(Texture tex);
 	

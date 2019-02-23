@@ -21,7 +21,7 @@ public class MatrixParamSetter extends ParamSetter {
 	
 	@Override
 	public void setParam() {
-		GLES20.glUniformMatrix4fv(shaderParamId, 1, false, matrix.matrixImpl, 0);		
+		GLES20.glUniformMatrix4fv(shaderParamId, 1, false, matrix.matrixImpl, 0);
 	}
 }
 
