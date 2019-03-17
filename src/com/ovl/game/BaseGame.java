@@ -2,6 +2,8 @@ package com.ovl.game;
 
 import java.util.ArrayList;
 
+import com.ovl.engine.OverloadEngine;
+import com.ovl.engine.Renderer;
 import com.ovl.graphics.Layer;
 import com.ovl.graphics.UnsortedLayer;
 import com.ovl.physics.PhysicsWorld;
@@ -318,5 +320,9 @@ public class BaseGame implements Updatable {
 			}
 		}
 		return false;
+	}
+
+	protected Renderer getRenderer(){
+		return OverloadEngine.getInstance().renderer;
 	}
 }
