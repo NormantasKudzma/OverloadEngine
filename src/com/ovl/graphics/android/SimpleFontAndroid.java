@@ -54,18 +54,24 @@ public class SimpleFontAndroid extends SimpleFont {
 			oldColor = sprite.getColor();
 			sprite.destroy();
 		}
+
+		String lines[] = text.split("\n");
+		String longestLine = lines[0];
+		for (String line : lines){
+			if (line.length() > longestLine.length()){
+				longestLine = line;
+			}
+		}
 		
-		// Prerender text to a texture using default java tools, 
-		// because dealing with fonts is a nightmare
 		Rect rect = new Rect();
-		paint.getTextBounds(text, 0, text.length(), rect);
-		Vector2.pixelCoordsToNormal(textSize.set(rect.width(), rect.height()));
+		paint.getTextBounds(longestLine, 0, longestLine.length(), rect);
+		Vector2.pixelCoordsToNormal(textSize.set(rect.width(), rect.height() * lines.length));
 		Vector2.pixelCoordsToNormal(textOffset.set(rect.left, rect.bottom));
 		
 		int newWidth = FastMath.nextPowerOfTwo(rect.width());
-		int newHeight = FastMath.nextPowerOfTwo(rect.height());
+		int newHeight = FastMath.nextPowerOfTwo(rect.height() * lines.length);
 		int newX = (int)((newWidth - rect.width()) * 0.5f);
-		int newY = (int)((newHeight + rect.height()) * 0.5f);
+		int newY = (int)((newHeight - rect.height() * lines.length) * 0.5f);
 		
 		if (newWidth > bmp.getWidth() || newHeight > bmp.getHeight()){
 			initBufferedImage(newWidth, newHeight);
@@ -77,7 +83,10 @@ public class SimpleFontAndroid extends SimpleFont {
 		
 		textBounds.set(0, newHeight, newWidth, 0);
 		
-		canvas.drawText(text, newX, newY, paint);
+		for (String line : lines){
+			canvas.drawText(line, newX, rect.height() + newY, paint);
+			newY += rect.height();
+		}
 		Bitmap textSubImage = Bitmap.createBitmap(bmp, 0, 0, newWidth, newHeight);
 		
 		TextureLoaderAndroid textureLoader = ((TextureLoaderAndroid)RENDERER.getTextureLoader());

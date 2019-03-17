@@ -32,7 +32,7 @@ public class OverloadEngineAndroid extends OverloadEngine {
 			frameHeight = h;
 			frameWidth = w;
 			aspectRatio = 1.0f * w / h;
-			
+
 			if (referenceHeight <= 0){
 				referenceHeight = frameHeight;
 			}
@@ -47,7 +47,9 @@ public class OverloadEngineAndroid extends OverloadEngine {
 				isRunning = true;
 				init();
 			}
-			
+
+			((RendererAndroid)renderer).onSurfaceChanged(w, h, aspectRatio);
+
 			surfaceView.requestRender();
 		}
 

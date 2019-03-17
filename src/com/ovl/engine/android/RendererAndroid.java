@@ -18,6 +18,7 @@ import com.ovl.graphics.Texture;
 import com.ovl.graphics.android.FontBuilderAndroid;
 import com.ovl.graphics.android.TextureAndroid;
 import com.ovl.graphics.android.TextureLoaderAndroid;
+import com.ovl.utils.MutableFloat;
 import com.ovl.utils.Pair;
 import com.ovl.utils.Vector2;
 import com.ovl.utils.android.Log;
@@ -41,10 +42,12 @@ public final class RendererAndroid extends Renderer {
 		primitiveModes[PrimitiveType.Triangles.getIndex()] = GLES20.GL_TRIANGLES;
 		
 		paramSetterBuilders.put(Color.class, new Pair<ParamSetter.Builder<?>, Object>(new ColorParamSetter.Builder(), Color.WHITE));
+		paramSetterBuilders.put(Vector2.class, new Pair<ParamSetter.Builder<?>, Object>(new Vector2ParamSetter.Builder(), new Vector2()));
 		paramSetterBuilders.put(mvpMatrix.getClass(), new Pair<ParamSetter.Builder<?>, Object>(new MatrixParamSetter.Builder(), mvpMatrix));
 		paramSetterBuilders.put(Texture.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TextureAndroid())));
 		paramSetterBuilders.put(TextureAndroid.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), new TextureAndroid()));
-		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.Builder(), new MutableFloat(0.0f)));
+		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.BuilderMutable(), new MutableFloat(0.0f)));
+		paramSetterBuilders.put(Float.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.BuilderImmutable(), 0.0f));
 	}
 
 	@Override
@@ -56,9 +59,15 @@ public final class RendererAndroid extends Renderer {
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glFrontFace(GLES20.GL_CCW);
-		
+
+		OverloadEngine i = OverloadEngine.getInstance();
+
 		Matrix.setIdentityM(mvpMatrix.matrixImpl, 0);
 		mvpMatrix.matrixImpl[0] = 2.0f / OverloadEngine.getInstance().aspectRatio;
+	}
+
+	public void onSurfaceChanged(int w, int h, float aspect){
+		mvpMatrix.matrixImpl[0] = 2.0f / aspect;
 	}
 
 	protected void loadProgramInfo(Shader shader){

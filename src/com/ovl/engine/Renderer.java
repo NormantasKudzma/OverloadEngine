@@ -77,41 +77,9 @@ public abstract class Renderer {
 	
 	public abstract void renderIndexed(ShaderParams vboId, PrimitiveType mode, ByteBuffer indices, int count);
 	
-	/*public void setTextureData(ShaderParams vboId, Vector2 tl, Vector2 br){
-		Vbo vbo = vboId.vbo;
-		
-		if (tl == null || br == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
-			return;
-		}
-		
-		vbo.setModified(true);
-		
-		int offset = vboId.index * vbo.getObjectSize();
-		vbo.getBuffer().put(2 + offset, tl.x).put(3 + offset, br.y)
-					.put(6 + offset, tl.x).put(7 + offset, tl.y)
-					.put(10 + offset, br.x).put(11 + offset, br.y)
-					.put(14 + offset, br.x).put(15 + offset, tl.y);
-	}
-	
-	public void setVertexData(ShaderParams vboId, Vector2[] v){
-		Vbo vbo = vboId.vbo;
-		
-		if (v == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
-			return;
-		}
-		
-		vbo.setModified(true);
-		
-		int offset = vboId.index * vbo.getObjectSize();
-		vbo.getBuffer().put(offset + 0, v[0].x).put(offset + 1, v[0].y)
-						.put(offset + 4, v[1].x).put(offset + 5, v[1].y)
-						.put(offset + 8, v[2].x).put(offset + 9, v[2].y)
-						.put(offset + 12, v[3].x).put(offset + 13, v[3].y);
-	}*/
-	
 	public void setVertexData(final ShaderParams vboId, final String attribute, Vector2... data){
 		Vbo vbo = vboId.vbo;
-				
+		
 		if (data == null || vboId.index < 0 || vboId.index >= vbo.getSize()){
 			return;
 		}

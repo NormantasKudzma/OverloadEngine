@@ -264,9 +264,6 @@ public final class Vector2 {
 	
 	public static Vector2 pixelCoordsToNormal(Vector2 i){
 		final OverloadEngine engine = OverloadEngine.getInstance();
-		/*i.mul(2.0f)
-		 .div(engine.frameHeight, engine.frameWidth)
-		 .div(engine.aspectRatio, 1.0f / engine.aspectRatio);*/
 		i.mul(engine.aspectRatio / engine.frameWidth, 2.0f / engine.frameHeight).mul(engine.referenceScale);
 		return i;
 	}

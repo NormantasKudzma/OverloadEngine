@@ -4,8 +4,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
-import org.apache.commons.lang3.mutable.MutableFloat;
-
 import com.jogamp.opengl.GL2ES2;
 import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.ParamSetter;
@@ -18,6 +16,7 @@ import com.ovl.graphics.Texture;
 import com.ovl.graphics.arm.FontBuilderArm;
 import com.ovl.graphics.arm.TextureArm;
 import com.ovl.graphics.arm.TextureLoaderArm;
+import com.ovl.utils.MutableFloat;
 import com.ovl.utils.Pair;
 import com.ovl.utils.Vector2;
 
@@ -40,10 +39,12 @@ public final class RendererArm extends Renderer {
 		primitiveModes[PrimitiveType.Triangles.getIndex()] = GL2ES2.GL_TRIANGLES;
 		
 		paramSetterBuilders.put(Color.class, new Pair<ParamSetter.Builder<?>, Object>(new ColorParamSetter.Builder(), Color.WHITE));
+		paramSetterBuilders.put(Vector2.class, new Pair<ParamSetter.Builder<?>, Object>(new Vector2ParamSetter.Builder(), new Vector2()));
 		paramSetterBuilders.put(mvpMatrix.getClass(), new Pair<ParamSetter.Builder<?>, Object>(new MatrixParamSetter.Builder(), mvpMatrix));
 		paramSetterBuilders.put(Texture.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TextureArm())));
 		paramSetterBuilders.put(TextureArm.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), new TextureArm()));
-		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.Builder(), new MutableFloat(0.0f)));
+		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.BuilderMutable(), new MutableFloat(0.0f)));
+		paramSetterBuilders.put(Float.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.BuilderImmutable(), 0.0f));
 	}
 
 	@Override
@@ -167,31 +168,26 @@ public final class RendererArm extends Renderer {
 		return 0;
 	}
 	
-	public Shader createShader(String name){
-		try {
-			Shader shader = new Shader(name);
-			shader.setVSId(compileShader(GL2ES2.GL_VERTEX_SHADER, shader.getVSCode()));
-			shader.setFSId(compileShader(GL2ES2.GL_FRAGMENT_SHADER, shader.getPSCode()));
-			shader.setProgramId(OverloadEngineArm.gl.glCreateProgram());
-			
-			OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), shader.getVSId());
-			OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), shader.getFSId());
-			OverloadEngineArm.gl.glLinkProgram(shader.getProgramId());
-			
-			int glErr = OverloadEngineArm.gl.glGetError();
-			if (glErr != GL2ES2.GL_NO_ERROR){
-				System.err.println("GL error " + glErr);
-			}
-			
-			loadProgramInfo(shader);
-			shaders.put(name, shader);
-			
-			return shader;
+	public Shader createShader(String name) {
+		Shader shader = new Shader(name);
+		shader.setVSId(compileShader(GL2ES2.GL_VERTEX_SHADER, shader.getVSCode()));
+		shader.setFSId(compileShader(GL2ES2.GL_FRAGMENT_SHADER, shader.getPSCode()));
+		shader.setProgramId(OverloadEngineArm.gl.glCreateProgram());
+		
+		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), shader.getVSId());
+		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), shader.getFSId());
+		OverloadEngineArm.gl.glLinkProgram(shader.getProgramId());
+		
+		int glErr = OverloadEngineArm.gl.glGetError();
+		if (glErr != GL2ES2.GL_NO_ERROR){
+			System.err.println("GL error " + glErr);
+			return null;
 		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		return null;
+		
+		loadProgramInfo(shader);
+		shaders.put(name, shader);
+		
+		return shader;
 	}
 	
 	@Override
