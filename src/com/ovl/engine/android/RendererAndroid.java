@@ -3,6 +3,7 @@ package com.ovl.engine.android;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Map;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -60,8 +61,6 @@ public final class RendererAndroid extends Renderer {
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 		GLES20.glFrontFace(GLES20.GL_CCW);
 
-		OverloadEngine i = OverloadEngine.getInstance();
-
 		Matrix.setIdentityM(mvpMatrix.matrixImpl, 0);
 		mvpMatrix.matrixImpl[0] = 2.0f / OverloadEngine.getInstance().aspectRatio;
 	}
@@ -70,7 +69,7 @@ public final class RendererAndroid extends Renderer {
 		mvpMatrix.matrixImpl[0] = 2.0f / aspect;
 	}
 
-	protected void loadProgramInfo(Shader shader){
+	private void loadProgramInfo(Shader shader){
 		int programId = shader.getProgramId();
 		GLES20.glUseProgram(programId);
 		Log.w("------------\nProgram info\n------------");
@@ -176,15 +175,7 @@ public final class RendererAndroid extends Renderer {
 	public Shader createShader(String name){
 		try {
 			Shader shader = new Shader(name);
-			shader.setVSId(compileShader(GLES20.GL_VERTEX_SHADER, shader.getVSCode()));
-			shader.setFSId(compileShader(GLES20.GL_FRAGMENT_SHADER, shader.getPSCode()));
-			shader.setProgramId(GLES20.glCreateProgram());
-			
-			GLES20.glAttachShader(shader.getProgramId(), shader.getVSId());
-			GLES20.glAttachShader(shader.getProgramId(), shader.getFSId());
-			GLES20.glLinkProgram(shader.getProgramId());
-			
-			loadProgramInfo(shader);
+			createShader(shader);
 			shaders.put(name, shader);
 			
 			return shader;
@@ -194,14 +185,28 @@ public final class RendererAndroid extends Renderer {
 		}
 		return null;
 	}
+
+	private void createShader(Shader shader){
+		shader.setProgramId(GLES20.glCreateProgram());
+
+		int vsId = compileShader(GLES20.GL_VERTEX_SHADER, shader.getVSCode());
+		int fsId = compileShader(GLES20.GL_FRAGMENT_SHADER, shader.getFSCode());
+		GLES20.glAttachShader(shader.getProgramId(), vsId);
+		GLES20.glAttachShader(shader.getProgramId(), fsId);
+
+		GLES20.glLinkProgram(shader.getProgramId());
+
+		GLES20.glDetachShader(shader.getProgramId(), vsId);
+		GLES20.glDetachShader(shader.getProgramId(), fsId);
+		GLES20.glDeleteShader(vsId);
+		GLES20.glDeleteShader(fsId);
+
+		loadProgramInfo(shader);
+	}
 	
 	@Override
 	public void postRender() {
-		// Disable vertex array
-		/*if (activeShader != null){
-			cleanupShader(activeShader);
-		}
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);*/
+
 	}
 
 	@Override
@@ -232,12 +237,6 @@ public final class RendererAndroid extends Renderer {
 		for (Shader.Attribute a : activeShader.getAttributes()){
 			GLES20.glVertexAttribPointer(a.id, a.size, GLES20.GL_FLOAT, false, boundVbo.getStride(), a.offset);
 			GLES20.glEnableVertexAttribArray(a.id);
-		}
-	}
-	
-	protected void cleanupShader(Shader shader){
-		for (Shader.Handle handle : shader.getAttributes()){
-			GLES20.glDisableVertexAttribArray(handle.id);
 		}
 	}
 
@@ -292,17 +291,62 @@ public final class RendererAndroid extends Renderer {
 	
 	public void deleteVbo(ShaderParams vboId){
 		Vbo vbo = vboId.getVbo();
-		IntBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
-		buffer.put(vbo.getId());
-		buffer.rewind();
-		GLES20.glDeleteBuffers(1, buffer);
+		int ids[] = new int[]{ vbo.getId() };
+		GLES20.glDeleteBuffers(1, ids, 0);
 		vbos.remove(vbo);
 	}
 	
 	protected void initVbo(Vbo vbo){
-		IntBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
-		GLES20.glGenBuffers(1, buffer);
-		vbo.setId(buffer.get(0));
+		int ids[] = new int[1];
+		GLES20.glGenBuffers(1, ids, 0);
+		vbo.setId(ids[0]);
 		vbos.add(vbo);
+	}
+
+	private void unloadShaders(){
+		for (Shader i : shaders.values()){
+			GLES20.glDeleteProgram(i.getProgramId());
+		}
+	}
+
+	private void reloadShaders(){
+		for (Shader i : shaders.values()){
+			i.reset();
+			createShader(i);
+		}
+	}
+
+	private void unloadVbos(){
+		int ids[] = new int[vbos.size()];
+		for (int i = 0; i < vbos.size(); ++i){
+			ids[i] = vbos.get(i).getId();
+		}
+		GLES20.glDeleteBuffers(vbos.size(), ids, 0);
+	}
+
+	private void reloadVbos(){
+		int ids[] = new int[vbos.size()];
+		GLES20.glGenBuffers(vbos.size(), ids, 0);
+		for (int i = 0; i < vbos.size(); ++i){
+			vbos.get(i).setId(ids[i]);
+			vbos.get(i).setModified(true);
+		}
+	}
+
+	@Override
+	public void unloadResources() {
+		textureLoader.unloadTextures();
+		unloadShaders();
+		unloadVbos();
+
+		activeShader = null;
+		boundVbo = null;
+	}
+
+	@Override
+	public void reloadResources() {
+		textureLoader.reloadTextures();
+		reloadShaders();
+		reloadVbos();
 	}
 }

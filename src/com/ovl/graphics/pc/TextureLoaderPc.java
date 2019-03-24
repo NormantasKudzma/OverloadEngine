@@ -87,7 +87,7 @@ public class TextureLoaderPc extends TextureLoader {
 
 	@Override
 	public Texture getTexture(String resourceName){
-		Texture tex = table.get(resourceName);
+		Texture tex = textureTable.get(resourceName);
 
 		if (tex != null) {
 			return tex;
@@ -96,7 +96,7 @@ public class TextureLoaderPc extends TextureLoader {
 		BufferedImage bufferedImage = loadImage(resourceName);
 		tex = getTexture(bufferedImage);
 
-		table.put(resourceName, tex);
+		textureTable.put(resourceName, tex);
 		
 		return tex;
 	}

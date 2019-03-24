@@ -75,12 +75,6 @@ public class SortedLayer extends Layer {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void clear() {
 		for (int i = 0; i < objects.size(); ++i){
 			objects.get(i).obj.destroy();
 		}
@@ -91,6 +85,20 @@ public class SortedLayer extends Layer {
 	public void render() {
 		for (int i = 0; i < objects.size(); ++i){
 			objects.get(i).obj.render();
+		}
+	}
+
+	@Override
+	public void unloadResources() {
+		for (int i = 0; i < objects.size(); ++i){
+			objects.get(i).obj.unloadResources();
+		}
+	}
+
+	@Override
+	public void reloadResources() {
+		for (int i = 0; i < objects.size(); ++i){
+			objects.get(i).obj.reloadResources();
 		}
 	}
 }

@@ -170,12 +170,12 @@ public final class RendererArm extends Renderer {
 	
 	public Shader createShader(String name) {
 		Shader shader = new Shader(name);
-		shader.setVSId(compileShader(GL2ES2.GL_VERTEX_SHADER, shader.getVSCode()));
-		shader.setFSId(compileShader(GL2ES2.GL_FRAGMENT_SHADER, shader.getPSCode()));
+		int vsId = compileShader(GL2ES2.GL_VERTEX_SHADER, shader.getVSCode());
+		int fsId = compileShader(GL2ES2.GL_FRAGMENT_SHADER, shader.getFSCode());
 		shader.setProgramId(OverloadEngineArm.gl.glCreateProgram());
 		
-		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), shader.getVSId());
-		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), shader.getFSId());
+		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), vsId);
+		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), fsId);
 		OverloadEngineArm.gl.glLinkProgram(shader.getProgramId());
 		
 		int glErr = OverloadEngineArm.gl.glGetError();
@@ -183,6 +183,11 @@ public final class RendererArm extends Renderer {
 			System.err.println("GL error " + glErr);
 			return null;
 		}
+
+		OverloadEngineArm.gl.glDetachShader(shader.getProgramId(), vsId);
+		OverloadEngineArm.gl.glDetachShader(shader.getProgramId(), fsId);
+		OverloadEngineArm.gl.glDeleteShader(vsId);
+		OverloadEngineArm.gl.glDeleteShader(fsId);
 		
 		loadProgramInfo(shader);
 		shaders.put(name, shader);
@@ -315,5 +320,15 @@ public final class RendererArm extends Renderer {
 		OverloadEngineArm.gl.glGenBuffers(1, buffer);
 		vbo.setId(buffer.get(0));
 		vbos.add(vbo);
+	}
+
+	@Override
+	public void unloadResources() {
+
+	}
+
+	@Override
+	public void reloadResources() {
+
 	}
 }

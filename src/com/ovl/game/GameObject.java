@@ -212,4 +212,12 @@ public class GameObject implements Collidable, Updatable, ICloneable {
 			sprite.updateVertices(pos, scale, rotation);
 		}
 	}
+
+	public void unloadResources(){
+		if (sprite != null) sprite.unloadResources();
+	}
+
+	public void reloadResources(){
+		if (sprite != null) sprite.reloadResources();
+	}
 }

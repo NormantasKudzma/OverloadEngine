@@ -15,7 +15,6 @@ import java.awt.image.WritableRaster;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
@@ -28,8 +27,6 @@ import com.ovl.graphics.TextureLoader;
 public class TextureLoaderArm extends TextureLoader {
 	private ColorModel glAlphaColorModel;
 	private ColorModel glColorModel;
-	
-	private IntBuffer textureIDBuffer = IntBuffer.allocate(1);
 
 	public TextureLoaderArm() {
 		glAlphaColorModel = new ComponentColorModel(
@@ -44,38 +41,32 @@ public class TextureLoaderArm extends TextureLoader {
 	}
 
 	@Override
-	protected int createTextureID() {
-		OverloadEngineArm.gl.glGenTextures(1, textureIDBuffer);
-		return textureIDBuffer.get(0);
-	}
-
-	@Override
 	public Texture getTexture(String resourceName){
-		Texture tex = table.get(resourceName);
+		Texture tex = textureTable.get(resourceName);
 
 		if (tex != null) {
 			return tex;
 		}
 
-		BufferedImage imageFile = loadImage(resourceName);
-		//ImageData imageData = parseImage(resourceName, imageFile);
-		ImageData data = new ImageData();
-		data.buffer = convertImageData(imageFile);
-		data.width = imageFile.getWidth();
-		data.height = imageFile.getHeight();
-		tex = createTexture(data, TexSize.POT);
-
-		table.put(resourceName, tex);
+		tex = createTexture(loadImage(resourceName));
+		
+		textureTable.put(resourceName, tex);
 		
 		return tex;
 	}
 
-	public Texture getTexture(BufferedImage bufferedImage){
+	public Texture createTexture(BufferedImage image) {
+		Texture texture = new TextureArm();
+		createTexture(texture, image);
+		return texture;
+	}
+	
+	private void createTexture(Texture texture, BufferedImage bufferedImage){
 		ImageData data = new ImageData();
 		data.buffer = convertImageData(bufferedImage);
 		data.width = bufferedImage.getWidth();
 		data.height = bufferedImage.getHeight();
-		return createTexture(data, TexSize.POT);
+		createTexture(texture, data, TexSize.POT);
 	}
 	
 	private ByteBuffer convertImageData(BufferedImage bufferedImage) {
@@ -119,10 +110,7 @@ public class TextureLoaderArm extends TextureLoader {
 		return imageBuffer;
 	}
 	
-	public Texture createTexture(ImageData data, TexSize type) {
-		int textureID = createTextureID();
-		Texture texture = new TextureArm(textureID);
-
+	protected void createTexture(Texture texture, ImageData data, TexSize type) {
 		texture.bind();
 
 		texture.setWidth(data.width);
@@ -138,8 +126,6 @@ public class TextureLoaderArm extends TextureLoader {
 
 		// produce a texture from the byte buffer
 		OverloadEngineArm.gl.glTexImage2D(GL2ES2.GL_TEXTURE_2D, 0, GL2ES2.GL_RGBA, texWidth, texHeight, 0, GL2ES2.GL_RGBA, GL2ES2.GL_UNSIGNED_BYTE, data.buffer);
-
-		return texture;
 	}
 
 	public ByteBuffer getTextureData(Texture tex){
@@ -175,13 +161,4 @@ public class TextureLoaderArm extends TextureLoader {
 
 		return bufferedImage;
 	}
-	
-	/*protected ImageData parseImage(String ref, byte bytes[]){
-		if (ref.endsWith(".png")){
-			return PngParser.parse(bytes);
-		}
-		else {
-			return null;
-		}
-	}*/
 }

@@ -18,17 +18,11 @@ public class UnsortedLayer extends Layer {
 		gameObjectList.add(gameObject);
 	}
 	
-	@Override
-	public void clear(){
-		gameObjectList.clear();
-		destroyMarkedObjects();
-	}
-	
 	public void destroy() {
 		for (GameObject i : gameObjectList) {
 			i.destroy();
 		}
-		clear();
+		gameObjectList.clear();
 	}
 	
 	public void destroyMarkedObjects(){
@@ -58,6 +52,20 @@ public class UnsortedLayer extends Layer {
 	public void update(float deltaTime) {
 		for (int i = 0; i < gameObjectList.size(); ++i){
 			gameObjectList.get(i).update(deltaTime);
+		}
+	}
+
+	@Override
+	public void unloadResources() {
+		for (int i = 0; i < gameObjectList.size(); ++i){
+			gameObjectList.get(i).unloadResources();
+		}
+	}
+
+	@Override
+	public void reloadResources() {
+		for (int i = 0; i < gameObjectList.size(); ++i){
+			gameObjectList.get(i).reloadResources();
 		}
 	}
 }

@@ -30,6 +30,10 @@ public final class Vector2 {
 		this(i.x, i.y);
 	}
 	
+	public Vector2(float i) {
+		this(i, i);
+	}
+	
 	public Vector2(float x, float y){
 		this.x = x;
 		this.y = y;
@@ -262,7 +266,7 @@ public final class Vector2 {
 		return (float)Math.sqrt(distanceSqr(i, j));
 	}
 	
-	public static Vector2 pixelCoordsToNormal(Vector2 i){
+	public static Vector2 toNormal(Vector2 i){
 		final OverloadEngine engine = OverloadEngine.getInstance();
 		i.mul(engine.aspectRatio / engine.frameWidth, 2.0f / engine.frameHeight).mul(engine.referenceScale);
 		return i;

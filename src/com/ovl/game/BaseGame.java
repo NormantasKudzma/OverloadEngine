@@ -70,19 +70,6 @@ public class BaseGame implements Updatable {
 		addLayer(new UnsortedLayer(layerName, index));
 	}
 	
-	public void clearLayer(UnsortedLayer l){
-		clearLayer(l.getName());
-	}
-	
-	public void clearLayer(String layerName){
-		for (Layer l : layers){
-			if (l.getName().equalsIgnoreCase(layerName)){
-				l.clear();
-				break;
-			}
-		}
-	}
-	
 	/**
 	 * Game destruction method. This method will be called last. Any acquired resources
 	 * should be released here.
@@ -324,5 +311,17 @@ public class BaseGame implements Updatable {
 
 	protected Renderer getRenderer(){
 		return OverloadEngine.getInstance().renderer;
+	}
+
+	public void unloadResources(){
+		for (int i = 0; i < layers.size(); i++) {
+			layers.get(i).unloadResources();
+		}
+	}
+
+	public void reloadResources(){
+		for (int i = 0; i < layers.size(); i++) {
+			layers.get(i).reloadResources();
+		}
 	}
 }

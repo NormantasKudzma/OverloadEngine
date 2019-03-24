@@ -167,4 +167,7 @@ public abstract class Renderer {
 	protected abstract void initVbo(Vbo vbo);
 	
 	public abstract void deleteVbo(ShaderParams vboId);
+
+	public abstract void unloadResources();
+	public abstract void reloadResources();
 }

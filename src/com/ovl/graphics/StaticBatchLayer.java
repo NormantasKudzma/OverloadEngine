@@ -120,10 +120,6 @@ public class StaticBatchLayer extends Layer {
 			}
 			renderer.deleteVbo(batch.id);
 		}
-	}
-
-	@Override
-	public void clear() {
 		objects.clear();
 	}
 
@@ -136,5 +132,15 @@ public class StaticBatchLayer extends Layer {
 			batch = it.next();
 			renderer.renderIndexed(batch.id, Renderer.PrimitiveType.Triangles, batch.indices, batch.objects.size() * 6);
 		}
+	}
+
+	@Override
+	public void unloadResources() {
+		// FIXME
+	}
+
+	@Override
+	public void reloadResources() {
+		// FIXME
 	}
 }

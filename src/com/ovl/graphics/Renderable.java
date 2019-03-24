@@ -22,4 +22,7 @@ public interface Renderable {
 	public void setShaderParams(ShaderParams params);
 	
 	public void updateVertices(Vector2 pos, Vector2 scale, float rotation);
+
+	public void unloadResources();
+	public void reloadResources();
 }

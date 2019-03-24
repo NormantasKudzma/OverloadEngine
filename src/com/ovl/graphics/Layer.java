@@ -24,8 +24,9 @@ public abstract class Layer implements Updatable {
 	}
 	
 	public abstract void addObject(GameObject obj);
-	public abstract void clear();
+	public abstract void destroy();
 	public abstract void render();
 
-	public abstract void destroy();
+	public abstract void unloadResources();
+	public abstract void reloadResources();
 }

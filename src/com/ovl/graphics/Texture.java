@@ -7,24 +7,25 @@ public abstract class Texture {
 	private int texHeight;
 	private float widthRatio;
 	private float heightRatio;
-	
-	protected int id;		// for glBindTexture
+	private boolean hasData = false;
+
+	protected int id = -1;	// for glBindTexture
 	protected int target;	// for glActiveTexture
 
 	public Texture(){
-		this(0, 0);
+		this(0);
 	}
 	
-	public Texture(int id){
-		this(id, 0);
-	}
-	
-	public Texture(int id, int target) {
-		this.id = id;
+	public Texture(int target) {
 		this.target = target;
+		create();
 	}
 	
 	public abstract void bind();
+
+	protected abstract int generateId();
+
+	protected abstract void destroy();
 	
 	public int getId(){
 		return id;
@@ -80,5 +81,23 @@ public abstract class Texture {
 		if (texWidth != 0) {
 			widthRatio = ((float) width) / texWidth;
 		}
+	}
+
+	public void destroyTexture(){
+		if (hasData) {
+			destroy();
+			hasData = false;
+		}
+	}
+
+	public void create(){
+		if (!hasData){
+			this.id = generateId();
+			hasData = true;
+		}
+	}
+
+	public boolean hasData(){
+		return hasData;
 	}
 }

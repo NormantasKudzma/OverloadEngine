@@ -253,10 +253,6 @@ public class DynamicBatchLayer extends Layer {
 			renderer.releaseId(objects.get(i).id);
 		}
 		renderer.deleteVbo(id);
-	}
-
-	@Override
-	public void clear() {
 		objects.clear();
 	}
 
@@ -320,5 +316,15 @@ public class DynamicBatchLayer extends Layer {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void unloadResources() {
+		// FIXME
+	}
+
+	@Override
+	public void reloadResources() {
+		// FIXME
 	}
 }

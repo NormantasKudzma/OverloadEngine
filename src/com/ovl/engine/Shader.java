@@ -45,8 +45,6 @@ public class Shader {
 	
 	private String resourceName;
 	private int programId = -1;
-	private int vsId = -1;
-	private int fsId = -1;
 	private int totalSize = 0;
 	private ArrayList<Uniform> uniforms;
 	private Attribute attributes[];
@@ -56,15 +54,13 @@ public class Shader {
 	}
 	
 	public String getVSCode(){
-		StringBuilder resource = new StringBuilder();
-		resource.append(Paths.getShaders()).append(resourceName).append("_VS");
-		return ConfigManager.loadFile(resource.toString());
+		String resource = Paths.getShaders() + resourceName + "_VS";
+		return ConfigManager.loadFile(resource);
 	}
 	
-	public String getPSCode(){
-		StringBuilder resource = new StringBuilder();
-		resource.append(Paths.getShaders()).append(resourceName).append("_FS");
-		return ConfigManager.loadFile(resource.toString());
+	public String getFSCode(){
+		String resource = Paths.getShaders() + resourceName + "_FS";
+		return ConfigManager.loadFile(resource);
 	}
 
 	public int getProgramId() {
@@ -73,22 +69,6 @@ public class Shader {
 
 	public void setProgramId(int programId) {
 		this.programId = programId;
-	}
-
-	public int getVSId() {
-		return vsId;
-	}
-
-	public void setVSId(int vsId) {
-		this.vsId = vsId;
-	}
-
-	public int getFSId() {
-		return fsId;
-	}
-
-	public void setFSId(int fsId) {
-		this.fsId = fsId;
 	}
 	
 	public void startAttributeDeclaration(int count){
@@ -143,5 +123,12 @@ public class Shader {
 	
 	public int getTotalAttributesSize(){
 		return totalSize;
+	}
+
+	public void reset(){
+		programId = -1;
+		totalSize = 0;
+		uniforms.clear();
+		attributes = null;
 	}
 }

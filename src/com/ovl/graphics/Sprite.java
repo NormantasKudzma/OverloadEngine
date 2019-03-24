@@ -231,6 +231,17 @@ public class Sprite implements Renderable, ICloneable {
 	}
 	
 	private void refreshVertexData(){
-		renderer.setVertexData(id, Shader.A_POSITION ,verts);
+		renderer.setVertexData(id, Shader.A_POSITION, verts);
+	}
+
+	@Override
+	public void unloadResources() {
+
+	}
+
+	@Override
+	public void reloadResources() {
+		refreshVertexData();
+		setUV(uv);
 	}
 }

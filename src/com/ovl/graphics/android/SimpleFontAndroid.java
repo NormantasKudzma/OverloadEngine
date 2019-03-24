@@ -17,7 +17,6 @@ public class SimpleFontAndroid extends SimpleFont {
 	private Canvas canvas;
 	private Bitmap bmp;
 	private Paint paint;
-	private Paint clearPaint;
 	private CustomFontAndroid font;	
 	private Rect textBounds = new Rect();
 	
@@ -28,8 +27,6 @@ public class SimpleFontAndroid extends SimpleFont {
 		paint.setColor(android.graphics.Color.WHITE);
 		paint.setFlags(Paint.ANTI_ALIAS_FLAG);
 		paint.setTextAlign(Paint.Align.LEFT);
-		
-		clearPaint = new Paint();
 	}
 	
 	public CustomFont getFont(){
@@ -52,6 +49,7 @@ public class SimpleFontAndroid extends SimpleFont {
 		Color oldColor = null;
 		if (sprite != null){
 			oldColor = sprite.getColor();
+			((Sprite)sprite).getTexture().destroyTexture();
 			sprite.destroy();
 		}
 
@@ -65,8 +63,8 @@ public class SimpleFontAndroid extends SimpleFont {
 		
 		Rect rect = new Rect();
 		paint.getTextBounds(longestLine, 0, longestLine.length(), rect);
-		Vector2.pixelCoordsToNormal(textSize.set(rect.width(), rect.height() * lines.length));
-		Vector2.pixelCoordsToNormal(textOffset.set(rect.left, rect.bottom));
+		Vector2.toNormal(textSize.set(rect.width(), rect.height() * lines.length));
+		Vector2.toNormal(textOffset.set(rect.left, rect.bottom));
 		
 		int newWidth = FastMath.nextPowerOfTwo(rect.width());
 		int newHeight = FastMath.nextPowerOfTwo(rect.height() * lines.length);
@@ -90,7 +88,7 @@ public class SimpleFontAndroid extends SimpleFont {
 		Bitmap textSubImage = Bitmap.createBitmap(bmp, 0, 0, newWidth, newHeight);
 		
 		TextureLoaderAndroid textureLoader = ((TextureLoaderAndroid)RENDERER.getTextureLoader());
-		setSprite(new Sprite(textureLoader.getTexture(textSubImage)));
+		setSprite(new Sprite(textureLoader.createTexture(textSubImage)));
 		
 		if (oldColor != null){
 			sprite.setColor(oldColor);
@@ -107,5 +105,20 @@ public class SimpleFontAndroid extends SimpleFont {
 		paint.setTextSize(font.getSize());
 		paint.setTypeface(font.getTypeface());
 		prerenderText();
+	}
+
+	@Override
+	public void unloadResources() {
+		super.unloadResources();
+
+		if (sprite != null){
+			((Sprite)sprite).getTexture().destroyTexture();
+		}
+	}
+
+	@Override
+	public void reloadResources() {
+		prerenderText();
+		super.reloadResources();
 	}
 }

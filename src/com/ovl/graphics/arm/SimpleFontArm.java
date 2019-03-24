@@ -64,6 +64,7 @@ public class SimpleFontArm extends SimpleFont {
 		Color oldColor = null;
 		if (sprite != null){
 			oldColor = sprite.getColor();
+			((Sprite)sprite).getTexture().destroyTexture();
 			sprite.destroy();
 		}
 
@@ -79,8 +80,8 @@ public class SimpleFontArm extends SimpleFont {
 		GlyphVector gv = f.createGlyphVector(frc, longestLine);
 		Rectangle rect = gv.getVisualBounds().getBounds();
 		
-		Vector2.pixelCoordsToNormal(textSize.set(rect.width, rect.height * lines.length));
-		Vector2.pixelCoordsToNormal(textOffset.set(rect.x, rect.y));
+		Vector2.toNormal(textSize.set(rect.width, rect.height * lines.length));
+		Vector2.toNormal(textOffset.set(rect.x, rect.y));
 		
 		int newWidth = FastMath.nextPowerOfTwo(rect.width + rect.x);
 		int newHeight = FastMath.nextPowerOfTwo(Math.abs(rect.y) + rect.height * lines.length);
@@ -106,7 +107,7 @@ public class SimpleFontArm extends SimpleFont {
 		
 		BufferedImage textSubImage = bufferedImage.getSubimage(0, 0, newWidth, newHeight);
 		TextureLoaderArm textureLoader = ((TextureLoaderArm)RENDERER.getTextureLoader());
-		setSprite(new Sprite(textureLoader.getTexture(textSubImage)));
+		setSprite(new Sprite(textureLoader.createTexture(textSubImage)));
 		
 		if (oldColor != null){
 			sprite.setColor(oldColor);

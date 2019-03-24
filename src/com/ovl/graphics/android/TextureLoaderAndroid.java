@@ -11,63 +11,56 @@ import java.util.Map;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
-import android.opengl.GLUtils;
 
 import com.ovl.graphics.Texture;
 import com.ovl.graphics.TextureLoader;
 import com.ovl.utils.android.Log;
 
 public class TextureLoaderAndroid extends TextureLoader {
-	private int[] textureIDBuffer = new int[1];
-
-	public TextureLoaderAndroid() {
-
-	}
-
-	protected int createTextureID() {
-		GLES20.glGenTextures(1, textureIDBuffer, 0);
-		return textureIDBuffer[0];
-	}
-
 	public Texture getTexture(String resourceName){
-		Texture tex = table.get(resourceName);
+		Texture tex = textureTable.get(resourceName);
 
-		if (tex != null) {
+		if (tex == null){
+			tex = new TextureAndroid();
+		}
+		else if (tex.hasData()) {
 			return tex;
 		}
 
-		tex = getTexture(loadImage(resourceName));
+		createTexture(tex, loadImage(resourceName));
 
-		table.put(resourceName, tex);
+		textureTable.put(resourceName, tex);
 		
 		return tex;
 	}
-	
-	public Texture getTexture(Bitmap bmp){
+
+	public TextureAndroid createTexture(Bitmap bmp){
+		TextureAndroid tex = new TextureAndroid();
+		createTexture(tex, bmp);
+		return tex;
+	}
+
+	private void createTexture(Texture tex, Bitmap bmp){
 		ByteBuffer buf = getRGBABytes(bmp);
 		ImageData data = new ImageData();
 		data.buffer = buf;
 		data.width = bmp.getWidth();
 		data.height = bmp.getHeight();
-		Texture tex = createTexture(data, TexSize.NON_POT);
+		createTexture(tex, data, TexSize.NON_POT);
 		
 		bmp.recycle();
-		
-		return tex;
 	}
 	
-	public Texture createTexture(ImageData data, TexSize type){
-		Texture texture = new TextureAndroid(createTextureID());
-		
-		texture.bind();
-		
-		texture.setWidth(data.width);
-		texture.setHeight(data.height);
+	protected void createTexture(Texture tex, ImageData data, TexSize type){
+		tex.bind();
+
+		tex.setWidth(data.width);
+		tex.setHeight(data.height);
 		
 		int texWidth = type == TexSize.POT ? get2Fold(data.width) : data.width;
 		int texHeight = type == TexSize.POT ? get2Fold(data.height) : data.height;
-		texture.setTextureWidth(texWidth);
-		texture.setTextureHeight(texHeight);
+		tex.setTextureWidth(texWidth);
+		tex.setTextureHeight(texHeight);
 		
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
@@ -80,14 +73,12 @@ public class TextureLoaderAndroid extends TextureLoader {
 		if (glErr != GLES20.GL_NO_ERROR){
 			Log.w("GL error when creating texture " + glErr);
 		}
-		
-		return texture;
 	}
 	
 	public ByteBuffer getTextureData(Texture tex){
 		// workaround, just reload tex from file..
 		Bitmap bmp = null;
-		for (Map.Entry<String, Texture> i : table.entrySet()){
+		for (Map.Entry<String, Texture> i : textureTable.entrySet()){
 			if (i.getValue() == tex){
 				bmp = loadImage(i.getKey());
 				break;
@@ -104,7 +95,7 @@ public class TextureLoaderAndroid extends TextureLoader {
 		return buf;
 	}
 	
-	protected ByteBuffer getRGBABytes(Bitmap bmp){
+	private ByteBuffer getRGBABytes(Bitmap bmp){
 		int numBytes = bmp.getRowBytes() * bmp.getHeight();
 		ByteBuffer buf = ByteBuffer.allocateDirect(numBytes).order(ByteOrder.BIG_ENDIAN);
 		IntBuffer ib = buf.asIntBuffer();
@@ -119,8 +110,8 @@ public class TextureLoaderAndroid extends TextureLoader {
 		buf.rewind();
 		return buf;
 	}
-	
-	protected Bitmap loadImage(String ref){
+
+	private Bitmap loadImage(String ref){
 		InputStream stream = null;
 		try {
 			URL url = Thread.currentThread().getContextClassLoader().getResource(ref);
@@ -133,8 +124,24 @@ public class TextureLoaderAndroid extends TextureLoader {
 		}
 		catch (IOException e){
 			Log.w(e.toString());
-			try {if (stream != null) stream.close();} catch (Exception ex){}
+			try {if (stream != null) stream.close();}
+			catch (Exception ex){ Log.w(ex.toString()); }
 			return null;
+		}
+	}
+
+	@Override
+	public void unloadTextures() {
+		for (Map.Entry<String, Texture> i : textureTable.entrySet()){
+			i.getValue().destroyTexture();
+		}
+	}
+
+	@Override
+	public void reloadTextures() {
+		for (Map.Entry<String, Texture> i : textureTable.entrySet()){
+			i.getValue().create();
+			createTexture(i.getValue(), loadImage(i.getKey()));
 		}
 	}
 }

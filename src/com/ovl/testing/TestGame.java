@@ -11,17 +11,12 @@ import com.ovl.engine.Shader;
 import com.ovl.engine.Vbo;
 import com.ovl.game.BaseGame;
 import com.ovl.game.GameObject;
-import com.ovl.graphics.BadLayer;
 import com.ovl.graphics.DynamicBatchLayer;
 import com.ovl.graphics.Layer;
 import com.ovl.graphics.Primitive;
-import com.ovl.graphics.SimpleFont;
-import com.ovl.graphics.SortedLayer;
 import com.ovl.graphics.Sprite;
 import com.ovl.graphics.StaticBatchLayer;
-import com.ovl.graphics.UnsortedLayer;
 import com.ovl.ui.Button;
-import com.ovl.ui.OnClickListener;
 import com.ovl.utils.Paths;
 import com.ovl.utils.Vector2;
 
@@ -33,7 +28,6 @@ public class TestGame extends BaseGame {
 	Layer sortedLayer;// = new SortedLayer("sorted", 110);
 	StaticBatchLayer staticBatchLayer;// = new StaticBatchLayer("static", 120);
 	DynamicBatchLayer dynamicBatchLayer;
-	BadLayer badLayer;
 	
 	Button showUnsorted;
 	Button showSorted;
@@ -73,7 +67,7 @@ public class TestGame extends BaseGame {
 	}
 	
 	public void init_o() {
-		showUnsorted = new Button(this, "");
+		/*showUnsorted = new Button(this, "");
 		showUnsorted.setPosition(-0.7f, 0.8f);
 		showUnsorted.setScale(0.25f, 0.25f);
 		showUnsorted.setClickListener(new OnClickListener(){

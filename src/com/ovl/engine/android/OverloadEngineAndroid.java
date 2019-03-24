@@ -6,7 +6,6 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.view.SurfaceView;
 
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.OverloadEngine;
@@ -14,10 +13,20 @@ import com.ovl.utils.ConfigManager;
 import com.ovl.utils.DebugFrameCounter;
 import com.ovl.utils.android.Log;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class OverloadEngineAndroid extends OverloadEngine {
 	private class SurfaceViewRenderer implements GLSurfaceView.Renderer {
 		@Override
 		public void onDrawFrame(GL10 deprecated) {
+			if (!canRender.get()) { return; }
+
+			if (reloadResources && isRunning){
+				renderer.reloadResources();
+				game.reloadResources();
+			}
+			reloadResources = false;
+
 			loop();
 			
 			renderer.preRender();
@@ -27,44 +36,53 @@ public class OverloadEngineAndroid extends OverloadEngine {
 
 		@Override
 		public void onSurfaceChanged(GL10 deprecated, int w, int h) {
+			Log.w(String.format("On surface changed w%d h%d", w, h));
 			GLES20.glViewport(0, 0, w, h);
-			
-			frameHeight = h;
-			frameWidth = w;
-			aspectRatio = 1.0f * w / h;
 
-			if (referenceHeight <= 0){
-				referenceHeight = frameHeight;
+			if (frameWidth == 0 || frameHeight == 0 || h < w) {
+				frameHeight = h;
+				frameWidth = w;
+				aspectRatio = 1.0f * w / h;
+
+				if (referenceHeight <= 0) {
+					referenceHeight = frameHeight;
+				}
+				if (referenceWidth <= 0) {
+					referenceWidth = frameWidth;
+				}
+				referenceScale = Math.min(1.0f * frameWidth / referenceWidth, 1.0f * frameHeight / referenceHeight);
 			}
-			if (referenceWidth <= 0){
-				referenceWidth = frameWidth;
-			}
-			referenceScale = Math.min(1.0f * frameWidth / referenceWidth, 1.0f * frameHeight / referenceHeight);
-			
+
 			t0 = t1 = System.nanoTime();
 			
 			if (!isRunning){
-				isRunning = true;
 				init();
+				isRunning = true;
 			}
 
-			((RendererAndroid)renderer).onSurfaceChanged(w, h, aspectRatio);
-
-			surfaceView.requestRender();
+			((RendererAndroid)renderer).onSurfaceChanged(frameWidth, frameHeight, aspectRatio);
 		}
 
 		@Override
 		public void onSurfaceCreated(GL10 deprecated, EGLConfig cfg) {
 			Log.w("Surface created");
+
+			if (renderer == null) {
+				renderer = new RendererAndroid();
+			}
+			initGL();
+
+			canRender.set(true);
 		}
 	}
 	
 	private CustomSurfaceView surfaceView;
 	private SurfaceViewRenderer surfaceViewRenderer;
 	private Context ctx;
-	//private boolean isStarted = false;
 	private long t0, t1; // Frame start/end time;
 	private boolean isRunning = false;
+	private boolean reloadResources = false;
+	private AtomicBoolean canRender = new AtomicBoolean(false);
 	
 	public OverloadEngineAndroid(EngineConfig config) {
 		super(config);
@@ -72,22 +90,16 @@ public class OverloadEngineAndroid extends OverloadEngine {
 
 	@Override
 	protected void destroy() {
-		// TODO Auto-generated method stub	
+		// TODO:...
 	}
 
 	@Override
 	protected void init() {
-		//isStarted = true;
 		platform = EnginePlatform.PLATFORM_ANDROID;
 		platformAssetsRoot = "assets/";
 		
 		ConfigManager.gameConfiguration = ConfigManager.loadFileLines(config.configPath);
 		Settings.parseConfig(ConfigManager.gameConfiguration);
-				
-		if (renderer == null) {
-			renderer = new RendererAndroid();
-			initGL();
-		}
 		
 		// Create and initialize game
 		game = config.game;
@@ -115,12 +127,26 @@ public class OverloadEngineAndroid extends OverloadEngine {
 		return ctx;
 	}
 	
-	public SurfaceView getSurfaceView(Context ctx){
+	public GLSurfaceView getSurfaceView(Context ctx){
 		if (surfaceViewRenderer == null){
+			this.ctx = ctx;
 			surfaceViewRenderer = new SurfaceViewRenderer();
 			surfaceView = new CustomSurfaceView(ctx, surfaceViewRenderer);
 		}
-		this.ctx = ctx;
 		return surfaceView;
+	}
+
+	public void onPause() {
+		canRender.set(false);
+		if (isRunning) {
+			renderer.unloadResources();
+			game.unloadResources();
+		}
+		surfaceView.onPause();
+	}
+
+	public void onResume(){
+		surfaceView.onResume();
+		reloadResources = isRunning;
 	}
 }

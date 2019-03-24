@@ -134,4 +134,14 @@ public class Primitive implements Renderable {
 	public void updateVertices(Vector2 pos, Vector2 scale, float rotation){
 		refreshVertexData();
 	}
+
+	@Override
+	public void unloadResources() {
+
+	}
+
+	@Override
+	public void reloadResources() {
+		refreshVertexData();
+	}
 }

@@ -10,14 +10,6 @@ public class TextureArm extends Texture {
 	public TextureArm(){
 		super();
 	}
-	
-	public TextureArm(int id){
-		super(id);
-	}
-	
-	public TextureArm(int id, int target) {
-		super(id, target);
-	}
 
 	@Override
 	public void bind() {
@@ -26,5 +18,18 @@ public class TextureArm extends Texture {
 			OverloadEngineArm.gl.glActiveTexture(GLES2.GL_TEXTURE0 + target);
 			OverloadEngineArm.gl.glBindTexture(GLES2.GL_TEXTURE_2D, id);
 		}
+	}
+
+	@Override
+	protected int generateId() {
+		int ids[] = new int[1];
+		OverloadEngineArm.gl.glGenTextures(1, ids, 0);
+		return ids[0];
+	}
+
+	@Override
+	protected void destroy() {
+		int ids[] = new int[]{ id };
+		OverloadEngineArm.gl.glDeleteTextures(1, ids, 0);
 	}
 }

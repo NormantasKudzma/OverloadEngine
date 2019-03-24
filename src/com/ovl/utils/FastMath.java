@@ -102,4 +102,12 @@ public class FastMath {
 	public static int nextPowerOfTwo(int num){
 		return Integer.highestOneBit(num) << 1;
 	}
+
+	public static final int clamp(int v, int min, int max) {
+		return Math.max(min, Math.min(v, max));
+	}
+	
+	public static final float clamp(float v, float min, float max) {
+		return Math.max(min, Math.min(v, max));
+	}
 }
