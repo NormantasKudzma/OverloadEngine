@@ -17,7 +17,11 @@ public class UnsortedLayer extends Layer {
 	public void addObject(GameObject gameObject){
 		gameObjectList.add(gameObject);
 	}
-	
+
+	public void removeObject(GameObject gameObject){
+		gameObjectList.remove(gameObject);
+	}
+
 	public void destroy() {
 		for (GameObject i : gameObjectList) {
 			i.destroy();

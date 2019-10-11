@@ -40,12 +40,17 @@ public class BaseGame implements Updatable {
 	}
 	
 	public void addObject(GameObject gameObject, String layerName){
-		for (Layer l : layers){
-			if (l.getName().equalsIgnoreCase(layerName)){
-				l.addObject(gameObject);
-				break;
-			}
-		}
+		Layer layer = getLayer(layerName);
+		if (layer == null) { return; }
+
+		layer.addObject(gameObject);
+	}
+
+	public void removeObject(GameObject gameObject, String layerName){
+		Layer layer = getLayer(layerName);
+		if (layer == null) { return; }
+
+		layer.removeObject(gameObject);
 	}
 	
 	public void addLayer(Layer layer){

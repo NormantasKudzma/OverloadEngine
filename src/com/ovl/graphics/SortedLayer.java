@@ -73,6 +73,10 @@ public class SortedLayer extends Layer {
 		}
 	}
 
+	public void removeObject(GameObject gameObject){
+		objects.remove(gameObject);
+	}
+
 	@Override
 	public void destroy() {
 		for (int i = 0; i < objects.size(); ++i){
