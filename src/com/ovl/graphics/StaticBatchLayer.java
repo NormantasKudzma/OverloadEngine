@@ -52,7 +52,11 @@ public class StaticBatchLayer extends Layer {
 		}
 		batch.objects.add(obj);
 	}
-	
+
+	public void removeObject(GameObject gameObject){
+		// TODO: fixme!
+	}
+
 	public void finish(){
 		if (objects.isEmpty()){
 			return;

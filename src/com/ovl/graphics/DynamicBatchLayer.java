@@ -117,6 +117,10 @@ public class DynamicBatchLayer extends Layer {
 		objects.add(new PackedSprite(obj, rect, uv));*/
 	}
 
+	public void removeObject(GameObject gameObject){
+		// TODO: fixme!
+	}
+
 	public void finish() {
 		long t0 = System.nanoTime();
 		
