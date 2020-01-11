@@ -43,8 +43,8 @@ public final class RendererArm extends Renderer {
 		paramSetterBuilders.put(mvpMatrix.getClass(), new Pair<ParamSetter.Builder<?>, Object>(new MatrixParamSetter.Builder(), mvpMatrix));
 		paramSetterBuilders.put(Texture.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), ((Texture)new TextureArm())));
 		paramSetterBuilders.put(TextureArm.class, new Pair<ParamSetter.Builder<?>, Object>(new TextureParamSetter.Builder(), new TextureArm()));
-		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.BuilderMutable(), new MutableFloat(0.0f)));
-		paramSetterBuilders.put(Float.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.BuilderImmutable(), 0.0f));
+		//paramSetterBuilders.put(Float.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.Builder(), 0.0f));
+		paramSetterBuilders.put(MutableFloat.class, new Pair<ParamSetter.Builder<?>, Object>(new FloatParamSetter.Builder(), 0.0f));
 	}
 
 	@Override
@@ -287,12 +287,15 @@ public final class RendererArm extends Renderer {
 		OverloadEngineArm.gl.glGetShaderiv(shader, GL2ES2.GL_COMPILE_STATUS, result, 0);
 		boolean isCompiled = result[0] != GL2ES2.GL_FALSE;
 
+		OverloadEngineArm.gl.glGetShaderiv(shader, GL2ES2.GL_INFO_LOG_LENGTH, result, 0);
+		int infoLogLength = Math.max(1024, result[0]);
+
 		if (!isCompiled){
 			int lengthBuf[] = new int[1];
-			byte logBuf[] = new byte[1024];
+			byte logBuf[] = new byte[infoLogLength];
 			
-			OverloadEngineArm.gl.glGetShaderInfoLog(shader, 1024, lengthBuf, 0, logBuf, 0);
-			System.err.println("Shader compilation error. More info:\n" + new String(logBuf, 0, logBuf[lengthBuf[0]]));
+			OverloadEngineArm.gl.glGetShaderInfoLog(shader, infoLogLength, lengthBuf, 0, logBuf, 0);
+			System.err.println("Shader compilation error. More info:\n" + new String(logBuf, 0, lengthBuf[0]));
 		}
 		
 		return shader;

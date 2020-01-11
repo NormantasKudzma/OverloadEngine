@@ -1,12 +1,5 @@
 package com.ovl.engine.arm;
 
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-
 import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
@@ -37,7 +30,6 @@ public class OverloadEngineArm extends OverloadEngine implements GLEventListener
 	private boolean isDestroyed;
 	private boolean isInitialized;
 	private String glProfile;
-	//private DropTarget dropTarget;
 	
 	public OverloadEngineArm(EngineConfig config){
 		super(config);
@@ -128,39 +120,6 @@ public class OverloadEngineArm extends OverloadEngine implements GLEventListener
 			animator.add(window);
 			animator.start();
 		}
-//		
-//		dropTarget = new DropTarget(window, DnDConstants.ACTION_COPY_OR_MOVE, new DropTargetListener(){
-//
-//			@Override
-//			public void dragEnter(DropTargetDragEvent arg0) {
-//				System.out.println("DRAG ENTER " + arg0.toString());
-//			}
-//
-//			@Override
-//			public void dragExit(DropTargetEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void dragOver(DropTargetDragEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void drop(DropTargetDropEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void dropActionChanged(DropTargetDragEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//		});
 	}
 	
 	protected void initArm() {

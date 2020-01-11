@@ -2,24 +2,21 @@ package com.ovl.engine.arm;
 
 import com.ovl.engine.ParamSetter;
 
-public class MatrixParamSetter extends ParamSetter {
+public class MatrixParamSetter extends ParamSetter<MatrixArm> {
 	public static class Builder implements ParamSetter.Builder<MatrixArm>{
 		@Override
-		public ParamSetter build(int paramId, MatrixArm param) {
-			return new MatrixParamSetter(paramId, param);
+		public ParamSetter build(int paramId, Producer<MatrixArm> p) {
+			return new MatrixParamSetter(paramId, p);
 		}
 	}
 	
-	MatrixArm matrix;
-	
-	public MatrixParamSetter(int paramId, MatrixArm matrix){
-		super(paramId);
-		this.matrix = matrix;
+	public MatrixParamSetter(int paramId, Producer<MatrixArm> p){
+		super(paramId, p);
 	}
 	
 	@Override
 	public void setParam() {
-		OverloadEngineArm.gl.glUniformMatrix4fv(shaderParamId, 1, false, matrix.matrixImpl, 0);
+		OverloadEngineArm.gl.glUniformMatrix4fv(shaderParamId, 1, false, producer.produce().matrixImpl, 0);
 	}
 }
 

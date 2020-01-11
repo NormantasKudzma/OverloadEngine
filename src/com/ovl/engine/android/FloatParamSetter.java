@@ -3,37 +3,21 @@ package com.ovl.engine.android;
 import android.opengl.GLES20;
 
 import com.ovl.engine.ParamSetter;
-import com.ovl.utils.MutableFloat;
 
-public class FloatParamSetter extends ParamSetter {
-	public static class BuilderImmutable implements ParamSetter.Builder<Float>{
+public class FloatParamSetter extends ParamSetter<Float> {
+	public static class Builder implements ParamSetter.Builder<Float>{
 		@Override
-		public ParamSetter build(int paramId, Float f) {
-			return new FloatParamSetter(paramId, f);
+		public ParamSetter build(int paramId, Producer<Float> p) {
+			return new FloatParamSetter(paramId, p);
 		}
 	}
 
-	public static class BuilderMutable implements ParamSetter.Builder<com.ovl.utils.MutableFloat>{
-		@Override
-		public ParamSetter build(int paramId, com.ovl.utils.MutableFloat f) {
-			return new FloatParamSetter(paramId, f);
-		}
-	}
-
-	MutableFloat f;
-
-	public FloatParamSetter(int paramId, Float f){
-		super(paramId);
-		this.f = new MutableFloat(f);
-	}
-
-	public FloatParamSetter(int paramId, MutableFloat f){
-		super(paramId);
-		this.f = f;
+	public FloatParamSetter(int paramId, Producer<Float> p){
+		super(paramId, p);
 	}
 	
 	@Override
 	public void setParam(){
-		GLES20.glUniform1f(shaderParamId, f.value);
+		GLES20.glUniform1f(shaderParamId, producer.produce());
 	}
 }

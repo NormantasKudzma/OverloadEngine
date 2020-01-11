@@ -1,14 +1,24 @@
 package com.ovl.engine;
 
-public abstract class ParamSetter {
-	public interface Builder<T>{
-		public ParamSetter build(int paramId, T param);
+public abstract class ParamSetter<T>  {
+	public interface Builder<T> {
+		public ParamSetter build(int paramId, Producer<T> producer);
+	}
+
+	public interface Producer<T> {
+		public T produce();
 	}
 	
 	protected int shaderParamId;
-	
-	public ParamSetter(int paramId){
+	protected Producer<T> producer;
+
+	public ParamSetter(){
+
+	}
+
+	public ParamSetter(int paramId, Producer<T> producer){
 		shaderParamId = paramId;
+		this.producer = producer;
 	}
 	
 	public abstract void setParam();

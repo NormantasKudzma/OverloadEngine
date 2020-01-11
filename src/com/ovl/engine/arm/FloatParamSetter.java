@@ -3,35 +3,20 @@ package com.ovl.engine.arm;
 import com.ovl.engine.ParamSetter;
 import com.ovl.utils.MutableFloat;
 
-public class FloatParamSetter extends ParamSetter {
-	public static class BuilderImmutable implements ParamSetter.Builder<Float>{
+public class FloatParamSetter extends ParamSetter<MutableFloat> {
+	public static class Builder implements ParamSetter.Builder<MutableFloat>{
 		@Override
-		public ParamSetter build(int paramId, Float f) {
-			return new FloatParamSetter(paramId, f);
+		public ParamSetter build(int paramId, Producer<MutableFloat> p) {
+			return new FloatParamSetter(paramId, p);
 		}
 	}
-	
-	public static class BuilderMutable implements ParamSetter.Builder<MutableFloat>{
-		@Override
-		public ParamSetter build(int paramId, MutableFloat f) {
-			return new FloatParamSetter(paramId, f);
-		}
-	}
-	
-	MutableFloat f;
-	
-	public FloatParamSetter(int paramId, Float f){
-		super(paramId);
-		this.f = new MutableFloat(f);
-	}
-	
-	public FloatParamSetter(int paramId, MutableFloat f){
-		super(paramId);
-		this.f = f;
+
+	public FloatParamSetter(int paramId, Producer<MutableFloat> p){
+		super(paramId, p);
 	}
 	
 	@Override
 	public void setParam(){
-		OverloadEngineArm.gl.glUniform1f(shaderParamId, f.value);
+		OverloadEngineArm.gl.glUniform1f(shaderParamId, producer.produce().value);
 	}
 }
