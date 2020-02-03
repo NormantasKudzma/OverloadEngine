@@ -7,6 +7,7 @@ import com.ovl.utils.Paths;
 public class TestGame extends BaseGame {
 	public void init(){
 		LuaScript s = new LuaScript(Paths.getResources() + "test/t.lua");
+		s.call("init");
 	}
 	
 	public void update(float dt)
