@@ -95,6 +95,10 @@ public class Sprite implements Renderable, ICloneable {
 		return texture;
 	}
 	
+	public static Sprite getSpriteFromSheet(int x, int y, int w, int h, String path) {
+		return getSpriteFromSheet(x, y, w, h, new Sprite(path));
+	}
+	
 	public static Sprite getSpriteFromSheet(int x, int y, int w, int h, Sprite sheet){
 		Vector2 sheetSizeCoef = new Vector2(sheet.getTexture().getWidth(), sheet.getTexture().getHeight());
 		sheetSizeCoef.div(sheet.getTexture().getImageWidth(), sheet.getTexture().getImageHeight());
