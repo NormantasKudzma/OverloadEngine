@@ -60,12 +60,14 @@ public class Sprite implements Renderable, ICloneable {
 	
 	@Override
 	public Sprite clone(){
-		Sprite clone = new Sprite(texture, uv[1], uv[3]);
+		Sprite clone = new Sprite(texture);
 		clone.useShader(id.getVbo(), id.getParams());
+		clone.setUV(uv[1], uv[2]);
 		clone.textureSize.set(textureSize);
 		for (int i = 0; i < clone.verts.length; ++i){
 			clone.verts[i].set(verts[i]);
 		}
+		clone.refreshVertexData();
 		return clone;
 	}
 	
