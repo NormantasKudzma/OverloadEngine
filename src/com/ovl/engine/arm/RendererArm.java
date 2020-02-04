@@ -22,6 +22,7 @@ import com.ovl.utils.Vector2;
 
 public final class RendererArm extends Renderer {
 	private MatrixArm mvpMatrix = new MatrixArm();
+	private GL2ES2 gl;
 	
 	public RendererArm() {
 		textureLoader = new TextureLoaderArm();
@@ -49,12 +50,14 @@ public final class RendererArm extends Renderer {
 
 	@Override
 	public void init() {
-		OverloadEngineArm.gl.glDisable(GL2ES2.GL_DEPTH_TEST);
-		OverloadEngineArm.gl.glEnable(GL2ES2.GL_BLEND);
-		OverloadEngineArm.gl.glBlendFunc(GL2ES2.GL_SRC_ALPHA, GL2ES2.GL_ONE_MINUS_SRC_ALPHA);
-		OverloadEngineArm.gl.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
-		OverloadEngineArm.gl.glTexParameteri(GL2ES2.GL_TEXTURE_2D, GL2ES2.GL_TEXTURE_WRAP_S, GL2ES2.GL_CLAMP_TO_EDGE);
-		OverloadEngineArm.gl.glTexParameteri(GL2ES2.GL_TEXTURE_2D, GL2ES2.GL_TEXTURE_WRAP_T, GL2ES2.GL_CLAMP_TO_EDGE);
+		gl = OverloadEngineArm.gl;
+		
+		gl.glDisable(GL2ES2.GL_DEPTH_TEST);
+		gl.glEnable(GL2ES2.GL_BLEND);
+		gl.glBlendFunc(GL2ES2.GL_SRC_ALPHA, GL2ES2.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+		gl.glTexParameteri(GL2ES2.GL_TEXTURE_2D, GL2ES2.GL_TEXTURE_WRAP_S, GL2ES2.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL2ES2.GL_TEXTURE_2D, GL2ES2.GL_TEXTURE_WRAP_T, GL2ES2.GL_CLAMP_TO_EDGE);
 		
 		mvpMatrix.matrixImpl[0] = 2.0f / OverloadEngine.getInstance().aspectRatio;
 		mvpMatrix.matrixImpl[5] = 1.0f;
@@ -64,17 +67,17 @@ public final class RendererArm extends Renderer {
 
 	protected void loadProgramInfo(Shader shader){
 		int programId = shader.getProgramId();
-		OverloadEngineArm.gl.glUseProgram(programId);
+		gl.glUseProgram(programId);
 		System.out.println("------------\nProgram info\n------------");
 
 		int lengthBuf[] = new int[1];
 		byte logBuf[] = new byte[1024];
 		
-		OverloadEngineArm.gl.glGetProgramInfoLog(programId, 1024, lengthBuf, 0, logBuf, 0);
+		gl.glGetProgramInfoLog(programId, 1024, lengthBuf, 0, logBuf, 0);
 		System.out.println(new String(logBuf, 0, lengthBuf[0]));
 
 		int ib[] = new int[1];
-		OverloadEngineArm.gl.glGetProgramiv(programId, GL2ES2.GL_ACTIVE_ATTRIBUTES, ib, 0);
+		gl.glGetProgramiv(programId, GL2ES2.GL_ACTIVE_ATTRIBUTES, ib, 0);
 		int count = ib[0];
 		
 		int length[] = new int[1];
@@ -86,17 +89,17 @@ public final class RendererArm extends Renderer {
 		System.out.println(String.format("%-20s%-20s%-20s\n", "Attribute name", "Index", "Location"));
 		shader.startAttributeDeclaration(count);
 		for (int i = 0; i < count; ++i){
-			OverloadEngineArm.gl.glGetActiveAttrib(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
+			gl.glGetActiveAttrib(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
 			name[length[0]] = '\0';
 			String attrib = new String(name, 0, length[0]);
-			int loc = OverloadEngineArm.gl.glGetAttribLocation(programId, attrib);
+			int loc = gl.glGetAttribLocation(programId, attrib);
 			int size = glSize[0] * getSizeInFloats(glType[0]);
 			shader.addAttribute(attrib, loc, size);
 			System.out.println(String.format("%-20s%-20d%-20d", attrib, i, loc));
 		}
 		shader.finishAttributeDeclaration();
 		
-		OverloadEngineArm.gl.glGetProgramiv(programId, GL2ES2.GL_ACTIVE_UNIFORMS, ib, 0);
+		gl.glGetProgramiv(programId, GL2ES2.GL_ACTIVE_UNIFORMS, ib, 0);
 		count = ib[0];
 		
 		// Uniforms
@@ -104,10 +107,10 @@ public final class RendererArm extends Renderer {
 		System.out.println(String.format("%-20s%-20s%-20s\n", "Uniform name", "Index", "Location"));
 		shader.startUniformDeclaration(count);
 		for (int i = 0; i < count; ++i){
-			OverloadEngineArm.gl.glGetActiveUniform(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
+			gl.glGetActiveUniform(programId, i, 256, length, 0, glSize, 0, glType, 0, name, 0);
 			name[length[0]] = '\0';
 			String uniform = new String(name, 0, length[0]);
-			int loc = OverloadEngineArm.gl.glGetUniformLocation(programId, uniform);
+			int loc = gl.glGetUniformLocation(programId, uniform);
 			shader.addUniform(uniform, loc, glTypeToOvl(glType[0]));
 			System.out.println(String.format("%-20s%-20d%-20d", uniform, i, loc));
 		}
@@ -172,22 +175,22 @@ public final class RendererArm extends Renderer {
 		Shader shader = new Shader(name);
 		int vsId = compileShader(GL2ES2.GL_VERTEX_SHADER, shader.getVSCode());
 		int fsId = compileShader(GL2ES2.GL_FRAGMENT_SHADER, shader.getFSCode());
-		shader.setProgramId(OverloadEngineArm.gl.glCreateProgram());
+		shader.setProgramId(gl.glCreateProgram());
 		
-		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), vsId);
-		OverloadEngineArm.gl.glAttachShader(shader.getProgramId(), fsId);
-		OverloadEngineArm.gl.glLinkProgram(shader.getProgramId());
+		gl.glAttachShader(shader.getProgramId(), vsId);
+		gl.glAttachShader(shader.getProgramId(), fsId);
+		gl.glLinkProgram(shader.getProgramId());
 		
-		int glErr = OverloadEngineArm.gl.glGetError();
+		int glErr = gl.glGetError();
 		if (glErr != GL2ES2.GL_NO_ERROR){
 			System.err.println("GL error " + glErr);
 			return null;
 		}
 
-		OverloadEngineArm.gl.glDetachShader(shader.getProgramId(), vsId);
-		OverloadEngineArm.gl.glDetachShader(shader.getProgramId(), fsId);
-		OverloadEngineArm.gl.glDeleteShader(vsId);
-		OverloadEngineArm.gl.glDeleteShader(fsId);
+		gl.glDetachShader(shader.getProgramId(), vsId);
+		gl.glDetachShader(shader.getProgramId(), fsId);
+		gl.glDeleteShader(vsId);
+		gl.glDeleteShader(fsId);
 		
 		loadProgramInfo(shader);
 		shaders.put(name, shader);
@@ -201,7 +204,7 @@ public final class RendererArm extends Renderer {
 		/*if (activeShader != null){
 			cleanupShader(activeShader);
 		}
-		OverloadEngineArm.gl.glBindBuffer(OverloadEngineArm.gl.GL_ARRAY_BUFFER, 0);*/
+		gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0);*/
 	}
 
 	@Override
@@ -210,34 +213,34 @@ public final class RendererArm extends Renderer {
 			if (vbo.isModified()){
 				vbo.setModified(false);
 				vbo.getBuffer().rewind();
-				OverloadEngineArm.gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, vbo.getId());
-				OverloadEngineArm.gl.glBufferData(GL2ES2.GL_ARRAY_BUFFER, vbo.getCapacity() * BYTES_PER_FLOAT, vbo.getBuffer(), GL2ES2.GL_STATIC_DRAW);
+				gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, vbo.getId());
+				gl.glBufferData(GL2ES2.GL_ARRAY_BUFFER, vbo.getCapacity() * BYTES_PER_FLOAT, vbo.getBuffer(), GL2ES2.GL_STATIC_DRAW);
 			}
 		}
 		
-		OverloadEngineArm.gl.glClear(GL2ES2.GL_COLOR_BUFFER_BIT);
+		gl.glClear(GL2ES2.GL_COLOR_BUFFER_BIT);
 		
-		OverloadEngineArm.gl.glActiveTexture(GL2ES2.GL_TEXTURE0);	
+		gl.glActiveTexture(GL2ES2.GL_TEXTURE0);	
 	}
 	
 	protected void useShader(Shader shader){
 		activeShader = shader;
-		OverloadEngineArm.gl.glUseProgram(shader.getProgramId());
+		gl.glUseProgram(shader.getProgramId());
 	}
 	
 	protected void bindVbo(Vbo vbo){
 		boundVbo = vbo;
-		OverloadEngineArm.gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, boundVbo.getId());
+		gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, boundVbo.getId());
 		
 		for (Shader.Attribute a : activeShader.getAttributes()){
-			OverloadEngineArm.gl.glVertexAttribPointer(a.id, a.size, GL2ES2.GL_FLOAT, false, boundVbo.getStride(), a.offset);
-			OverloadEngineArm.gl.glEnableVertexAttribArray(a.id);
+			gl.glVertexAttribPointer(a.id, a.size, GL2ES2.GL_FLOAT, false, boundVbo.getStride(), a.offset);
+			gl.glEnableVertexAttribArray(a.id);
 		}
 	}
 	
 	protected void cleanupShader(Shader shader){
 		for (Shader.Handle handle : shader.getAttributes()){
-			OverloadEngineArm.gl.glDisableVertexAttribArray(handle.id);
+			gl.glDisableVertexAttribArray(handle.id);
 		}
 	}
 
@@ -263,38 +266,38 @@ public final class RendererArm extends Renderer {
 	
 	public void render(ShaderParams vboId, PrimitiveType mode, int offset, int count){
 		setParams(vboId);
-		OverloadEngineArm.gl.glDrawArrays(primitiveModes[mode.getIndex()], offset, count);
+		gl.glDrawArrays(primitiveModes[mode.getIndex()], offset, count);
 	}
 	
 	@Override
 	public void renderIndexed(ShaderParams vboId, PrimitiveType mode, ByteBuffer indices, int count) {
 		//setParams(vboId);
-		//OverloadEngineArm.gl.glDrawElements(primitiveModes[mode.getIndex()], count, GL2ES2.GL_UNSIGNED_SHORT, indices);
+		//gl.glDrawElements(primitiveModes[mode.getIndex()], count, GL2ES2.GL_UNSIGNED_SHORT, indices);
 	}
 	
 	@Override
 	protected int compileShader(int type, String shaderCode) {
-		int shader = OverloadEngineArm.gl.glCreateShader(type);
+		int shader = gl.glCreateShader(type);
 
 		IntBuffer size = IntBuffer.allocate(1);
 		size.put(shaderCode.length());
 		size.rewind();
 		
-		OverloadEngineArm.gl.glShaderSource(shader, 1, new String[]{ shaderCode }, size);
-		OverloadEngineArm.gl.glCompileShader(shader);
+		gl.glShaderSource(shader, 1, new String[]{ shaderCode }, size);
+		gl.glCompileShader(shader);
 		
 		int result[] = new int[1];
-		OverloadEngineArm.gl.glGetShaderiv(shader, GL2ES2.GL_COMPILE_STATUS, result, 0);
+		gl.glGetShaderiv(shader, GL2ES2.GL_COMPILE_STATUS, result, 0);
 		boolean isCompiled = result[0] != GL2ES2.GL_FALSE;
 
-		OverloadEngineArm.gl.glGetShaderiv(shader, GL2ES2.GL_INFO_LOG_LENGTH, result, 0);
+		gl.glGetShaderiv(shader, GL2ES2.GL_INFO_LOG_LENGTH, result, 0);
 		int infoLogLength = Math.max(1024, result[0]);
 
 		if (!isCompiled){
 			int lengthBuf[] = new int[1];
 			byte logBuf[] = new byte[infoLogLength];
 			
-			OverloadEngineArm.gl.glGetShaderInfoLog(shader, infoLogLength, lengthBuf, 0, logBuf, 0);
+			gl.glGetShaderInfoLog(shader, infoLogLength, lengthBuf, 0, logBuf, 0);
 			System.err.println("Shader compilation error. More info:\n" + new String(logBuf, 0, lengthBuf[0]));
 		}
 		
@@ -314,13 +317,13 @@ public final class RendererArm extends Renderer {
 		IntBuffer buffer = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
 		buffer.put(vbo.getId());
 		buffer.rewind();
-		OverloadEngineArm.gl.glDeleteBuffers(1, buffer);
+		gl.glDeleteBuffers(1, buffer);
 		vbos.remove(vbo);
 	}
 	
 	protected void initVbo(Vbo vbo){
 		IntBuffer buffer = IntBuffer.allocate(1);
-		OverloadEngineArm.gl.glGenBuffers(1, buffer);
+		gl.glGenBuffers(1, buffer);
 		vbo.setId(buffer.get(0));
 		vbos.add(vbo);
 	}

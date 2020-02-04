@@ -3,22 +3,23 @@ package com.ovl.utils;
 import com.ovl.engine.OverloadEngine;
 
 public final class Paths {
-	private static final String PLATFORM_ROOT;
-	private static final String RESOURCES;
-	private static final String FONTS;
-	private static final String TEXTURES;
-	private static final String CONFIGS;
-	private static final String MAPS;
-	private static final String ANIMATIONS;
-	private static final String SOUNDS;
-	private static final String MUSIC;
-	private static final String UI;
-	private static final String SHADERS;
-	private static final String ALLOWED_DEVICES;
+	public static final String ROOT;
+	public static final String RESOURCES;
+	public static final String FONTS;
+	public static final String TEXTURES;
+	public static final String CONFIGS;
+	public static final String MAPS;
+	public static final String ANIMATIONS;
+	public static final String SOUNDS;
+	public static final String MUSIC;
+	public static final String UI;
+	public static final String SHADERS;
+	public static final String SCRIPTS;
+	public static final String ALLOWED_DEVICES;
 	
 	static {
-		PLATFORM_ROOT = OverloadEngine.getInstance().getPlatformAssetsRoot();
-		RESOURCES = PLATFORM_ROOT + "res/";
+		ROOT = OverloadEngine.getInstance().getPlatformAssetsRoot();
+		RESOURCES = ROOT + "res/";
 		FONTS = RESOURCES + "fonts/";
 		TEXTURES = RESOURCES + "textures/";
 		CONFIGS = RESOURCES + "configs/";
@@ -28,6 +29,7 @@ public final class Paths {
 		MUSIC = RESOURCES + "music/";
 		UI = TEXTURES + "ui/";
 		SHADERS = RESOURCES + "shaders/";
+		SCRIPTS = RESOURCES + "scripts/";
 		ALLOWED_DEVICES = CONFIGS + "AllowedDevices.dat";
 	}
 	
@@ -35,7 +37,7 @@ public final class Paths {
 	 * @return platform specific resources root folder (ie. <i>assets/</i> on android)
 	 */
 	public static String getPlatformAssetsRoot(){
-		return PLATFORM_ROOT;
+		return ROOT;
 	}
 	
 	public static String getResources(){
