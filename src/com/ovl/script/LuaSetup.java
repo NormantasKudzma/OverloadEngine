@@ -12,6 +12,5 @@ public class LuaSetup {
 		Globals globals = Lua.globals();
 		
 		globals.set("Paths", CoerceJavaToLua.coerce(Paths.class));
-		globals.set("muh_secret", 7);
 	}
 }
