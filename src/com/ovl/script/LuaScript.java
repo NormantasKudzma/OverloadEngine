@@ -4,10 +4,9 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-public class LuaScript {
-	LuaValue mScript;
-	
+public class LuaScript extends LuaCallable {
 	public LuaScript(String resource){
+		super();
 		load(resource);
 	}
 	
@@ -15,7 +14,7 @@ public class LuaScript {
 		try {
 			Globals globals = JsePlatform.standardGlobals();
 			LuaValue chunk = globals.loadfile(resource);
-			mScript = chunk.call();
+			mValue = chunk.call();
 		}
 		catch (Exception e){
 			System.err.println("Err loading script " + resource);
@@ -23,25 +22,28 @@ public class LuaScript {
 		}
 	}
 	
-	public boolean isCallable() {
-		return mScript != null && mScript.istable();
+	public boolean hasContents() {
+		return mValue != null && mValue.istable();
+	}
+	
+	public LuaValue get(String item){
+		return mValue.get(item);
+	}
+	
+	public LuaValue get(int item) {
+		return mValue.get(item);
+	}
+	
+	public LuaCallable getCallable(String item) {
+		return new LuaCallable(get(item));
+	}
+	
+	public LuaCallable getCallable(int item) {
+		return new LuaCallable(get(item));
 	}
 	
 	public void call(String f, Object... args) {
-		if (!isCallable()) { return; }
-		mScript.get(f).invoke(valuesOf(args));
-	}
-	
-	public LuaValue valueOf(Object obj) {
-		// STUB
-		return null;
-	}
-	
-	public LuaValue[] valuesOf(Object... objs) {
-		LuaValue values[] = new LuaValue[objs.length];
-		for (int i = 0; i < objs.length; ++i) {
-			values[i] = valueOf(objs[i]);
-		}
-		return values;
+		if (!hasContents()) { return; }
+		get(f).invoke(valuesOf(args));
 	}
 }
