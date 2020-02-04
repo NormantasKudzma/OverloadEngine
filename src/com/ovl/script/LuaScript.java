@@ -2,7 +2,6 @@ package com.ovl.script;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class LuaScript extends LuaCallable {
 	public LuaScript(String resource){
@@ -12,7 +11,7 @@ public class LuaScript extends LuaCallable {
 	
 	private void load(String resource){
 		try {
-			Globals globals = JsePlatform.standardGlobals();
+			Globals globals = Lua.globals();
 			LuaValue chunk = globals.loadfile(resource);
 			mValue = chunk.call();
 		}

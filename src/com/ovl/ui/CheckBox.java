@@ -24,10 +24,10 @@ public class CheckBox extends SpriteComponent{
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setSprite(new Sprite(Paths.getUI() + "checkbox_normal.png"), EUIState.NORMAL, false);
-		setSprite(new Sprite(Paths.getUI() + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
-		setSprite(new Sprite(Paths.getUI() + "checkbox_checked.png"), EUIState.CLICKED, false);
-		setSprite(new Sprite(Paths.getUI() + "checkbox_checked_hover.png"), EUIState.CLICKED, true);
+		setSprite(new Sprite(Paths.UI + "checkbox_normal.png"), EUIState.NORMAL, false);
+		setSprite(new Sprite(Paths.UI + "checkbox_normal_hover.png"), EUIState.NORMAL, true);
+		setSprite(new Sprite(Paths.UI + "checkbox_checked.png"), EUIState.CLICKED, false);
+		setSprite(new Sprite(Paths.UI + "checkbox_checked_hover.png"), EUIState.CLICKED, true);
 		clickListener = new CheckBoxClickListener();
 	}
 	

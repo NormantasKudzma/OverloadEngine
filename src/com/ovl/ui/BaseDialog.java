@@ -15,7 +15,7 @@ public class BaseDialog extends Composite {
 	protected void initialize(){
 		super.initialize();
 		isVisible = false;
-		this.setSprite(new Sprite(Paths.getUI() + "square_blue.png"));		
+		this.setSprite(new Sprite(Paths.UI + "square_blue.png"));		
 		getScale().mul(40f);
 		setPosition(Vector2.one);	
 	}

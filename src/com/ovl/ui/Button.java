@@ -29,8 +29,8 @@ public class Button extends SpriteComponent{
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setSprite(new Sprite(Paths.getUI() + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
-		setSprite(new Sprite(Paths.getUI() + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
+		setSprite(new Sprite(Paths.UI + "button_green.png"), SpriteComponent.EUIState.NORMAL, false);
+		setSprite(new Sprite(Paths.UI + "hover_green.png"), SpriteComponent.EUIState.NORMAL, true);
 
 		//addChild(label);
 	}

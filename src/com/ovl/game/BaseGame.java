@@ -7,6 +7,7 @@ import com.ovl.engine.Renderer;
 import com.ovl.graphics.Layer;
 import com.ovl.graphics.UnsortedLayer;
 import com.ovl.physics.PhysicsWorld;
+import com.ovl.script.LuaSetup;
 import com.ovl.ui.BaseDialog;
 import com.ovl.utils.Vector2;
 
@@ -173,6 +174,8 @@ public class BaseGame implements Updatable {
 			
 		});
 		k.startController();*/
+		
+		LuaSetup.setup();
 	}
 
 	/** 

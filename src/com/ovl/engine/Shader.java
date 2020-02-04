@@ -54,12 +54,12 @@ public class Shader {
 	}
 	
 	public String getVSCode(){
-		String resource = Paths.getShaders() + resourceName + "_VS";
+		String resource = Paths.SHADERS + resourceName + "_VS";
 		return ConfigManager.loadFile(resource);
 	}
 	
 	public String getFSCode(){
-		String resource = Paths.getShaders() + resourceName + "_FS";
+		String resource = Paths.SHADERS + resourceName + "_FS";
 		return ConfigManager.loadFile(resource);
 	}
 
