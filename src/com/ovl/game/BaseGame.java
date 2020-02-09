@@ -2,15 +2,12 @@ package com.ovl.game;
 
 import java.util.ArrayList;
 
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
 import com.ovl.engine.OverloadEngine;
 import com.ovl.engine.Renderer;
 import com.ovl.graphics.Layer;
 import com.ovl.graphics.UnsortedLayer;
 import com.ovl.physics.PhysicsWorld;
 import com.ovl.script.Lua;
-import com.ovl.script.LuaSetup;
 import com.ovl.ui.BaseDialog;
 import com.ovl.utils.Vector2;
 
@@ -178,7 +175,7 @@ public class BaseGame implements Updatable {
 		});
 		k.startController();*/
 		
-		LuaSetup.setup();
+		Lua.setup();
 		Lua.expose("BaseGame", this);
 	}
 
