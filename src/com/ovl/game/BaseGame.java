@@ -213,7 +213,7 @@ public class BaseGame implements Updatable {
 	}
 
 	protected void renderGame(){
-		for (int i = 0 ; i < layers.size(); ++i){
+		for (int i = layers.size() - 1; i >= 0 ; --i){
 			layers.get(i).render();
 		}
 	}
