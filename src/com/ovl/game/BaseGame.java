@@ -41,6 +41,7 @@ public class BaseGame implements Updatable {
 	}
 	
 	public void addObject(GameObject gameObject, String layerName){
+		assert(gameObject != null);
 		Layer layer = getLayer(layerName);
 		if (layer == null) { return; }
 

@@ -123,6 +123,6 @@ public class SimpleFontArm extends SimpleFont {
 		font = (CustomFontArm)f;
 		measureGraphics.setFont(font.get());
 		frc = measureGraphics.getFontMetrics().getFontRenderContext();
-		prerenderText();
+		prerenderPending = true;
 	}
 }

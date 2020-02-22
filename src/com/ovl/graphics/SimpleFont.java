@@ -11,6 +11,7 @@ public abstract class SimpleFont extends GameObject {
 	public static final Renderer RENDERER;
 	
 	protected String text;
+	protected boolean prerenderPending;
 	
 	protected Vector2 textSize = new Vector2();
 	protected Vector2 textOffset = new Vector2();
@@ -63,6 +64,13 @@ public abstract class SimpleFont extends GameObject {
 		}
 		
 		this.text = text;
-		prerenderText();
+		prerenderPending = true;
+	}
+	
+	public void update(float dt) {
+		if (prerenderPending) {
+			prerenderPending = false;
+			prerenderText();
+		}
 	}
 }

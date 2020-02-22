@@ -22,6 +22,7 @@ public class TextureArm extends Texture {
 
 	@Override
 	protected int generateId() {
+		assert(id == -1);
 		int ids[] = new int[1];
 		OverloadEngineArm.gl.glGenTextures(1, ids, 0);
 		return ids[0];
@@ -29,6 +30,7 @@ public class TextureArm extends Texture {
 
 	@Override
 	protected void destroy() {
+		assert(id != -1);
 		int ids[] = new int[]{ id };
 		OverloadEngineArm.gl.glDeleteTextures(1, ids, 0);
 	}
