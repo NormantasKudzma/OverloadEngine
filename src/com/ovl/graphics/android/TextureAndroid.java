@@ -28,6 +28,10 @@ public class TextureAndroid extends Texture {
 
 	@Override
 	protected void destroy() {
+		if (boundTextures[target] == id) {
+			boundTextures[target] = 0;
+		}
+		
 		int ids[] = new int[]{ id };
 		GLES20.glDeleteTextures(1, ids, 0);
 		boundTextures[target] = -1;
