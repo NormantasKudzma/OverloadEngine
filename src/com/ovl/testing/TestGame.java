@@ -16,6 +16,7 @@ public class TestGame extends BaseGame {
 	}
 	
 	public void update(float dt){
+		super.update(dt);
 		script.call("update", dt);
 	}
 }

@@ -31,6 +31,11 @@ public class TextureArm extends Texture {
 	@Override
 	protected void destroy() {
 		assert(id != -1);
+
+		if (boundTextures[target] == id) {
+			boundTextures[target] = 0;
+		}
+		
 		int ids[] = new int[]{ id };
 		OverloadEngineArm.gl.glDeleteTextures(1, ids, 0);
 	}
