@@ -1,7 +1,6 @@
 package com.ovl.testing;
 
 import com.ovl.game.BaseGame;
-import com.ovl.graphics.SimpleFont;
 import com.ovl.script.LuaScript;
 import com.ovl.utils.Paths;
 

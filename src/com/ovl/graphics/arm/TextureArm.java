@@ -5,15 +5,15 @@ import com.ovl.engine.arm.OverloadEngineArm;
 import com.ovl.graphics.Texture;
 
 public class TextureArm extends Texture {
-	static final int boundTextures[] = new int[64 /*GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS*/];
-	
-	public TextureArm(){
+	static final int boundTextures[] = new int[64 /* GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS */];
+
+	public TextureArm() {
 		super();
 	}
 
 	@Override
 	public void bind() {
-		if (boundTextures[target] != id){
+		if (boundTextures[target] != id) {
 			boundTextures[target] = id;
 			OverloadEngineArm.gl.glActiveTexture(GLES2.GL_TEXTURE0 + target);
 			OverloadEngineArm.gl.glBindTexture(GLES2.GL_TEXTURE_2D, id);
@@ -22,7 +22,7 @@ public class TextureArm extends Texture {
 
 	@Override
 	protected int generateId() {
-		assert(id == -1);
+		assert (id == -1);
 		int ids[] = new int[1];
 		OverloadEngineArm.gl.glGenTextures(1, ids, 0);
 		return ids[0];
@@ -30,13 +30,13 @@ public class TextureArm extends Texture {
 
 	@Override
 	protected void destroy() {
-		assert(id != -1);
+		assert (id != -1);
 
 		if (boundTextures[target] == id) {
 			boundTextures[target] = 0;
 		}
-		
-		int ids[] = new int[]{ id };
+
+		int ids[] = new int[] { id };
 		OverloadEngineArm.gl.glDeleteTextures(1, ids, 0);
 	}
 }

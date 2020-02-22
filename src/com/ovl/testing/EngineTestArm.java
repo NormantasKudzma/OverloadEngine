@@ -1,9 +1,7 @@
 package com.ovl.testing;
 
-import com.jogamp.opengl.GLProfile;
 import com.ovl.engine.EngineConfig;
 import com.ovl.engine.arm.OverloadEngineArm;
-import com.ovl.utils.Paths;
 
 public class EngineTestArm {
 	public static void main(String args[]){

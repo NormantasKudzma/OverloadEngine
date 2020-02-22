@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.ovl.game.BaseGame;
 import com.ovl.utils.DebugFrameCounter;
-import com.ovl.utils.Vector2;
 
 public abstract class OverloadEngine {
 	public enum EnginePlatform {
