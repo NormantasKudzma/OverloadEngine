@@ -12,13 +12,13 @@ public class UnsortedLayer extends Layer {
 	public UnsortedLayer(String name, int index) {
 		super(name, index);
 	}
-	
+
 	@Override
-	public void addObject(GameObject gameObject){
+	public void addObject(GameObject gameObject) {
 		gameObjectList.add(gameObject);
 	}
 
-	public void removeObject(GameObject gameObject){
+	public void removeObject(GameObject gameObject) {
 		gameObjectList.remove(gameObject);
 	}
 
@@ -28,47 +28,47 @@ public class UnsortedLayer extends Layer {
 		}
 		gameObjectList.clear();
 	}
-	
-	public void destroyMarkedObjects(){
-		if (destroyList.isEmpty()){
+
+	public void destroyMarkedObjects() {
+		if (destroyList.isEmpty()) {
 			return;
 		}
-		
-		for (int i = 0; i < destroyList.size(); ++i){
+
+		for (int i = 0; i < destroyList.size(); ++i) {
 			destroyList.get(i).onDestroy();
 			destroyList.get(i).destroy();
 		}
 		destroyList.clear();
 	}
-	
-	public ArrayList<GameObject> getDestroyList(){
+
+	public ArrayList<GameObject> getDestroyList() {
 		return destroyList;
 	}
-	
+
 	@Override
 	public void render() {
-		for (int i = 0; i < gameObjectList.size(); ++i){
+		for (int i = 0; i < gameObjectList.size(); ++i) {
 			gameObjectList.get(i).render();
 		}
 	}
 
 	@Override
 	public void update(float deltaTime) {
-		for (int i = 0; i < gameObjectList.size(); ++i){
+		for (int i = 0; i < gameObjectList.size(); ++i) {
 			gameObjectList.get(i).update(deltaTime);
 		}
 	}
 
 	@Override
 	public void unloadResources() {
-		for (int i = 0; i < gameObjectList.size(); ++i){
+		for (int i = 0; i < gameObjectList.size(); ++i) {
 			gameObjectList.get(i).unloadResources();
 		}
 	}
 
 	@Override
 	public void reloadResources() {
-		for (int i = 0; i < gameObjectList.size(); ++i){
+		for (int i = 0; i < gameObjectList.size(); ++i) {
 			gameObjectList.get(i).reloadResources();
 		}
 	}
