@@ -6,6 +6,7 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 import com.ovl.engine.OverloadEngine;
 import com.ovl.game.GameObject;
+import com.ovl.graphics.Color;
 import com.ovl.graphics.Primitive;
 import com.ovl.graphics.SimpleFont;
 import com.ovl.graphics.Sprite;
@@ -33,10 +34,10 @@ public class Lua {
 		Lua.expose("Engine", OverloadEngine.getInstance());
 		Lua.expose("Paths", Paths.class);
 		Lua.expose("Vector2", Vector2.class);
-		
 		Lua.expose("GameObject", GameObject.class);
 		Lua.expose("Sprite", Sprite.class);
 		Lua.expose("Primitive", Primitive.class);
 		Lua.expose("SimpleFont", SimpleFont.class);
+		Lua.expose("Color", Color.class);
 	}
 }
